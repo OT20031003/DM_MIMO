@@ -1,0 +1,93 @@
+Output Directory: outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+MIMO Streams: 2x1024 complex symbols
+
+======== SNR = -5 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.274120956659317
+ddim.py start_timesteps after clamp S = 200 : 502
+Saved result for SNR -5
+
+======== SNR = -2 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.3077293336391449
+ddim.py start_timesteps after clamp S = 200 : 478
+Saved result for SNR -2
+
+======== SNR = 1 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.3786928355693817
+ddim.py start_timesteps after clamp S = 200 : 430
+Saved result for SNR 1
+
+======== SNR = 4 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.47640565037727356
+ddim.py start_timesteps after clamp S = 200 : 369
+Saved result for SNR 4
+
+======== SNR = 7 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.5595622658729553
+ddim.py start_timesteps after clamp S = 200 : 319
+Saved result for SNR 7
+
+======== SNR = 10 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.7767841815948486
+ddim.py start_timesteps after clamp S = 200 : 185
+Saved result for SNR 10
+
+======== SNR = 13 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.7707855105400085
+ddim.py start_timesteps after clamp S = 200 : 189
+Saved result for SNR 13
+
+======== SNR = 16 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.8373820781707764
+ddim.py start_timesteps after clamp S = 200 : 144
+Saved result for SNR 16
+
+======== SNR = 19 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.8953066468238831
+ddim.py start_timesteps after clamp S = 200 : 100
+Saved result for SNR 19
+
+======== SNR = 22 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.9495906829833984
+ddim.py start_timesteps after clamp S = 200 : 52
+Saved result for SNR 22
+
+======== SNR = 25 dB (Benchmark: MMSE) ========
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.9567235708236694
+ddim.py start_timesteps after clamp S = 200 : 46
+Saved result for SNR 25

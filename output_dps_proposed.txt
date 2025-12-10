@@ -1,0 +1,119 @@
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Saved images to ./sentimg/
+MIMO Streams: 2x1024 complex symbols
+
+======== SNR = -5 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+[Info] Low SNR (-5dB): Reducing Zeta to 0.0300
+Starting Proposed Sampling... Steps=200, Zeta=0.03
+  > Effective Noise Var: 2.64802 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr-5.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR -5
+
+======== SNR = -2 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+[Info] Low SNR (-2dB): Reducing Zeta to 0.0300
+Starting Proposed Sampling... Steps=200, Zeta=0.03
+  > Effective Noise Var: 2.24961 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr-2.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR -2
+
+======== SNR = 1 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+[Info] Low SNR (1dB): Reducing Zeta to 0.0300
+Starting Proposed Sampling... Steps=200, Zeta=0.03
+  > Effective Noise Var: 1.64066 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr1.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 1
+
+======== SNR = 4 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+[Info] Low SNR (4dB): Reducing Zeta to 0.0300
+Starting Proposed Sampling... Steps=200, Zeta=0.03
+  > Effective Noise Var: 1.13451 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr4.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 4
+
+======== SNR = 7 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.83820 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr7.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 7
+
+======== SNR = 10 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.37924 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr10.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 10
+
+======== SNR = 13 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.28763 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr13.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 13
+
+======== SNR = 16 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.13583 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr16.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 16
+
+======== SNR = 19 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.11941 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr19.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 19
+
+======== SNR = 22 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.06637 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr22.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 22
+
+======== SNR = 25 dB ========
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
+Starting Proposed Sampling... Steps=200, Zeta=0.3
+  > Effective Noise Var: 0.04205 (Matched with Benchmark)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr25.png
+Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
+Saved result for SNR 25

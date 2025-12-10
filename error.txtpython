@@ -1,0 +1,5 @@
+usage: txt2img.py [-h] [--prompt [PROMPT]] [--outdir [OUTDIR]]
+                  [--ddim_steps DDIM_STEPS] [--plms] [--ddim_eta DDIM_ETA]
+                  [--n_iter N_ITER] [--H H] [--W W] [--n_samples N_SAMPLES]
+                  [--scale SCALE]
+txt2img.py: error: unrecognized arguments: scripts/txt2img.py
