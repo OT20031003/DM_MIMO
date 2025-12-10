@@ -32,13 +32,14 @@ def get_adaptive_h_lr(current_snr, snr_min=-5, snr_max=25, lr_max=20.0, lr_min=1
     lr = lr_max + (current_snr - snr_min) * slope
     return lr
 
-def plot_channel_evolution(H_true, H_init, H_final, save_path):
+def plot_channel_evolution(H_true, H_init, H_final, save_path, batch_idx=0):
     """
-    初期値(LS)と最終値(GCR)の点のみをプロット
+    初期値(LS)と最終値(GCR)の点のみをプロット (指定バッチ)
     """
-    h_gt = H_true[0].detach().cpu().numpy().flatten()
-    h_ls = H_init[0].detach().cpu().numpy().flatten()
-    h_gcr = H_final[0].detach().cpu().numpy().flatten()
+    # 指定バッチのデータを取り出し
+    h_gt = H_true[batch_idx].detach().cpu().numpy().flatten()
+    h_ls = H_init[batch_idx].detach().cpu().numpy().flatten()
+    h_gcr = H_final[batch_idx].detach().cpu().numpy().flatten()
 
     plt.figure(figsize=(8, 8))
     
@@ -65,7 +66,7 @@ def plot_channel_evolution(H_true, H_init, H_final, save_path):
     plt.axvline(0, color='black', linewidth=0.5, alpha=0.5)
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend(loc='upper right')
-    plt.title(f"Channel Estimation Evolution (Batch[0])\nMethod: Burst Calibration")
+    plt.title(f"Channel Estimation Evolution (Batch[{batch_idx}])\nMethod: Burst Calibration")
     plt.xlabel("Real Part")
     plt.ylabel("Imaginary Part")
     
@@ -74,20 +75,19 @@ def plot_channel_evolution(H_true, H_init, H_final, save_path):
     plt.close()
     print(f"Saved channel plot to {save_path}")
 
-def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=None):
+def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=None, batch_idx=0):
     """
-    Hの推移を軌跡としてプロットする関数 (Batch[0]のみ)
+    Hの推移を軌跡としてプロットする関数 (指定バッチのみ)
     split_index: Burst Phase (Orange) と Main Phase (Green) の境界
-    すべての点にインデックス番号を付与
     """
-    # H_history: list of Tensor(B, r, t) -> Convert to (Steps, r*t)
     steps = len(H_history)
     
-    # Batch 0 を取り出し、CPU numpyへ
-    traj = torch.stack(H_history).cpu().numpy()[:, 0, :, :].reshape(steps, -1)
+    # Batch idx を取り出し、CPU numpyへ
+    # H_historyは [Tensor(B, r, t), ...] のリスト
+    traj = torch.stack(H_history).cpu().numpy()[:, batch_idx, :, :].reshape(steps, -1)
     
-    h_gt = H_true[0].detach().cpu().numpy().flatten()
-    h_ls = H_init[0].detach().cpu().numpy().flatten()
+    h_gt = H_true[batch_idx].detach().cpu().numpy().flatten()
+    h_ls = H_init[batch_idx].detach().cpu().numpy().flatten()
     
     plt.figure(figsize=(10, 10))
     
@@ -111,23 +111,20 @@ def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=No
 
         # 1. Initial LS (Start) - Blue
         plt.scatter(h_ls[i].real, h_ls[i].imag, c='blue', marker='^', s=60, zorder=4, label='Initial LS' if i==0 else "")
-        # 番号を追加 (右・上寄り)
         plt.text(h_ls[i].real, h_ls[i].imag, f"{i}", fontsize=10, color='blue', ha='right', va='bottom', fontweight='bold')
         
         # 2. Final Est (End) - Green
         plt.scatter(traj[-1, i].real, traj[-1, i].imag, c='green', marker='o', s=80, zorder=4, label='Final Est' if i==0 else "")
-        # 番号を追加 (左・下寄り)
         plt.text(traj[-1, i].real, traj[-1, i].imag, f"{i}", fontsize=10, color='green', ha='left', va='top', fontweight='bold')
         
         # 3. Ground Truth - Red
         plt.scatter(h_gt[i].real, h_gt[i].imag, c='red', marker='x', s=100, linewidths=2, zorder=5, label='Ground Truth' if i==0 else "")
-        # 番号を追加 (左・上寄り)
         plt.text(h_gt[i].real, h_gt[i].imag, f"{i}", fontsize=12, color='red', fontweight='bold', ha='left', va='bottom')
 
     plt.axhline(0, color='black', linewidth=0.5, alpha=0.5)
     plt.axvline(0, color='black', linewidth=0.5, alpha=0.5)
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.title("Channel Estimation Trajectory\nOrange: Burst Calibration, Green: Main GCR Loop")
+    plt.title(f"Channel Estimation Trajectory (Batch[{batch_idx}])\nOrange: Burst Calibration, Green: Main GCR Loop")
     plt.xlabel("Real Part")
     plt.ylabel("Imaginary Part")
     plt.legend(loc='upper right')
@@ -137,13 +134,9 @@ def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=No
     plt.close()
     print(f"Saved trajectory plot to {save_path}")
 
-# ==========================================
-#  NEW: Loss Evolution Plotter
-# ==========================================
 def plot_h_loss_evolution(burst_loss, main_loss, save_path):
     """
-    Burst PhaseとMain PhaseのHのSquared Error (|H_true - H|^2) の推移を
-    横並びのグラフにして保存する。
+    Burst PhaseとMain PhaseのHのSquared Error (|H_true - H|^2) の推移
     """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
@@ -160,8 +153,6 @@ def plot_h_loss_evolution(burst_loss, main_loss, save_path):
         ax1.text(len(burst_loss)*0.7, burst_loss[-1]*1.1, f"End: {burst_loss[-1]:.4f}", color='red')
 
     # --- 2. Main Phase ---
-    # 通常のDiffusionはStepが逆順で進行するが、配列はappend順（処理順）になっているため
-    # x軸は「Processing Step」として表示する
     ax2.plot(main_loss, color='green', linewidth=1.5)
     ax2.set_title("Phase 3: Main GCR Sampling Loss")
     ax2.set_xlabel("Sampling Step (Process Order)")
@@ -178,6 +169,76 @@ def plot_h_loss_evolution(burst_loss, main_loss, save_path):
     plt.close()
     print(f"Saved loss evolution plot to {save_path}")
 
+# ==========================================
+#  [NEW] Metric Calculation & Plotting
+# ==========================================
+
+def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
+    """
+    単一画像(1, C, H, W)のPSNRとLPIPSを計算する
+    target_img_01: [1, 3, H, W] in [0, 1] (Original)
+    pred_img: [1, 3, H, W] in [-1, 1] or [0, 1] (Decoder output)
+    """
+    # pred_imgを[0, 1]に正規化 (PSNR用)
+    if pred_img.min() < 0:
+        pred_01 = (pred_img + 1.0) / 2.0
+    else:
+        pred_01 = pred_img
+    pred_01 = torch.clamp(pred_01, 0.0, 1.0)
+    
+    # PSNR
+    mse = torch.mean((target_img_01 - pred_01) ** 2)
+    psnr = 20 * torch.log10(1.0 / (torch.sqrt(mse) + 1e-8))
+    
+    # LPIPS用: 入力は[-1, 1]である必要がある
+    target_m11 = target_img_01 * 2.0 - 1.0
+    
+    if pred_img.min() >= 0:
+        pred_m11 = pred_img * 2.0 - 1.0
+    else:
+        pred_m11 = pred_img
+    pred_m11 = torch.clamp(pred_m11, -1.0, 1.0)
+    
+    with torch.no_grad():
+        lpips_val = lpips_fn(target_m11, pred_m11).item()
+        
+    return psnr.item(), lpips_val
+
+def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
+    """
+    PSNRとLPIPSの推移をプロット
+    凡例を上部にまとめて表示
+    """
+    steps = range(len(psnr_list))
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+
+    # --- 左軸: PSNR (Blue) ---
+    color1 = 'tab:blue'
+    ax1.set_xlabel('Sampling Step (Process Order)')
+    ax1.set_ylabel('PSNR (dB)', color=color1)
+    
+    line1 = ax1.plot(steps, psnr_list, color=color1, label='PSNR (Left Axis)')
+    ax1.tick_params(axis='y', labelcolor=color1)
+    ax1.grid(True, linestyle='--', alpha=0.5)
+
+    # --- 右軸: LPIPS (Red) ---
+    ax2 = ax1.twinx()  
+    color2 = 'tab:red'
+    ax2.set_ylabel('LPIPS', color=color2) 
+    
+    line2 = ax2.plot(steps, lpips_list, color=color2, linestyle='--', label='LPIPS (Right Axis)')
+    ax2.tick_params(axis='y', labelcolor=color2)
+
+    # --- 凡例 ---
+    lines = line1 + line2
+    labels = [l.get_label() for l in lines]
+    ax1.legend(lines, labels, loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False)
+
+    plt.title(f"Evolution of Image Quality - SNR {snr}dB (Batch[{batch_idx}])", y=1.1)
+    fig.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved metrics plot to {save_path}")
 
 def seed_everything(seed):
     torch.manual_seed(seed)
@@ -229,6 +290,11 @@ def save_img_individually(img, path):
     basename = os.path.splitext(os.path.basename(path))[0]
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
+    
+    if img.min() < 0:
+        img = (img + 1.0) / 2.0
+    img = torch.clamp(img, 0.0, 1.0)
+        
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
     print(f"Saved images to {dirname}/")
@@ -285,10 +351,7 @@ if __name__ == "__main__":
     
     P_power = 1.0 
     Perfect_Estimate = False 
-    # python -m scripts.mimo_dps_burst_reset > output_burst.txt
-    # ----------------------------------------------------
-    # Experiment Naming
-    # ----------------------------------------------------
+    
     base_experiment_name = f"MIMO_Burst_Reset/t={t_mimo}_r={r_mimo}"
     
     parser.add_argument("--input_path", type=str, default="input_img")
@@ -300,35 +363,40 @@ if __name__ == "__main__":
     parser.add_argument("--scale", type=float, default=5.0)
     parser.add_argument("--dps_scale", type=float, default=0.3)
     
-    # ----------------------------------------------------
-    # Burst & Reset Parameters (New!)
-    # ----------------------------------------------------
-    parser.add_argument("--burst_iterations", type=int, default=20, help="Number of H updates in Burst Phase")
-    parser.add_argument("--burst_lr", type=float, default=0.1, help="Learning rate for H in Burst Phase")
-    parser.add_argument("--anchor_lambda", type=float, default=1.0, help="Weight for H-Anchor regularization")
+    # Burst & Reset Parameters
+    parser.add_argument("--burst_iterations", type=int, default=20)
+    parser.add_argument("--burst_lr", type=float, default=0.1)
+    parser.add_argument("--anchor_lambda", type=float, default=1.0)
     
-    # Adaptive Learning Rate Settings for Main Phase
+    # Adaptive Learning Rate
     parser.add_argument("--h_lr_max", type=float, default=20.0)
     parser.add_argument("--h_lr_min", type=float, default=0.05)
     
-    parser.add_argument("--seed", type=int, default=42, help="random seed for reproducibility")
+    parser.add_argument("--seed", type=int, default=42)
+    
+    # [NEW] 監視するバッチインデックス
+    parser.add_argument("--monitor_idx", type=int, default=2, help="Index of the batch to monitor intermediate results and plots")
     
     opt = parser.parse_args()
 
-    # Seed Setting
     seed_everything(opt.seed)
 
     # Directory Setup
     suffix = "perfect" if Perfect_Estimate else "estimated"
     base_out_path = f"outputs/{base_experiment_name}"
+    
     opt.outdir = os.path.join(opt.outdir, suffix)
     opt.nosample_outdir = os.path.join(opt.nosample_outdir, suffix)
     channel_outdir = os.path.join(base_out_path, "channel_plots", suffix)
+    
+    # 中間生成物用ディレクトリ
+    intermediates_base_dir = os.path.join(base_out_path, f"{suffix}_process")
 
     os.makedirs(opt.outdir, exist_ok=True)
     os.makedirs(opt.sentimgdir, exist_ok=True)
     os.makedirs(opt.nosample_outdir, exist_ok=True)
     os.makedirs(channel_outdir, exist_ok=True)
+    os.makedirs(intermediates_base_dir, exist_ok=True)
     
     remove_png(opt.outdir)
     remove_png(channel_outdir)
@@ -340,10 +408,23 @@ if __name__ == "__main__":
     model = model.to(device)
     sampler = DDIMSampler(model)
 
+    # Initialize LPIPS
+    print("Loading LPIPS model...")
+    lpips_fn = lpips.LPIPS(net='alex').to(device)
+
     # Load Images
     img = load_images_as_tensors(opt.input_path).to(device)
     batch_size = img.shape[0]
     save_img_individually(img, opt.sentimgdir + "/original.png")
+    
+    # [NEW] 指定された monitor_idx がバッチサイズを超えていないか確認
+    if opt.monitor_idx >= batch_size:
+        print(f"Warning: monitor_idx {opt.monitor_idx} is out of bounds for batch size {batch_size}. Resetting to 0.")
+        opt.monitor_idx = 0
+
+    # 評価用のターゲット画像 (Ground Truth) を抽出
+    # Shape: [1, 3, H, W]
+    gt_img_target = img[opt.monitor_idx:opt.monitor_idx+1]
 
     # Encode & Normalize
     z = model.encode_first_stage(img)
@@ -354,7 +435,11 @@ if __name__ == "__main__":
     eps = 1e-7
     z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
     
-    # 1. Map Latent to MIMO Streams
+    # [NEW] デコード用にターゲット画像の統計量を抽出
+    z_mean_target = z_mean[opt.monitor_idx:opt.monitor_idx+1]
+    z_var_target = z_var[opt.monitor_idx:opt.monitor_idx+1]
+
+    # Map to MIMO Streams
     s_0_real = z_norm / np.sqrt(2.0)
     s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
     s_0 = s_0.to(device)
@@ -362,7 +447,7 @@ if __name__ == "__main__":
     L_len = s_0.shape[2]
     print(f"MIMO Streams: {t_mimo}x{L_len} complex symbols")
 
-    # 2. Pilot Signal Setup
+    # Pilot Signal Setup
     t_vec = torch.arange(t_mimo, device=device)
     N_vec = torch.arange(N_pilot, device=device)
     tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
@@ -374,21 +459,19 @@ if __name__ == "__main__":
     max_snr_sim = 25
     
     for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
-        print(f"\n======== SNR = {snr} dB ========")
+        print(f"\n======== SNR = {snr} dB (Monitoring Batch [{opt.monitor_idx}]) ========")
         
         noise_variance = t_mimo / (10**(snr/10))
         sigma_n = np.sqrt(noise_variance / 2.0)
 
-        # A. Channel Generation
+        # Channel & Transmission
         H_real = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
         H_imag = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
         H = torch.complex(H_real, H_imag)
 
-        # B. Pilot Transmission & Estimation
         V_real = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
         V_imag = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
         V = torch.complex(V_real, V_imag)
-        
         S_pilot = torch.matmul(H, P) + V
         
         if Perfect_Estimate:
@@ -400,52 +483,36 @@ if __name__ == "__main__":
             H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
             sigma_e2 = noise_variance / (P_power/t_mimo)
 
-        # C. Data Transmission
         W_real = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
         W_imag = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
         W = torch.complex(W_real, W_imag)
-        
         Y = torch.matmul(H, s_0) + W
         
-        # D. MMSE Initialization (Original)
+        # MMSE Initialization
         eff_noise = sigma_e2 + noise_variance
-        
         H_hat_H = H_hat.mH
         Gram = torch.matmul(H_hat_H, H_hat) 
         Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
-        
         inv_mat = torch.inverse(Gram + Reg)
         W_mmse = torch.matmul(inv_mat, H_hat_H) 
-        
         s_mmse = torch.matmul(W_mmse, Y) 
         
-        # Save MMSE Result
         z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
         z_init_mmse = z_init_real * np.sqrt(2.0)
         
+        # Save MMSE Result
         z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
         rec_nosample = model.decode_first_stage(z_nosample)
         save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png")
         
-        # E. Prepare for Burst-GCR Sampling
-        
-        # -------------------------------------------------------------
-        # [Corrected] Noise Variance Normalization (Consistency Fix)
-        # -------------------------------------------------------------
+        # Sampling Prep
         W_W_H = torch.matmul(W_mmse, W_mmse.mH) 
         noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
-        
-        # MMSE後の物理的な残留ノイズ分散
         post_mmse_noise_var_raw = eff_noise * noise_power_factor
-        
-        # z_initの信号分散で正規化して、Samplerが期待する「相対ノイズ分散」に変換
         actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
         actual_var_flat = (actual_std.flatten()) ** 2
-        
-        # これがbench_MMSE.pyと同じスケールのノイズ分散になる
         effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
 
-        # Regularization for solver
         eff_var_scalar = noise_variance + sigma_e2
         Sigma_inv = 1.0 / eff_var_scalar
         
@@ -456,75 +523,96 @@ if __name__ == "__main__":
             z = mimo_streams_to_latent(s, shape)
             return z * np.sqrt(2.0)
 
-        # Input Normalization
         z_init_normalized = z_init_mmse / (actual_std + 1e-8)
-        
         cond = model.get_learned_conditioning(batch_size * [""])
 
-        # Adaptive Settings based on SNR
         current_zeta = opt.dps_scale
         if snr < 5:
             current_zeta *= 0.1
-            print(f"[Info] Low SNR ({snr}dB): Reducing Zeta to {current_zeta:.4f}")
         
         adaptive_h_lr = get_adaptive_h_lr(
-            snr, 
-            snr_min=min_snr_sim, snr_max=max_snr_sim,
+            snr, snr_min=min_snr_sim, snr_max=max_snr_sim,
             lr_max=opt.h_lr_max, lr_min=opt.h_lr_min
         )
 
-        print(f"Starting Burst-Reset Sampling... Steps={opt.ddim_steps}, Burst={opt.burst_iterations}, H_LR={adaptive_h_lr:.2f}")
-        print(f"  > Effective Noise Var: {effective_noise_variance.item():.5f} (Matched with Benchmark)")
+        print(f"Starting Burst-Reset Sampling... Steps={opt.ddim_steps}")
+        print(f"  > Effective Noise Var: {effective_noise_variance.item():.5f}")
 
-        # --- NEW SAMPLING CALL (Updated to unpack loss histories) ---
-        samples, H_final_est, H_history, burst_loss, main_loss = sampler.gcr_burst_sampling(
+        # --- CALL SAMPLER (with monitor_batch_idx) ---
+        samples, H_final_est, H_history, burst_loss, main_loss, img_history = sampler.gcr_burst_sampling(
             S=opt.ddim_steps,
             batch_size=batch_size,
             shape=z.shape[1:4], 
             conditioning=cond,
-            
             y=Y,                 
             H_hat=H_hat, 
             Sigma_inv=torch.tensor(Sigma_inv, device=device),
             z_init=z_init_normalized, 
-            
-            # Burst Parameters
             burst_iterations=opt.burst_iterations,
             burst_lr=opt.burst_lr,
             anchor_lambda=opt.anchor_lambda,
-            
-            # Main Loop Parameters
             zeta=current_zeta,
             h_lr=adaptive_h_lr, 
-            
             mapper=forward_mapper,
             inv_mapper=backward_mapper,
-            
-            # ここで修正済みの正規化された分散を渡す
             initial_noise_variance=effective_noise_variance,
-            
-            # Evaluation
             H_true=H,  
-            
             eta=0.0,
-            verbose=True 
+            verbose=True,
+            monitor_batch_idx=opt.monitor_idx # [NEW] 監視対象のインデックスを渡す
         )
         
-        # 1. 軌跡のプロット (BurstとMainの境界をsplit_indexで指定)
+        # 1. 軌跡のプロット (指定バッチ)
         traj_plot_path = os.path.join(channel_outdir, f"trajectory_snr{snr}.png")
-        plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, split_index=opt.burst_iterations)
+        plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, 
+                                split_index=opt.burst_iterations, batch_idx=opt.monitor_idx)
 
-        # 2. 始点・終点のプロット
+        # 2. 始点・終点のプロット (指定バッチ)
         plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}.png")
-        plot_channel_evolution(H, H_hat, H_final_est, plot_path)
+        plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_idx=opt.monitor_idx)
 
-        # 3. NEW: Loss Evolutionのプロット
+        # 3. Loss Evolutionのプロット (Batch平均のままが一般的だが、H_lossなどは加算されている可能性があるためそのまま)
         loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}.png")
         plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path)
 
-        # 4. 画像の保存
+        # 4. 画像の保存 (全バッチの最終結果)
         z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
         rec_proposed = model.decode_first_stage(z_restored)
-        
         save_img_individually(rec_proposed, f"{opt.outdir}/burst_reset_snr{snr}.png")
+
+        # -------------------------------------------------------------
+        # 5. Analyze Intermediate Images (Monitored Batch Only)
+        # -------------------------------------------------------------
+        print(f"Analyzing intermediate steps for SNR {snr} (Batch {opt.monitor_idx})...")
+        
+        # 兄弟ディレクトリのSNRサブフォルダに保存
+        inter_dir = os.path.join(intermediates_base_dir, f"snr{snr}")
+        os.makedirs(inter_dir, exist_ok=True)
+        
+        psnr_history = []
+        lpips_history = []
+        
+        # img_history内の要素は [C, H, W] (monitor_idxのものだけ)
+        for idx, z_step in enumerate(tqdm(img_history, desc="Decoding Intermediates")):
+            # GPUへ移動し、バッチ次元[1, C, H, W]を追加
+            z_step_gpu = z_step.to(device).unsqueeze(0)
+            
+            # Latent復元: ターゲット画像(monitor_idx)の統計量を使用
+            z_step_restored = z_step_gpu * (torch.sqrt(z_var_target) + eps) + z_mean_target
+            
+            with torch.no_grad():
+                rec_step = model.decode_first_stage(z_step_restored)
+            
+            # Metrics Calculation (ターゲット画像と比較)
+            p, l = calculate_metrics_single(gt_img_target, rec_step, lpips_fn)
+            psnr_history.append(p)
+            lpips_history.append(l)
+            
+            # 保存
+            save_img_individually(rec_step, os.path.join(inter_dir, f"step_{idx:03d}.png"))
+        
+        # Plot Metrics
+        metrics_plot_path = os.path.join(channel_outdir, f"metrics_evolution_snr{snr}.png")
+        plot_metrics_evolution(psnr_history, lpips_history, metrics_plot_path, snr, batch_idx=opt.monitor_idx)
+
         print(f"Saved result for SNR {snr}")

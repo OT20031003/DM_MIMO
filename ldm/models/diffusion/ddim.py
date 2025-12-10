@@ -2067,6 +2067,7 @@ class DDIMSampler(object):
                unconditional_guidance_scale=1., 
                unconditional_conditioning=None,
                H_true=None,
+               monitor_batch_idx=0, # [NEW] 監視するバッチインデックス
                **kwargs
                ):
         """
@@ -2074,39 +2075,24 @@ class DDIMSampler(object):
         1. Burst Phase: 初期画像推定を用いてチャネルHを事前補正
         2. Latent Reset: 補正されたHでMMSEフィルタを作り直し、z_Tをリセット (ノイズ付加なし)
         3. Main Phase: 通常のGCRサンプリング
+        
+        [修正] 指定された monitor_batch_idx のLatent履歴(img_history)を返す
         """
         
-        # --- Helper for Logging ---
-        def get_tensor_stats_str(tensor):
-            with torch.no_grad():
-                if torch.isnan(tensor).any(): return "!!! CONTAINS NaN !!!"
-                return f"Mean: {tensor.mean().item():.4f} | Norm: {torch.norm(tensor).item():.4f}"
-
         # --- Helper: MMSE Solver for Reset ---
         def compute_new_initial_latent(y_batch, H_batch, noise_pwr, target_mean, target_std):
-            """
-            改善されたHを用いてMMSE解を再計算し、正規化して新たな初期値z_Tとする。
-            注: ここで新たなランダムノイズは付加しない。yに含まれるチャネル雑音を拡散ノイズとして扱う。
-            """
             B_local, r, t = H_batch.shape
-            # MMSE Filter Calculation: W = (H^H H + sigma^2 I)^-1 H^H
             H_herm = H_batch.mH
             Gram = torch.matmul(H_herm, H_batch)
             Reg = noise_pwr * torch.eye(t, device=H_batch.device).unsqueeze(0)
             inv_mat = torch.inverse(Gram + Reg)
             W_mmse = torch.matmul(inv_mat, H_herm)
             
-            # Estimate Symbols
             s_new = torch.matmul(W_mmse, y_batch)
-            
-            # Map back to Latent Space (Dimensions: B, C, H, W)
             z_raw = inv_mapper(s_new, (B_local, *shape))
             
-            # Normalize (Standardization)
-            # 生のMMSE出力はスケールが合わないため、入力分布(N(0,1)等)に合わせて正規化する
+            # Normalize
             z_new = (z_raw - z_raw.mean()) / (z_raw.std() + 1e-8) 
-            
-            # 元のz_initの統計量に合わせる (通常はMean=0, Std=1)
             z_new = z_new * target_std + target_mean
             return z_new
 
@@ -2123,6 +2109,7 @@ class DDIMSampler(object):
         target_alpha = 1.0 / (1.0 + est_noise_var)
         diffs = torch.abs(self.alphas_cumprod.to(device) - target_alpha)
         start_t_ddpm = torch.argmin(diffs).item()
+        
         ddim_timesteps_tensor = torch.from_numpy(self.ddim_timesteps).to(device)
         abs_diff = torch.abs(ddim_timesteps_tensor - start_t_ddpm)
         start_index = torch.argmin(abs_diff).item()
@@ -2138,23 +2125,18 @@ class DDIMSampler(object):
         H_anchor = H_hat.clone().detach()
         H_history = [current_H.detach().cpu().clone()]
         
-        # 損失記録用リスト
         burst_loss_history = []
         main_loss_history = []
 
         # ============================================================
-        # Phase 1: Early Burst Calibration (バースト補正)
+        # Phase 1: Early Burst Calibration
         # ============================================================
         if verbose:
             print(f"--> [Phase 1] Starting Burst Calibration ({burst_iterations} iters)...")
-            if H_true is not None:
-                print(f"    Initial H Error: {torch.norm(current_H - H_true).item():.4f}")
 
-        # 最初のタイムステップを取得
         t_start = self.ddim_timesteps[start_index]
         ts = torch.full((batch_size,), t_start, device=device, dtype=torch.long)
         
-        # U-Net 1回推論 (Guidance用)
         with torch.enable_grad():
             img_in = img.detach().requires_grad_(False)
             
@@ -2172,29 +2154,22 @@ class DDIMSampler(object):
             a_t = torch.full((batch_size, 1, 1, 1), alphas[start_index], device=device)
             sqrt_one_minus_at = torch.full((batch_size, 1, 1, 1), sqrt_one_minus_alphas[start_index], device=device)
             
-            # Tweedie: x0予測
             pred_z0_target = (img_in - sqrt_one_minus_at * e_t) / a_t.sqrt()
-            s_hat_target, _ = mapper(pred_z0_target.detach()) # ターゲット固定
+            s_hat_target, _ = mapper(pred_z0_target.detach()) 
         
-        # Hの高速更新ループ
         optimizer_H = torch.optim.Adam([current_H], lr=burst_lr)
-        
-        # tqdm表示なしで高速化したい場合は pbar = range(burst_iterations) に変更
         pbar = range(burst_iterations)
         
         for i in pbar:
             with torch.enable_grad():
                 optimizer_H.zero_grad()
                 
-                # Data Consistency
                 y_est = torch.matmul(current_H, s_hat_target)
                 residual = y - y_est
                 weighted_res = residual * Sigma_inv
                 K_dim = residual.shape[1] * residual.shape[2]
                 loss_data = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / K_dim
                 
-                # Anchor Loss (Complex MSE Fix)
-                # 複素数を実部・虚部に分けてMSE計算
                 loss_anchor = 0.5 * torch.nn.functional.mse_loss(
                     torch.view_as_real(current_H), 
                     torch.view_as_real(H_anchor)
@@ -2204,10 +2179,8 @@ class DDIMSampler(object):
                 total_loss.backward()
                 optimizer_H.step()
 
-            # Record H loss (MSE: ||H - H_true||^2)
             if H_true is not None:
                 with torch.no_grad():
-                    # Frobenius norm squared
                     h_err = torch.norm(current_H - H_true)**2
                     burst_loss_history.append(h_err.item())
         
@@ -2215,24 +2188,21 @@ class DDIMSampler(object):
 
         if verbose and H_true is not None:
             err_after = torch.norm(current_H - H_true).item()
-            print(f"    Post-Burst H Error: {err_after:.4f} (Delta: {err_after - torch.norm(H_anchor - H_true).item():.4f})")
+            print(f"    Post-Burst H Error: {err_after:.4f}")
 
         # ============================================================
-        # Phase 2: Latent Reset (再初期化)
+        # Phase 2: Latent Reset
         # ============================================================
         if verbose:
-            print("--> [Phase 2] Resetting Latent with Improved H (No Additive Noise)...")
+            print("--> [Phase 2] Resetting Latent with Improved H...")
         
         with torch.no_grad():
-            # 統計量を維持しつつ、中身をより信頼できるMMSE解(channel noise含む)に置き換える
             z_mean = z_init.mean()
             z_std = z_init.std()
-            
             img = compute_new_initial_latent(
                 y, current_H.detach(), est_noise_var, 
                 z_mean, z_std
             )
-            # img はここで更新され、次のMain Phaseの初期値となる
 
         # ============================================================
         # Phase 3: Main GCR Sampling Loop
@@ -2240,6 +2210,9 @@ class DDIMSampler(object):
         timesteps = self.ddim_timesteps[:start_index+1]
         time_range = np.flip(timesteps)
         iterator = tqdm(time_range, desc='GCR (Burst+Reset)', total=len(time_range))
+
+        # [NEW] 指定されたバッチインデックスのみ保存
+        img_history = [img[monitor_batch_idx].detach().cpu().clone()]
 
         for i, step in enumerate(iterator):
             index = np.where(self.ddim_timesteps == step)[0][0]
@@ -2249,7 +2222,6 @@ class DDIMSampler(object):
             with torch.enable_grad():
                 img_in = img.detach().requires_grad_(True)
                 
-                # U-Net Forward
                 if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
                     e_t = self.model.apply_model(img_in, ts, conditioning)
                 else:
@@ -2259,29 +2231,25 @@ class DDIMSampler(object):
                     e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
                     e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
 
-                # Tweedie Estimation
                 alphas = self.ddim_alphas
                 sqrt_one_minus_alphas = self.ddim_sqrt_one_minus_alphas
                 a_t = torch.full((batch_size, 1, 1, 1), alphas[index], device=device)
                 sqrt_one_minus_at = torch.full((batch_size, 1, 1, 1), sqrt_one_minus_alphas[index], device=device)
                 pred_z0 = (img_in - sqrt_one_minus_at * e_t) / a_t.sqrt()
 
-                # Physical Mapping
                 s_hat, _ = mapper(pred_z0) 
                 
-                # Loss Calculation
                 y_est = torch.matmul(current_H, s_hat)
                 residual = y - y_est
                 weighted_res = residual * Sigma_inv 
                 K_dim = residual.shape[1] * residual.shape[2] 
                 loss_val = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / K_dim
                 
-                # Gradients for DPS (z) and GCR (H)
                 grads = torch.autograd.grad(loss_val, [img_in, current_H])
                 guidance_grad = grads[0]
                 h_grad = grads[1]
 
-            # --- B. Update H (Refinement) ---
+            # --- B. Update H ---
             if h_lr > 0:
                 with torch.no_grad():
                     h_grad_norm_tensor = torch.linalg.norm(h_grad)
@@ -2289,23 +2257,20 @@ class DDIMSampler(object):
                         norm_h_grad = h_grad / h_grad_norm_tensor
                     else:
                         norm_h_grad = torch.zeros_like(h_grad)
-                    
                     current_H = current_H - h_lr * norm_h_grad
                     current_H = current_H.detach().requires_grad_(True)
             
             H_history.append(current_H.detach().cpu().clone())
 
-            # Record H loss (MSE)
             if H_true is not None:
                 with torch.no_grad():
                     h_err = torch.norm(current_H - H_true)**2
                     main_loss_history.append(h_err.item())
 
-            # --- C. Update z (DPS) ---
+            # --- C. Update z ---
             max_timestep = self.ddim_timesteps[-1]
             current_zeta = zeta 
             scaled_grad = guidance_grad * current_zeta
-            # Gradient Clipping
             scaled_grad = torch.clamp(scaled_grad, min=-1.0, max=1.0)
 
             # --- D. DDIM Step ---
@@ -2319,16 +2284,17 @@ class DDIMSampler(object):
                 noise = sigma_t * noise_like(img.shape, device, False) * eta
                 img_prev_ddim = a_prev.sqrt() * pred_z0 + dir_xt + noise
                 
-                # DPS Guidance
                 img = img_prev_ddim - scaled_grad
                 img = torch.clamp(img, min=-3.0, max=3.0)
+                
+                # [NEW] 指定インデックスのみ保存
+                img_history.append(img[monitor_batch_idx].detach().cpu().clone())
 
-                # Logging
                 if verbose and (i % 1 == 0):
                     logs = {"Loss": f"{loss_val.item():.2f}"}
                     if H_true is not None:
                         logs["H_err"] = f"{torch.norm(current_H - H_true).item():.3f}"
                     iterator.set_postfix(logs)
 
-        # 戻り値に burst_loss_history と main_loss_history を追加
-        return img, current_H, H_history, burst_loss_history, main_loss_history
+        # img_history を返り値に追加
+        return img, current_H, H_history, burst_loss_history, main_loss_history, img_history
