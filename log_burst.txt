@@ -1,0 +1,1013 @@
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Loading LPIPS model...
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/weights/v0.1/alex.pth
+Found 140 images in input_img
+
+Processing Batch: 0 to 19 (20 images)
+Saved images to ./sentimg/ (Indices 0-19)
+  [Info] Monitor target (Global Idx 2) found in this batch at Local Idx 2.
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 23.7261
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr-5.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-5.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5.png
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 18.1177
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr-2.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-2.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2.png
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 13.6233
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr1.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr1.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1.png
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 10.1079
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr4.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr4.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4.png
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 6.9537
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr7.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr7.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7.png
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 6.7404
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr10.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr10.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10.png
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 4.6369
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr13.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr13.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13.png
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 2.9005
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr16.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr16.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16.png
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 2.0580
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr19.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr19.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19.png
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 1.3288
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr22.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr22.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22.png
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 0-19)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 1.0592
+--> [Phase 2] Resetting Latent with Improved H...
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr25.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr25.png
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 0-19)
+    - Analyzing intermediates for Global Monitor Idx 2 (Local 2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/ (Indices 2-2)
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25.png
+
+Processing Batch: 20 to 39 (20 images)
+Saved images to ./sentimg/ (Indices 20-39)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 20-39)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 20-39)
+
+Processing Batch: 40 to 59 (20 images)
+Saved images to ./sentimg/ (Indices 40-59)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 40-59)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 40-59)
+
+Processing Batch: 60 to 79 (20 images)
+Saved images to ./sentimg/ (Indices 60-79)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 60-79)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 60-79)
+
+Processing Batch: 80 to 99 (20 images)
+Saved images to ./sentimg/ (Indices 80-99)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 80-99)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 80-99)
+
+Processing Batch: 100 to 119 (20 images)
+Saved images to ./sentimg/ (Indices 100-119)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 100-119)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 100-119)
+
+Processing Batch: 120 to 139 (20 images)
+Saved images to ./sentimg/ (Indices 120-139)
+  > SNR = -5 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = -2 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 1 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 4 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 7 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 10 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 13 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 16 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 19 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 22 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)
+  > SNR = 25 dB
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/ (Indices 120-139)
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/ (Indices 120-139)

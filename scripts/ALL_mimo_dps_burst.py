@@ -207,7 +207,6 @@ def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
 def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
     """
     PSNRとLPIPSの推移をプロット
-    凡例を上部にまとめて表示
     """
     steps = range(len(psnr_list))
     fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -247,27 +246,35 @@ def seed_everything(seed):
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
 
-def load_images_as_tensors(dir_path, image_size=(256, 256)):
-    transform = transforms.Compose([
-        transforms.Resize(image_size),
-        transforms.ToTensor()
-    ])
+def get_image_paths(dir_path):
+    """ディレクトリ内の全画像パスを取得してソートして返す"""
     image_paths = []
     supported_formats = ["*.jpg", "*.jpeg", "*.png"]
     for fmt in supported_formats:
         image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
+    image_paths.sort()
+    return image_paths
+
+def load_images_from_paths(paths, image_size=(256, 256)):
+    """指定されたパスのリストから画像を読み込んでTensorにする"""
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.ToTensor()
+    ])
     
-    if not image_paths:
-        print(f"Warning: No images found in {dir_path}")
+    if not paths:
         return torch.empty(0)
 
     tensors_list = []
-    for path in tqdm(image_paths, desc="Loading Images"):
+    for path in tqdm(paths, desc="Loading Image Batch"):
         try:
             img = Image.open(path).convert("RGB")
             tensors_list.append(transform(img))
         except Exception as e:
             print(f"Error loading {path}: {e}")
+
+    if not tensors_list:
+        return torch.empty(0)
 
     return torch.stack(tensors_list, dim=0)
 
@@ -284,7 +291,7 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-def save_img_individually(img, path):
+def save_img_individually(img, path, start_idx=0):
     if len(img.shape) == 3: img = img.unsqueeze(0)
     dirname = os.path.dirname(path)
     basename = os.path.splitext(os.path.basename(path))[0]
@@ -296,8 +303,9 @@ def save_img_individually(img, path):
     img = torch.clamp(img, 0.0, 1.0)
         
     for i in range(img.shape[0]):
-        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
-    print(f"Saved images to {dirname}/")
+        global_idx = start_idx + i
+        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{global_idx}{ext}"))
+    print(f"Saved images to {dirname}/ (Indices {start_idx}-{start_idx+img.shape[0]-1})")
 
 def remove_png(path):
     for file in glob.glob(f'{path}/*.png'):
@@ -365,7 +373,7 @@ if __name__ == "__main__":
     
     # Burst & Reset Parameters
     parser.add_argument("--burst_iterations", type=int, default=20)
-    parser.add_argument("--burst_lr", type=float, default=0.05)
+    parser.add_argument("--burst_lr", type=float, default=0.1)
     parser.add_argument("--anchor_lambda", type=float, default=1.0)
     
     # Adaptive Learning Rate
@@ -373,9 +381,10 @@ if __name__ == "__main__":
     parser.add_argument("--h_lr_min", type=float, default=0.05)
     
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--batch_processing_size", type=int, default=20, help="Number of images to process at once to avoid OOM")
     
-    # [NEW] 監視するバッチインデックス
-    parser.add_argument("--monitor_idx", type=int, default=2, help="Index of the batch to monitor intermediate results and plots")
+    # 監視するバッチインデックス（全画像を通してのインデックス）
+    parser.add_argument("--monitor_idx", type=int, default=2, help="Index of the image to monitor (global index)")
     
     opt = parser.parse_args()
 
@@ -412,207 +421,244 @@ if __name__ == "__main__":
     print("Loading LPIPS model...")
     lpips_fn = lpips.LPIPS(net='alex').to(device)
 
-    # Load Images
-    img = load_images_as_tensors(opt.input_path).to(device)
-    batch_size = img.shape[0]
-    save_img_individually(img, opt.sentimgdir + "/original.png")
-    
-    # [NEW] 指定された monitor_idx がバッチサイズを超えていないか確認
-    if opt.monitor_idx >= batch_size:
-        print(f"Warning: monitor_idx {opt.monitor_idx} is out of bounds for batch size {batch_size}. Resetting to 0.")
-        opt.monitor_idx = 0
+    # Load All Image Paths
+    all_image_paths = get_image_paths(opt.input_path)
+    total_images = len(all_image_paths)
+    print(f"Found {total_images} images in {opt.input_path}")
 
-    # 評価用のターゲット画像 (Ground Truth) を抽出
-    # Shape: [1, 3, H, W]
-    gt_img_target = img[opt.monitor_idx:opt.monitor_idx+1]
+    if total_images == 0:
+        print("No images found. Exiting.")
+        sys.exit()
 
-    # Encode & Normalize
-    z = model.encode_first_stage(img)
-    z = model.get_first_stage_encoding(z).detach()
-    
-    z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
-    z_var = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
-    eps = 1e-7
-    z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
-    
-    # [NEW] デコード用にターゲット画像の統計量を抽出
-    z_mean_target = z_mean[opt.monitor_idx:opt.monitor_idx+1]
-    z_var_target = z_var[opt.monitor_idx:opt.monitor_idx+1]
+    # =========================================================
+    # Batch Processing Loop
+    # =========================================================
+    chunk_size = opt.batch_processing_size
 
-    # Map to MIMO Streams
-    s_0_real = z_norm / np.sqrt(2.0)
-    s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
-    s_0 = s_0.to(device)
-    
-    L_len = s_0.shape[2]
-    print(f"MIMO Streams: {t_mimo}x{L_len} complex symbols")
-
-    # Pilot Signal Setup
-    t_vec = torch.arange(t_mimo, device=device)
-    N_vec = torch.arange(N_pilot, device=device)
-    tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
-    P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
-    P = P.to(device) 
-
-    # Simulation Loop
-    min_snr_sim = -5
-    max_snr_sim = 25
-    
-    for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
-        print(f"\n======== SNR = {snr} dB (Monitoring Batch [{opt.monitor_idx}]) ========")
+    for chunk_start_idx in range(0, total_images, chunk_size):
+        chunk_end_idx = min(chunk_start_idx + chunk_size, total_images)
+        current_batch_paths = all_image_paths[chunk_start_idx:chunk_end_idx]
         
-        noise_variance = t_mimo / (10**(snr/10))
-        sigma_n = np.sqrt(noise_variance / 2.0)
+        print(f"\nProcessing Batch: {chunk_start_idx} to {chunk_end_idx-1} ({len(current_batch_paths)} images)")
 
-        # Channel & Transmission
-        H_real = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
-        H_imag = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
-        H = torch.complex(H_real, H_imag)
-
-        V_real = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
-        V_imag = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
-        V = torch.complex(V_real, V_imag)
-        S_pilot = torch.matmul(H, P) + V
+        # Load Images
+        img = load_images_from_paths(current_batch_paths).to(device)
+        batch_size = img.shape[0]
         
-        if Perfect_Estimate:
-            H_hat = H 
-            sigma_e2 = 0.0
+        save_img_individually(img, opt.sentimgdir + "/original.png", start_idx=chunk_start_idx)
+        
+        # 監視対象(Monitor Index)が現在のバッチに含まれるか判定
+        monitor_target_in_batch = False
+        local_monitor_idx = opt.monitor_idx - chunk_start_idx
+        
+        if 0 <= local_monitor_idx < batch_size:
+            monitor_target_in_batch = True
+            print(f"  [Info] Monitor target (Global Idx {opt.monitor_idx}) found in this batch at Local Idx {local_monitor_idx}.")
+            # 評価用のターゲット画像を抽出
+            gt_img_target = img[local_monitor_idx:local_monitor_idx+1]
         else:
-            P_herm = P.mH
-            inv_PP = torch.inverse(torch.matmul(P, P_herm))
-            H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
-            sigma_e2 = noise_variance / (P_power/t_mimo)
+            # バッチ内に監視対象がなければ、Samplerにはダミー(0)を渡し、後半のプロット処理をスキップする
+            local_monitor_idx = 0 
+            gt_img_target = None
 
-        W_real = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
-        W_imag = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
-        W = torch.complex(W_real, W_imag)
-        Y = torch.matmul(H, s_0) + W
+        # Encode & Normalize
+        with torch.no_grad():
+            z = model.encode_first_stage(img)
+            z = model.get_first_stage_encoding(z).detach()
         
-        # MMSE Initialization
-        eff_noise = sigma_e2 + noise_variance
-        H_hat_H = H_hat.mH
-        Gram = torch.matmul(H_hat_H, H_hat) 
-        Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
-        inv_mat = torch.inverse(Gram + Reg)
-        W_mmse = torch.matmul(inv_mat, H_hat_H) 
-        s_mmse = torch.matmul(W_mmse, Y) 
+        z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
+        z_var = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
+        eps = 1e-7
+        z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
         
-        z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
-        z_init_mmse = z_init_real * np.sqrt(2.0)
-        
-        # Save MMSE Result
-        z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
-        rec_nosample = model.decode_first_stage(z_nosample)
-        save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png")
-        
-        # Sampling Prep
-        W_W_H = torch.matmul(W_mmse, W_mmse.mH) 
-        noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
-        post_mmse_noise_var_raw = eff_noise * noise_power_factor
-        actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
-        actual_var_flat = (actual_std.flatten()) ** 2
-        effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
+        # モニター用の統計量を準備（現在のバッチに対象が含まれる場合のみ有効）
+        if monitor_target_in_batch:
+            z_mean_target = z_mean[local_monitor_idx:local_monitor_idx+1]
+            z_var_target = z_var[local_monitor_idx:local_monitor_idx+1]
 
-        eff_var_scalar = noise_variance + sigma_e2
-        Sigma_inv = 1.0 / eff_var_scalar
+        # Map to MIMO Streams
+        s_0_real = z_norm / np.sqrt(2.0)
+        s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
+        s_0 = s_0.to(device)
         
-        def forward_mapper(z):
-            return latent_to_mimo_streams(z / np.sqrt(2.0), t_mimo)
+        L_len = s_0.shape[2]
+        # print(f"MIMO Streams: {t_mimo}x{L_len} complex symbols")
+
+        # Pilot Signal Setup
+        t_vec = torch.arange(t_mimo, device=device)
+        N_vec = torch.arange(N_pilot, device=device)
+        tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
+        P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
+        P = P.to(device) 
+
+        # Simulation Loop
+        min_snr_sim = -5
+        max_snr_sim = 25
         
-        def backward_mapper(s, shape):
-            z = mimo_streams_to_latent(s, shape)
-            return z * np.sqrt(2.0)
-
-        z_init_normalized = z_init_mmse / (actual_std + 1e-8)
-        cond = model.get_learned_conditioning(batch_size * [""])
-
-        current_zeta = opt.dps_scale
-        if snr < 5:
-            current_zeta *= 0.1
-        
-        adaptive_h_lr = get_adaptive_h_lr(
-            snr, snr_min=min_snr_sim, snr_max=max_snr_sim,
-            lr_max=opt.h_lr_max, lr_min=opt.h_lr_min
-        )
-
-        print(f"Starting Burst-Reset Sampling... Steps={opt.ddim_steps}")
-        print(f"  > Effective Noise Var: {effective_noise_variance.item():.5f}")
-
-        # --- CALL SAMPLER (with monitor_batch_idx) ---
-        samples, H_final_est, H_history, burst_loss, main_loss, img_history = sampler.gcr_burst_sampling(
-            S=opt.ddim_steps,
-            batch_size=batch_size,
-            shape=z.shape[1:4], 
-            conditioning=cond,
-            y=Y,                 
-            H_hat=H_hat, 
-            Sigma_inv=torch.tensor(Sigma_inv, device=device),
-            z_init=z_init_normalized, 
-            burst_iterations=opt.burst_iterations,
-            burst_lr=opt.burst_lr,
-            anchor_lambda=opt.anchor_lambda,
-            zeta=current_zeta,
-            h_lr=adaptive_h_lr, 
-            mapper=forward_mapper,
-            inv_mapper=backward_mapper,
-            initial_noise_variance=effective_noise_variance,
-            H_true=H,  
-            eta=0.0,
-            verbose=True,
-            monitor_batch_idx=opt.monitor_idx # [NEW] 監視対象のインデックスを渡す
-        )
-        
-        # 1. 軌跡のプロット (指定バッチ)
-        traj_plot_path = os.path.join(channel_outdir, f"trajectory_snr{snr}.png")
-        plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, 
-                                split_index=opt.burst_iterations, batch_idx=opt.monitor_idx)
-
-        # 2. 始点・終点のプロット (指定バッチ)
-        plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}.png")
-        plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_idx=opt.monitor_idx)
-
-        # 3. Loss Evolutionのプロット (Batch平均のままが一般的だが、H_lossなどは加算されている可能性があるためそのまま)
-        loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}.png")
-        plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path)
-
-        # 4. 画像の保存 (全バッチの最終結果)
-        z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
-        rec_proposed = model.decode_first_stage(z_restored)
-        save_img_individually(rec_proposed, f"{opt.outdir}/burst_reset_snr{snr}.png")
-
-        # -------------------------------------------------------------
-        # 5. Analyze Intermediate Images (Monitored Batch Only)
-        # -------------------------------------------------------------
-        print(f"Analyzing intermediate steps for SNR {snr} (Batch {opt.monitor_idx})...")
-        
-        # 兄弟ディレクトリのSNRサブフォルダに保存
-        inter_dir = os.path.join(intermediates_base_dir, f"snr{snr}")
-        os.makedirs(inter_dir, exist_ok=True)
-        
-        psnr_history = []
-        lpips_history = []
-        
-        # img_history内の要素は [C, H, W] (monitor_idxのものだけ)
-        for idx, z_step in enumerate(tqdm(img_history, desc="Decoding Intermediates")):
-            # GPUへ移動し、バッチ次元[1, C, H, W]を追加
-            z_step_gpu = z_step.to(device).unsqueeze(0)
+        for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
+            print(f"  > SNR = {snr} dB")
             
-            # Latent復元: ターゲット画像(monitor_idx)の統計量を使用
-            z_step_restored = z_step_gpu * (torch.sqrt(z_var_target) + eps) + z_mean_target
+            noise_variance = t_mimo / (10**(snr/10))
+            sigma_n = np.sqrt(noise_variance / 2.0)
+
+            # Channel & Transmission
+            H_real = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
+            H_imag = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
+            H = torch.complex(H_real, H_imag)
+
+            V_real = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+            V_imag = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+            V = torch.complex(V_real, V_imag)
+            S_pilot = torch.matmul(H, P) + V
             
+            if Perfect_Estimate:
+                H_hat = H 
+                sigma_e2 = 0.0
+            else:
+                P_herm = P.mH
+                inv_PP = torch.inverse(torch.matmul(P, P_herm))
+                H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
+                sigma_e2 = noise_variance / (P_power/t_mimo)
+
+            W_real = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+            W_imag = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+            W = torch.complex(W_real, W_imag)
+            Y = torch.matmul(H, s_0) + W
+            
+            # MMSE Initialization
+            eff_noise = sigma_e2 + noise_variance
+            H_hat_H = H_hat.mH
+            Gram = torch.matmul(H_hat_H, H_hat) 
+            Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
+            inv_mat = torch.inverse(Gram + Reg)
+            W_mmse = torch.matmul(inv_mat, H_hat_H) 
+            s_mmse = torch.matmul(W_mmse, Y) 
+            
+            z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
+            z_init_mmse = z_init_real * np.sqrt(2.0)
+            
+            # Save MMSE Result
+            z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
             with torch.no_grad():
-                rec_step = model.decode_first_stage(z_step_restored)
+                rec_nosample = model.decode_first_stage(z_nosample)
+            save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png", start_idx=chunk_start_idx)
             
-            # Metrics Calculation (ターゲット画像と比較)
-            p, l = calculate_metrics_single(gt_img_target, rec_step, lpips_fn)
-            psnr_history.append(p)
-            lpips_history.append(l)
-            
-            # 保存
-            save_img_individually(rec_step, os.path.join(inter_dir, f"step_{idx:03d}.png"))
-        
-        # Plot Metrics
-        metrics_plot_path = os.path.join(channel_outdir, f"metrics_evolution_snr{snr}.png")
-        plot_metrics_evolution(psnr_history, lpips_history, metrics_plot_path, snr, batch_idx=opt.monitor_idx)
+            # Sampling Prep
+            W_W_H = torch.matmul(W_mmse, W_mmse.mH) 
+            noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
+            post_mmse_noise_var_raw = eff_noise * noise_power_factor
+            actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
+            actual_var_flat = (actual_std.flatten()) ** 2
+            effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
 
-        print(f"Saved result for SNR {snr}")
+            eff_var_scalar = noise_variance + sigma_e2
+            Sigma_inv = 1.0 / eff_var_scalar
+            
+            def forward_mapper(z):
+                return latent_to_mimo_streams(z / np.sqrt(2.0), t_mimo)
+            
+            def backward_mapper(s, shape):
+                z = mimo_streams_to_latent(s, shape)
+                return z * np.sqrt(2.0)
+
+            z_init_normalized = z_init_mmse / (actual_std + 1e-8)
+            cond = model.get_learned_conditioning(batch_size * [""])
+
+            current_zeta = opt.dps_scale
+            if snr < 5:
+                current_zeta *= 0.1
+            
+            adaptive_h_lr = get_adaptive_h_lr(
+                snr, snr_min=min_snr_sim, snr_max=max_snr_sim,
+                lr_max=opt.h_lr_max, lr_min=opt.h_lr_min
+            )
+
+            # --- CALL SAMPLER ---
+            # local_monitor_idx を渡すが、monitor_target_in_batchがFalseの場合はこの結果は無視する
+            samples, H_final_est, H_history, burst_loss, main_loss, img_history = sampler.gcr_burst_sampling(
+                S=opt.ddim_steps,
+                batch_size=batch_size,
+                shape=z.shape[1:4], 
+                conditioning=cond,
+                y=Y,                 
+                H_hat=H_hat, 
+                Sigma_inv=torch.tensor(Sigma_inv, device=device),
+                z_init=z_init_normalized, 
+                burst_iterations=opt.burst_iterations,
+                burst_lr=opt.burst_lr,
+                anchor_lambda=opt.anchor_lambda,
+                zeta=current_zeta,
+                h_lr=adaptive_h_lr, 
+                mapper=forward_mapper,
+                inv_mapper=backward_mapper,
+                initial_noise_variance=effective_noise_variance,
+                H_true=H,  
+                eta=0.0,
+                verbose=monitor_target_in_batch, # モニター対象がある場合のみVerbose
+                monitor_batch_idx=local_monitor_idx 
+            )
+            
+            # --- Monitor Logic: 対象がこのバッチに含まれている場合のみプロットを実行 ---
+            if monitor_target_in_batch:
+                # 1. 軌跡のプロット
+                traj_plot_path = os.path.join(channel_outdir, f"trajectory_snr{snr}.png")
+                plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, 
+                                        split_index=opt.burst_iterations, batch_idx=local_monitor_idx)
+
+                # 2. 始点・終点のプロット
+                plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}.png")
+                plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_idx=local_monitor_idx)
+
+                # 3. Loss Evolutionのプロット
+                loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}.png")
+                plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path)
+
+            # 4. 画像の保存 (全バッチの最終結果)
+            z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
+            with torch.no_grad():
+                rec_proposed = model.decode_first_stage(z_restored)
+            save_img_individually(rec_proposed, f"{opt.outdir}/burst_reset_snr{snr}.png", start_idx=chunk_start_idx)
+
+            # -------------------------------------------------------------
+            # 5. Analyze Intermediate Images (Monitored Image Only)
+            # -------------------------------------------------------------
+            if monitor_target_in_batch:
+                print(f"    - Analyzing intermediates for Global Monitor Idx {opt.monitor_idx} (Local {local_monitor_idx})")
+                
+                # 兄弟ディレクトリのSNRサブフォルダに保存
+                inter_dir = os.path.join(intermediates_base_dir, f"snr{snr}")
+                os.makedirs(inter_dir, exist_ok=True)
+                
+                psnr_history = []
+                lpips_history = []
+                
+                # img_history内の要素は [C, H, W] (local_monitor_idxのものだけ抽出済みと仮定)
+                # Samplerの実装依存ですが、Samplerが返すimg_historyは通常 monitor_batch_idx に対応するものだけです
+                for idx, z_step in enumerate(tqdm(img_history, desc="Decoding Intermediates", leave=False)):
+                    # GPUへ移動し、バッチ次元[1, C, H, W]を追加
+                    z_step_gpu = z_step.to(device).unsqueeze(0)
+                    
+                    # Latent復元: ターゲット画像(monitor_idx)の統計量を使用
+                    z_step_restored = z_step_gpu * (torch.sqrt(z_var_target) + eps) + z_mean_target
+                    
+                    with torch.no_grad():
+                        rec_step = model.decode_first_stage(z_step_restored)
+                    
+                    # Metrics Calculation (ターゲット画像と比較)
+                    p, l = calculate_metrics_single(gt_img_target, rec_step, lpips_fn)
+                    psnr_history.append(p)
+                    lpips_history.append(l)
+                    
+                    # 保存 (上書きしないようステップ番号で)
+                    save_img_individually(rec_step, os.path.join(inter_dir, f"step_{idx:03d}.png"), start_idx=opt.monitor_idx)
+                
+                # Plot Metrics
+                metrics_plot_path = os.path.join(channel_outdir, f"metrics_evolution_snr{snr}.png")
+                plot_metrics_evolution(psnr_history, lpips_history, metrics_plot_path, snr, batch_idx=opt.monitor_idx)
+        
+        # End of SNR loop
+        # Clear Memory
+        del img, z, s_0, H, Y, samples, rec_proposed
+        if monitor_target_in_batch:
+             del gt_img_target, z_mean_target, z_var_target
+        torch.cuda.empty_cache()

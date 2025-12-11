@@ -1,0 +1,13 @@
+nohup: ignoring input
+===========================================
+Starting Batch Execution at Thu Dec 11 12:54:39 JST 2025
+===========================================
+[1/3] Running bench_MMSE.py...
+Finished MMSE Benchmark at Thu Dec 11 12:58:11 JST 2025
+[2/3] Running mimo_dps_proposed.py...
+Finished Proposed DPS at Thu Dec 11 13:08:59 JST 2025
+[3/3] Running mimo_dps_burst.py...
+Finished Burst Reset at Thu Dec 11 13:20:48 JST 2025
+===========================================
+All jobs finished at Thu Dec 11 13:20:48 JST 2025
+===========================================
