@@ -283,20 +283,28 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.cuda()
     model.eval()
     return model
-
 def save_img_individually(img, path):
+    """
+    Proposed(mimo_dps_proposed.py)と同じ、シンプルな保存関数です。
+    余計な正規化処理( (img+1)/2 )を一切行わず、そのまま保存します。
+    """
     if len(img.shape) == 3: img = img.unsqueeze(0)
+    
     dirname = os.path.dirname(path)
     basename = os.path.splitext(os.path.basename(path))[0]
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
     
-    if img.min() < 0:
-        img = (img + 1.0) / 2.0
-    img = torch.clamp(img, 0.0, 1.0)
-        
+    # デバッグ用: 値の範囲を確認したい場合はコメントアウトを外してください
+    # print(f"[Debug] Saving {basename}: min={img.min().item():.4f}, max={img.max().item():.4f}")
+
+    # ここが重要: 自動変換ロジックを排除し、単純なclampのみにします
+    # vutil.save_image は入力が [0, 1] であることを期待しますが、
+    # 多少のはみ出しは自動でクリップされるため、余計な計算は不要です。
+    
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
+        
     print(f"Saved images to {dirname}/")
 
 def remove_png(path):
@@ -380,7 +388,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
 
     seed_everything(opt.seed)
-
+    # python -m scripts.mimo_dps_burst_reset > output_burst.txt
     # Directory Setup
     suffix = "perfect" if Perfect_Estimate else "estimated"
     base_out_path = f"outputs/{base_experiment_name}"
@@ -399,6 +407,7 @@ if __name__ == "__main__":
     os.makedirs(intermediates_base_dir, exist_ok=True)
     
     remove_png(opt.outdir)
+    remove_png(opt.nosample_outdir)
     remove_png(channel_outdir)
 
     # Load Model
@@ -455,7 +464,7 @@ if __name__ == "__main__":
     P = P.to(device) 
 
     # Simulation Loop
-    min_snr_sim = -5
+    min_snr_sim =-5
     max_snr_sim = 25
     
     for snr in range(min_snr_sim, max_snr_sim + 1, 3): 

@@ -6,37 +6,51 @@ import os
 from ldm.modules.diffusionmodules.util import make_ddim_sampling_parameters, make_ddim_timesteps, noise_like
 import torchvision.utils as vutil
 import torch
-
 def print_debug_stats(tensor, name="Tensor"):
-    """
-    テンソルの統計情報を表示して、異常値（NaN/Inf/全ゼロ）を検知します。
-    """
     if tensor is None:
         print(f"[{name}] is None!")
         return
-
-    # GPUにある場合はCPUに移して計算
+    
+    # Detach and move to CPU for safe printing
     t = tensor.detach().cpu().float()
     
     min_val = t.min().item()
     max_val = t.max().item()
     mean_val = t.mean().item()
     std_val = t.std().item()
-    has_nan = torch.isnan(t).any().item()
-    has_inf = torch.isinf(t).any().item()
+    norm_val = torch.norm(t).item()
     
-    print(f"--- DEBUG: {name} ---")
-    print(f"    Shape: {t.shape}")
-    print(f"    Range: [{min_val:.5f}, {max_val:.5f}]")
-    print(f"    Mean:  {mean_val:.5f} | Std: {std_val:.5f}")
+    print(f"  [DEBUG] {name:20s} | Shape: {tuple(t.shape)} | Range: [{min_val:.4f}, {max_val:.4f}] | Mean: {mean_val:.4f} | Std: {std_val:.4f} | Norm: {norm_val:.4f}")
+# def print_debug_stats(tensor, name="Tensor"):
+#     """
+#     テンソルの統計情報を表示して、異常値（NaN/Inf/全ゼロ）を検知します。
+#     """
+#     if tensor is None:
+#         print(f"[{name}] is None!")
+#         return
+
+#     # GPUにある場合はCPUに移して計算
+#     t = tensor.detach().cpu().float()
     
-    if has_nan:
-        print(f"    !!! WARNING: Contains NaN (Not a Number) !!!")
-    if has_inf:
-        print(f"    !!! WARNING: Contains Inf (Infinity) !!!")
-    if min_val == 0.0 and max_val == 0.0:
-        print(f"    !!! WARNING: All values are ZERO !!!")
-    print("-------------------------")
+#     min_val = t.min().item()
+#     max_val = t.max().item()
+#     mean_val = t.mean().item()
+#     std_val = t.std().item()
+#     has_nan = torch.isnan(t).any().item()
+#     has_inf = torch.isinf(t).any().item()
+    
+#     print(f"--- DEBUG: {name} ---")
+#     print(f"    Shape: {t.shape}")
+#     print(f"    Range: [{min_val:.5f}, {max_val:.5f}]")
+#     print(f"    Mean:  {mean_val:.5f} | Std: {std_val:.5f}")
+    
+#     if has_nan:
+#         print(f"    !!! WARNING: Contains NaN (Not a Number) !!!")
+#     if has_inf:
+#         print(f"    !!! WARNING: Contains Inf (Infinity) !!!")
+#     if min_val == 0.0 and max_val == 0.0:
+#         print(f"    !!! WARNING: All values are ZERO !!!")
+#     print("-------------------------")
 def orthogonal_guidance(pred_noise, known_noise, current_scale):
     """
     予測ノイズから既知ノイズと直交する成分（有色雑音や幻覚）を
@@ -2091,9 +2105,31 @@ class DDIMSampler(object):
             s_new = torch.matmul(W_mmse, y_batch)
             z_raw = inv_mapper(s_new, (B_local, *shape))
             
-            # Normalize
-            z_new = (z_raw - z_raw.mean()) / (z_raw.std() + 1e-8) 
+            # --- [修正箇所] バッチごとの正規化 ---
+            # z_raw の形状は (B, C, H, W) を想定
+            
+            # 1. バッチ以外の次元を平坦化して計算しやすくする (B, C*H*W)
+            z_flat = z_raw.view(B_local, -1)
+            
+            # 2. バッチごとに平均と標準偏差を計算 (dim=1)
+            # keepdim=True にすることで (B, 1) になり、ブロードキャスト計算が可能になる
+            batch_mean = z_flat.mean(dim=1, keepdim=True)
+            batch_std = z_flat.std(dim=1, keepdim=True)
+            
+            # 3. 元の形状 (B, C, H, W) に戻せるようにビューを調整
+            # ※ target_mean, target_std もスカラーの場合はそのままで良いですが、
+            #    もしバッチごとの統計量なら同様に shape を合わせる必要があります。
+            
+            # reshape用のtupleを作成 (B, 1, 1, 1)
+            view_shape = (B_local,) + (1,) * (z_raw.ndim - 1)
+            
+            batch_mean = batch_mean.view(view_shape)
+            batch_std = batch_std.view(view_shape)
+
+            # 4. 正規化と再スケーリング
+            z_new = (z_raw - batch_mean) / (batch_std + 1e-8)
             z_new = z_new * target_std + target_mean
+            
             return z_new
 
         # 1. Setup & Schedule

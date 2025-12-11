@@ -115,25 +115,21 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-def save_img_individually(img, path, start_idx=0):
-    """
-    start_idx: バッチ処理時の通し番号オフセット
-    """
+def save_img_individually(img, path):
     if len(img.shape) == 3: img = img.unsqueeze(0)
+    
     dirname = os.path.dirname(path)
     basename = os.path.splitext(os.path.basename(path))[0]
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
     
-    if img.min() < 0:
-        img = (img + 1.0) / 2.0
+    # 全スクリプトで挙動を揃えるため、明示的にクリップを入れる
     img = torch.clamp(img, 0.0, 1.0)
 
     for i in range(img.shape[0]):
-        # 通し番号を使用 (start_idx + i)
-        global_idx = start_idx + i
-        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{global_idx}{ext}"))
-    print(f"Saved images to {dirname}/ (Indices {start_idx}-{start_idx+img.shape[0]-1})")
+        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
+    print(f"Saved images to {dirname}/")
+
 
 def remove_png(path):
     for file in glob.glob(f'{path}/*.png'):

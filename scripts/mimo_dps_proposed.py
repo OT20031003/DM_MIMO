@@ -109,14 +109,18 @@ def load_model_from_config(config, ckpt, verbose=False):
 
 def save_img_individually(img, path):
     if len(img.shape) == 3: img = img.unsqueeze(0)
+    
     dirname = os.path.dirname(path)
     basename = os.path.splitext(os.path.basename(path))[0]
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
+    
+    # 全スクリプトで挙動を揃えるため、明示的にクリップを入れる
+    img = torch.clamp(img, 0.0, 1.0)
+
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
     print(f"Saved images to {dirname}/")
-
 def remove_png(path):
     for file in glob.glob(f'{path}/*.png'):
         try: os.remove(file)
