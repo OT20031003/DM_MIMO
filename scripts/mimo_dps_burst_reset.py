@@ -2,6 +2,7 @@ import argparse, os, sys, glob
 import torch
 import numpy as np
 import random
+import re  # 【修正】自然順ソート用にreモジュールを追加
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
@@ -14,6 +15,7 @@ from ldm.models.diffusion.ddim import DDIMSampler
 from torchvision import utils as vutil
 import lpips
 import matplotlib.pyplot as plt
+import shutil
 
 # ==========================================
 #  Helper Classes & Functions
@@ -31,6 +33,16 @@ def get_adaptive_h_lr(current_snr, snr_min=-5, snr_max=25, lr_max=20.0, lr_min=1
     slope = (lr_min - lr_max) / (snr_max - snr_min)
     lr = lr_max + (current_snr - snr_min) * slope
     return lr
+
+def get_optimal_steps(snr):
+    """
+    SNR(dB)に基づいて最適なSampling Step数を計算する
+    Approximation: Steps = 28.3 * exp(-0.088 * SNR)
+    """
+    # 指数関数近似
+    steps = 28.33 * np.exp(-0.0879 * snr) - 1.45
+    # 最低1ステップ、最大200ステップに収める
+    return int(np.clip(np.round(steps), 1, 200))
 
 def plot_channel_evolution(H_true, H_init, H_final, save_path, batch_idx=0):
     """
@@ -83,7 +95,6 @@ def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=No
     steps = len(H_history)
     
     # Batch idx を取り出し、CPU numpyへ
-    # H_historyは [Tensor(B, r, t), ...] のリスト
     traj = torch.stack(H_history).cpu().numpy()[:, batch_idx, :, :].reshape(steps, -1)
     
     h_gt = H_true[batch_idx].detach().cpu().numpy().flatten()
@@ -142,19 +153,18 @@ def plot_h_loss_evolution(burst_loss, main_loss, save_path):
 
     # --- 1. Burst Phase ---
     ax1.plot(burst_loss, color='orange', linewidth=1.5)
-    ax1.set_title("Phase 1: Burst Calibration Loss")
+    ax1.set_title("Phase 1: Burst Calibration Loss (Batch Sum)")
     ax1.set_xlabel("Iteration")
     ax1.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
     ax1.grid(True, linestyle='--', alpha=0.6)
     
-    # 最後の値を表示
     if len(burst_loss) > 0:
         ax1.text(len(burst_loss)*0.7, burst_loss[0]*0.9, f"Start: {burst_loss[0]:.4f}", color='black')
         ax1.text(len(burst_loss)*0.7, burst_loss[-1]*1.1, f"End: {burst_loss[-1]:.4f}", color='red')
 
     # --- 2. Main Phase ---
     ax2.plot(main_loss, color='green', linewidth=1.5)
-    ax2.set_title("Phase 3: Main GCR Sampling Loss")
+    ax2.set_title("Phase 3: Main GCR Sampling Loss (Batch Sum)")
     ax2.set_xlabel("Sampling Step (Process Order)")
     ax2.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
     ax2.grid(True, linestyle='--', alpha=0.6)
@@ -172,18 +182,21 @@ def plot_h_loss_evolution(burst_loss, main_loss, save_path):
 # ==========================================
 #  [NEW] Metric Calculation & Plotting
 # ==========================================
-
 def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
     """
     単一画像(1, C, H, W)のPSNRとLPIPSを計算する
     target_img_01: [1, 3, H, W] in [0, 1] (Original)
-    pred_img: [1, 3, H, W] in [-1, 1] or [0, 1] (Decoder output)
+    pred_img: [1, 3, H, W] in [-1, 1] (Decoder output)
     """
-    # pred_imgを[0, 1]に正規化 (PSNR用)
-    if pred_img.min() < 0:
-        pred_01 = (pred_img + 1.0) / 2.0
-    else:
-        pred_01 = pred_img
+    # 【修正】9dB問題の解消: 常に [-1, 1] -> [0, 1] への変換を行う
+    
+    # 1. まず [-1, 1] に収める（外れ値対策）
+    pred_clamped = torch.clamp(pred_img, -1.0, 1.0)
+    
+    # 2. [-1, 1] -> [0, 1] に変換
+    pred_01 = (pred_clamped + 1.0) / 2.0
+    
+    # 念のため [0, 1] クリップ
     pred_01 = torch.clamp(pred_01, 0.0, 1.0)
     
     # PSNR
@@ -193,21 +206,16 @@ def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
     # LPIPS用: 入力は[-1, 1]である必要がある
     target_m11 = target_img_01 * 2.0 - 1.0
     
-    if pred_img.min() >= 0:
-        pred_m11 = pred_img * 2.0 - 1.0
-    else:
-        pred_m11 = pred_img
-    pred_m11 = torch.clamp(pred_m11, -1.0, 1.0)
-    
+    # LPIPSには pred_clamped ([-1, 1]) をそのまま使う
     with torch.no_grad():
-        lpips_val = lpips_fn(target_m11, pred_m11).item()
+        lpips_val = lpips_fn(target_m11, pred_clamped).item()
         
     return psnr.item(), lpips_val
 
 def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
     """
     PSNRとLPIPSの推移をプロット
-    凡例を上部にまとめて表示
+    batch_idx: 整数なら "Batch[x]"、文字列ならそのままタイトルに使用する
     """
     steps = range(len(psnr_list))
     fig, ax1 = plt.subplots(figsize=(10, 6))
@@ -233,8 +241,14 @@ def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
     lines = line1 + line2
     labels = [l.get_label() for l in lines]
     ax1.legend(lines, labels, loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False)
+    
+    # タイトル設定 (batch_idxが文字列の場合はそれを表示)
+    if isinstance(batch_idx, str):
+        batch_label = batch_idx
+    else:
+        batch_label = f"Batch[{batch_idx}]"
 
-    plt.title(f"Evolution of Image Quality - SNR {snr}dB (Batch[{batch_idx}])", y=1.1)
+    plt.title(f"Evolution of Image Quality - SNR {snr}dB ({batch_label})", y=1.1)
     fig.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
@@ -258,11 +272,15 @@ def load_images_as_tensors(dir_path, image_size=(256, 256)):
         image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
     
     if not image_paths:
-        print(f"Warning: No images found in {dir_path}")
+        # print(f"Warning: No images found in {dir_path}") 
         return torch.empty(0)
 
+    # 【重要・修正】ファイル名に含まれる数値を考慮して自然順ソートを行う
+    # これにより original_2.png が original_10.png より先に来るようになる
+    image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
+    
     tensors_list = []
-    for path in tqdm(image_paths, desc="Loading Images"):
+    for path in tqdm(image_paths, desc=f"Loading Images from {dir_path}"):
         try:
             img = Image.open(path).convert("RGB")
             tensors_list.append(transform(img))
@@ -283,11 +301,8 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.cuda()
     model.eval()
     return model
+
 def save_img_individually(img, path):
-    """
-    Proposed(mimo_dps_proposed.py)と同じ、シンプルな保存関数です。
-    余計な正規化処理( (img+1)/2 )を一切行わず、そのまま保存します。
-    """
     if len(img.shape) == 3: img = img.unsqueeze(0)
     
     dirname = os.path.dirname(path)
@@ -295,17 +310,8 @@ def save_img_individually(img, path):
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
     
-    # デバッグ用: 値の範囲を確認したい場合はコメントアウトを外してください
-    # print(f"[Debug] Saving {basename}: min={img.min().item():.4f}, max={img.max().item():.4f}")
-
-    # ここが重要: 自動変換ロジックを排除し、単純なclampのみにします
-    # vutil.save_image は入力が [0, 1] であることを期待しますが、
-    # 多少のはみ出しは自動でクリップされるため、余計な計算は不要です。
-    
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
-        
-    print(f"Saved images to {dirname}/")
 
 def remove_png(path):
     for file in glob.glob(f'{path}/*.png'):
@@ -382,17 +388,19 @@ if __name__ == "__main__":
     
     parser.add_argument("--seed", type=int, default=42)
     
-    # [NEW] 監視するバッチインデックス
-    parser.add_argument("--monitor_idx", type=int, default=2, help="Index of the batch to monitor intermediate results and plots")
+    # 監視するバッチインデックスの範囲指定 (0~19など)
+    parser.add_argument("--monitor_range", type=int, nargs=2, default=[0, 5], 
+                        help="Start and End index of batches to monitor (e.g. 0 10 for batch 0 to 9)")
     
     opt = parser.parse_args()
 
     seed_everything(opt.seed)
-    # python -m scripts.mimo_dps_burst_reset > output_burst.txt
-    # Directory Setup
+    
     suffix = "perfect" if Perfect_Estimate else "estimated"
     base_out_path = f"outputs/{base_experiment_name}"
-    
+    if os.path.exists(base_out_path):
+        print(f"Removing previous experiment results at: {base_out_path}")
+        shutil.rmtree(base_out_path)  # ディレクトリごと中身をすべて削除
     opt.outdir = os.path.join(opt.outdir, suffix)
     opt.nosample_outdir = os.path.join(opt.nosample_outdir, suffix)
     channel_outdir = os.path.join(base_out_path, "channel_plots", suffix)
@@ -405,10 +413,6 @@ if __name__ == "__main__":
     os.makedirs(opt.nosample_outdir, exist_ok=True)
     os.makedirs(channel_outdir, exist_ok=True)
     os.makedirs(intermediates_base_dir, exist_ok=True)
-    
-    remove_png(opt.outdir)
-    remove_png(opt.nosample_outdir)
-    remove_png(channel_outdir)
 
     # Load Model
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
@@ -421,19 +425,35 @@ if __name__ == "__main__":
     print("Loading LPIPS model...")
     lpips_fn = lpips.LPIPS(net='alex').to(device)
 
-    # Load Images
-    img = load_images_as_tensors(opt.input_path).to(device)
-    batch_size = img.shape[0]
-    save_img_individually(img, opt.sentimgdir + "/original.png")
-    
-    # [NEW] 指定された monitor_idx がバッチサイズを超えていないか確認
-    if opt.monitor_idx >= batch_size:
-        print(f"Warning: monitor_idx {opt.monitor_idx} is out of bounds for batch size {batch_size}. Resetting to 0.")
-        opt.monitor_idx = 0
+    # ------------------------------------------------------------------
+    # [Modified] Load Images: Check sentimgdir first to preserve order
+    # ------------------------------------------------------------------
+    # sentimgdir に画像があるか確認
+    existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
+                    glob.glob(os.path.join(opt.sentimgdir, "*.jpg"))
 
-    # 評価用のターゲット画像 (Ground Truth) を抽出
-    # Shape: [1, 3, H, W]
-    gt_img_target = img[opt.monitor_idx:opt.monitor_idx+1]
+    if len(existing_imgs) > 0:
+        print(f"Found existing images in {opt.sentimgdir}. Loading from there to preserve order...")
+        img = load_images_as_tensors(opt.sentimgdir).to(device)
+    else:
+        print(f"No existing images in {opt.sentimgdir}. Loading from {opt.input_path}...")
+        img = load_images_as_tensors(opt.input_path).to(device)
+        # まだ保存されていない場合のみ保存
+        save_img_individually(img, opt.sentimgdir + "/original.png")
+
+    if img.shape[0] == 0:
+        raise ValueError("No images loaded! Please check input paths.")
+        
+    batch_size = img.shape[0]
+    # ------------------------------------------------------------------
+    
+    # [NEW] 監視対象のインデックスリストを作成
+    start_idx, end_idx = opt.monitor_range
+    # バッチサイズを超えないようにクリップ
+    end_idx = min(end_idx, batch_size)
+    monitor_indices = list(range(start_idx, end_idx))
+    
+    print(f"Monitoring batches: {monitor_indices} (Total {len(monitor_indices)})")
 
     # Encode & Normalize
     z = model.encode_first_stage(img)
@@ -444,9 +464,9 @@ if __name__ == "__main__":
     eps = 1e-7
     z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
     
-    # [NEW] デコード用にターゲット画像の統計量を抽出
-    z_mean_target = z_mean[opt.monitor_idx:opt.monitor_idx+1]
-    z_var_target = z_var[opt.monitor_idx:opt.monitor_idx+1]
+    # 評価用に全画像の統計量を保持 (デコード時に使用)
+    z_mean_target_all = z_mean
+    z_var_target_all = z_var
 
     # Map to MIMO Streams
     s_0_real = z_norm / np.sqrt(2.0)
@@ -464,11 +484,15 @@ if __name__ == "__main__":
     P = P.to(device) 
 
     # Simulation Loop
-    min_snr_sim =-5
+    min_snr_sim = -5
     max_snr_sim = 25
     
+    # 単一の画像についてメトリクス計算するためのGround Truthを用意
+    gt_imgs = img  # (B, 3, H, W)
+
     for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
-        print(f"\n======== SNR = {snr} dB (Monitoring Batch [{opt.monitor_idx}]) ========")
+        print(f"\n======== SNR = {snr} dB ========")
+        print(f"Monitoring: {monitor_indices}")
         
         noise_variance = t_mimo / (10**(snr/10))
         sigma_n = np.sqrt(noise_variance / 2.0)
@@ -509,7 +533,7 @@ if __name__ == "__main__":
         z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
         z_init_mmse = z_init_real * np.sqrt(2.0)
         
-        # Save MMSE Result
+        # Save MMSE Result (Subset or All? 保存は全バッチやっておく)
         z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
         rec_nosample = model.decode_first_stage(z_nosample)
         save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png")
@@ -544,10 +568,14 @@ if __name__ == "__main__":
             lr_max=opt.h_lr_max, lr_min=opt.h_lr_min
         )
 
+        # 【追加】最適ステップ数の計算
+        opt_steps = get_optimal_steps(snr)
+
         print(f"Starting Burst-Reset Sampling... Steps={opt.ddim_steps}")
         print(f"  > Effective Noise Var: {effective_noise_variance.item():.5f}")
-
-        # --- CALL SAMPLER (with monitor_batch_idx) ---
+        print(f"  > Optimal Phase3 Steps calculated: {opt_steps}")
+        
+        # --- CALL SAMPLER (with monitor_indices) ---
         samples, H_final_est, H_history, burst_loss, main_loss, img_history = sampler.gcr_burst_sampling(
             S=opt.ddim_steps,
             batch_size=batch_size,
@@ -568,21 +596,35 @@ if __name__ == "__main__":
             H_true=H,  
             eta=0.0,
             verbose=True,
-            monitor_batch_idx=opt.monitor_idx # [NEW] 監視対象のインデックスを渡す
+            phase3_num_steps=opt_steps, # 【変更】計算した最適ステップを適用
+            monitor_indices=monitor_indices 
         )
         
-        # 1. 軌跡のプロット (指定バッチ)
-        traj_plot_path = os.path.join(channel_outdir, f"trajectory_snr{snr}.png")
-        plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, 
-                                split_index=opt.burst_iterations, batch_idx=opt.monitor_idx)
+        # ---------------------------------------------------------------------------------
+        # [NEW] Loop over monitored indices for plotting
+        # ---------------------------------------------------------------------------------
+        for k, real_batch_idx in enumerate(monitor_indices):
+            print(f"  -> Processing plots for Batch {real_batch_idx} (List Index {k})")
+            
+            # ディレクトリ分け (channel_plots/estimated/batch_2/...)
+            batch_plot_dir = os.path.join(channel_outdir, f"batch_{real_batch_idx}")
+            os.makedirs(batch_plot_dir, exist_ok=True)
 
-        # 2. 始点・終点のプロット (指定バッチ)
-        plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}.png")
-        plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_idx=opt.monitor_idx)
+            # 1. 軌跡のプロット
+            traj_plot_path = os.path.join(batch_plot_dir, f"trajectory_snr{snr}.png")
+            plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, 
+                                    split_index=opt.burst_iterations, batch_idx=real_batch_idx)
 
-        # 3. Loss Evolutionのプロット (Batch平均のままが一般的だが、H_lossなどは加算されている可能性があるためそのまま)
-        loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}.png")
-        plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path)
+            # 2. 始点・終点のプロット
+            plot_path = os.path.join(batch_plot_dir, f"channel_plot_snr{snr}.png")
+            plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_idx=real_batch_idx)
+
+            # 3. Loss Evolution (これは現在バッチ総和なので、フォルダ直下に一つだけ保存でも良いが、
+            #    ここでは各バッチフォルダにもコピー的に保存しておくか、ルートに保存する)
+            if k == 0:
+                # 代表して1回だけルートにも保存
+                loss_plot_path_root = os.path.join(channel_outdir, f"loss_evolution_snr{snr}_total.png")
+                plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path_root)
 
         # 4. 画像の保存 (全バッチの最終結果)
         z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
@@ -590,38 +632,77 @@ if __name__ == "__main__":
         save_img_individually(rec_proposed, f"{opt.outdir}/burst_reset_snr{snr}.png")
 
         # -------------------------------------------------------------
-        # 5. Analyze Intermediate Images (Monitored Batch Only)
+        # 5. Analyze Intermediate Images (For ALL monitored indices)
         # -------------------------------------------------------------
-        print(f"Analyzing intermediate steps for SNR {snr} (Batch {opt.monitor_idx})...")
+        print(f"Analyzing intermediate steps for SNR {snr} (Indices: {monitor_indices})...")
         
-        # 兄弟ディレクトリのSNRサブフォルダに保存
-        inter_dir = os.path.join(intermediates_base_dir, f"snr{snr}")
-        os.makedirs(inter_dir, exist_ok=True)
+        # img_history: List of Tensors. Each tensor is (Num_Monitored, C, H, W)
+        num_steps = len(img_history)
         
-        psnr_history = []
-        lpips_history = []
-        
-        # img_history内の要素は [C, H, W] (monitor_idxのものだけ)
-        for idx, z_step in enumerate(tqdm(img_history, desc="Decoding Intermediates")):
-            # GPUへ移動し、バッチ次元[1, C, H, W]を追加
-            z_step_gpu = z_step.to(device).unsqueeze(0)
-            
-            # Latent復元: ターゲット画像(monitor_idx)の統計量を使用
-            z_step_restored = z_step_gpu * (torch.sqrt(z_var_target) + eps) + z_mean_target
-            
-            with torch.no_grad():
-                rec_step = model.decode_first_stage(z_step_restored)
-            
-            # Metrics Calculation (ターゲット画像と比較)
-            p, l = calculate_metrics_single(gt_img_target, rec_step, lpips_fn)
-            psnr_history.append(p)
-            lpips_history.append(l)
-            
-            # 保存
-            save_img_individually(rec_step, os.path.join(inter_dir, f"step_{idx:03d}.png"))
-        
-        # Plot Metrics
-        metrics_plot_path = os.path.join(channel_outdir, f"metrics_evolution_snr{snr}.png")
-        plot_metrics_evolution(psnr_history, lpips_history, metrics_plot_path, snr, batch_idx=opt.monitor_idx)
+        # 集計用リスト [batch][step] = val
+        all_batches_psnr_history = []
+        all_batches_lpips_history = []
 
-        print(f"Saved result for SNR {snr}")
+        # 監視対象ごとにループ
+        for k, real_batch_idx in enumerate(monitor_indices):
+            
+            # 保存先: process/snrX/batchY/
+            inter_dir = os.path.join(intermediates_base_dir, f"snr{snr}", f"batch_{real_batch_idx}")
+            os.makedirs(inter_dir, exist_ok=True)
+            
+            psnr_history = []
+            lpips_history = []
+            
+            # Ground Truth for this batch
+            gt_img_target = gt_imgs[real_batch_idx:real_batch_idx+1]
+            z_mean_target = z_mean_target_all[real_batch_idx:real_batch_idx+1]
+            z_var_target = z_var_target_all[real_batch_idx:real_batch_idx+1]
+            
+            # 時系列ループ
+            for idx in range(num_steps):
+                z_step_batch = img_history[idx] # (Num_Monitored, C, H, W)
+                
+                # k番目の画像 (real_batch_idxに対応) を取り出す -> (C, H, W)
+                z_step_single = z_step_batch[k]
+                
+                # バッチ次元追加 -> (1, C, H, W)
+                z_step_gpu = z_step_single.to(device).unsqueeze(0)
+                
+                # Latent復元
+                z_step_restored = z_step_gpu * (torch.sqrt(z_var_target) + eps) + z_mean_target
+                
+                with torch.no_grad():
+                    rec_step = model.decode_first_stage(z_step_restored)
+                
+                # Metrics
+                p, l = calculate_metrics_single(gt_img_target, rec_step, lpips_fn)
+                psnr_history.append(p)
+                lpips_history.append(l)
+                
+                # 画像保存
+                save_img_individually(rec_step, os.path.join(inter_dir, f"step_{idx:03d}.png"))
+            
+            # 履歴リストに追加
+            all_batches_psnr_history.append(psnr_history)
+            all_batches_lpips_history.append(lpips_history)
+
+            # Plot Metrics for this batch
+            batch_plot_dir = os.path.join(channel_outdir, f"batch_{real_batch_idx}")
+            metrics_plot_path = os.path.join(batch_plot_dir, f"metrics_evolution_snr{snr}.png")
+            plot_metrics_evolution(psnr_history, lpips_history, metrics_plot_path, snr, batch_idx=real_batch_idx)
+        
+        # --- [NEW] Calculate and Plot Average Metrics over Monitored Batches ---
+        if len(all_batches_psnr_history) > 0:
+            # list of list -> numpy array (Num_Batches, Num_Steps)
+            # axis=0 で平均をとる -> (Num_Steps)
+            avg_psnr_history = np.mean(np.array(all_batches_psnr_history), axis=0)
+            avg_lpips_history = np.mean(np.array(all_batches_lpips_history), axis=0)
+            
+            # 保存先（ルートのchannel_plotsディレクトリに保存）
+            avg_plot_path = os.path.join(channel_outdir, f"metrics_evolution_snr{snr}_AVERAGE.png")
+            print(f"Plotting Average Metrics (Batch Mean) for SNR {snr} to {avg_plot_path}")
+            
+            # プロット実行 ("Average" という文字列を渡すことでタイトルを変更)
+            plot_metrics_evolution(avg_psnr_history, avg_lpips_history, avg_plot_path, snr, batch_idx="Average")
+
+        print(f"Saved all results for SNR {snr}")

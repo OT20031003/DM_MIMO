@@ -2,6 +2,7 @@ import argparse, os, sys, glob
 import torch
 import numpy as np
 import random
+import re  # 【修正】自然順ソート用にreモジュールを追加
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
@@ -29,8 +30,6 @@ class MatrixOperator:
 def plot_channel_evolution(H_true, H_init, H_final, save_path):
     """
     チャネル推定の可視化。
-    Proposed(Standard DPS)では H_init と H_final は完全に一致しますが、
-    GCRとの比較用ベースラインとして保存します。
     """
     # バッチの先頭[0]を取得し、CPUへ移動・平坦化
     h_gt = H_true[0].detach().cpu().numpy().flatten()
@@ -81,11 +80,15 @@ def load_images_as_tensors(dir_path, image_size=(256, 256)):
         image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
     
     if not image_paths:
-        print(f"Warning: No images found in {dir_path}")
+        # print(f"Warning: No images found in {dir_path}")
         return torch.empty(0)
 
+    # 【重要・修正】ファイル名に含まれる数値を考慮して自然順ソートを行う
+    # これにより original_2.png が original_10.png より先に来るようになる
+    image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
+
     tensors_list = []
-    for path in tqdm(image_paths, desc="Loading Images"):
+    for path in tqdm(image_paths, desc=f"Loading Images from {dir_path}"):
         try:
             img = Image.open(path).convert("RGB")
             tensors_list.append(transform(img))
@@ -173,8 +176,7 @@ if __name__ == "__main__":
     
     P_power = 1.0 
     Perfect_Estimate = False
-    # python -m scripts.mimo_dps_proposed > output_dps_proposed.txt
-    # Use consistent naming for symmetric experiments
+    
     base_experiment_name = f"MIMO_Proposed_LS/t={t_mimo}_r={r_mimo}"
     
     parser.add_argument("--input_path", type=str, default="input_img")
@@ -218,10 +220,27 @@ if __name__ == "__main__":
     model = model.to(device)
     sampler = DDIMSampler(model)
 
-    # Load Images
-    img = load_images_as_tensors(opt.input_path).to(device)
+    # ------------------------------------------------------------------
+    # [Modified] Load Images: Check sentimgdir first to preserve order
+    # ------------------------------------------------------------------
+    # sentimgdir に画像があるか確認
+    existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
+                    glob.glob(os.path.join(opt.sentimgdir, "*.jpg"))
+    
+    if len(existing_imgs) > 0:
+        print(f"Found existing images in {opt.sentimgdir}. Loading from there to preserve order...")
+        img = load_images_as_tensors(opt.sentimgdir).to(device)
+    else:
+        print(f"No existing images in {opt.sentimgdir}. Loading from {opt.input_path}...")
+        img = load_images_as_tensors(opt.input_path).to(device)
+        # まだ保存されていない場合のみ保存
+        save_img_individually(img, opt.sentimgdir + "/original.png")
+
+    if img.shape[0] == 0:
+        raise ValueError("No images loaded! Please check input paths.")
+
     batch_size = img.shape[0]
-    save_img_individually(img, opt.sentimgdir + "/original.png")
+    # ------------------------------------------------------------------
 
     # Encode & Normalize
     z = model.encode_first_stage(img)

@@ -2055,8 +2055,6 @@ class DDIMSampler(object):
         # For Proposed, H_final is same as initial H_hat
         return img, current_H
     
-
-    
     
     @torch.no_grad()
     def gcr_burst_sampling(self,
@@ -2081,17 +2079,23 @@ class DDIMSampler(object):
                unconditional_guidance_scale=1., 
                unconditional_conditioning=None,
                H_true=None,
-               monitor_batch_idx=0, # [NEW] 監視するバッチインデックス
+               monitor_indices=None,
+               phase3_num_steps=None, # [NEW] フェーズ3のサンプリング回数を強制指定する引数
                **kwargs
                ):
         """
         Early Burst Calibration & Latent Reset Sampling
-        1. Burst Phase: 初期画像推定を用いてチャネルHを事前補正
-        2. Latent Reset: 補正されたHでMMSEフィルタを作り直し、z_Tをリセット (ノイズ付加なし)
-        3. Main Phase: 通常のGCRサンプリング
         
-        [修正] 指定された monitor_batch_idx のLatent履歴(img_history)を返す
+        Args:
+            phase3_num_steps (int, optional): 
+                フェーズ3 (Main GCR) で行うサンプリングのステップ数。
+                指定された場合(Not None)、ノイズ分散に基づく開始位置計算よりも優先される。
+                例えば 50 を指定すると、スケジュールの最後から50ステップ分を実行する。
         """
+        
+        # デフォルトはバッチ0のみ監視
+        if monitor_indices is None:
+            monitor_indices = [0]
         
         # --- Helper: MMSE Solver for Reset ---
         def compute_new_initial_latent(y_batch, H_batch, noise_pwr, target_mean, target_std):
@@ -2105,28 +2109,15 @@ class DDIMSampler(object):
             s_new = torch.matmul(W_mmse, y_batch)
             z_raw = inv_mapper(s_new, (B_local, *shape))
             
-            # --- [修正箇所] バッチごとの正規化 ---
-            # z_raw の形状は (B, C, H, W) を想定
-            
-            # 1. バッチ以外の次元を平坦化して計算しやすくする (B, C*H*W)
+            # --- Batch-wise Normalization ---
             z_flat = z_raw.view(B_local, -1)
-            
-            # 2. バッチごとに平均と標準偏差を計算 (dim=1)
-            # keepdim=True にすることで (B, 1) になり、ブロードキャスト計算が可能になる
             batch_mean = z_flat.mean(dim=1, keepdim=True)
             batch_std = z_flat.std(dim=1, keepdim=True)
             
-            # 3. 元の形状 (B, C, H, W) に戻せるようにビューを調整
-            # ※ target_mean, target_std もスカラーの場合はそのままで良いですが、
-            #    もしバッチごとの統計量なら同様に shape を合わせる必要があります。
-            
-            # reshape用のtupleを作成 (B, 1, 1, 1)
             view_shape = (B_local,) + (1,) * (z_raw.ndim - 1)
-            
             batch_mean = batch_mean.view(view_shape)
             batch_std = batch_std.view(view_shape)
 
-            # 4. 正規化と再スケーリング
             z_new = (z_raw - batch_mean) / (batch_std + 1e-8)
             z_new = z_new * target_std + target_mean
             
@@ -2136,19 +2127,37 @@ class DDIMSampler(object):
         self.make_schedule(ddim_num_steps=S, ddim_eta=eta, verbose=False)
         device = self.model.betas.device
         
+        # ノイズ分散の推定 (Reset時のMMSEフィルタには必要なので計算はしておく)
         if initial_noise_variance is not None:
             est_noise_var = initial_noise_variance.mean().item() if torch.is_tensor(initial_noise_variance) else initial_noise_variance
         else:
             avg_precision = Sigma_inv.abs().mean().item()
             est_noise_var = 1.0 / (avg_precision + 1e-8)
         
-        target_alpha = 1.0 / (1.0 + est_noise_var)
-        diffs = torch.abs(self.alphas_cumprod.to(device) - target_alpha)
-        start_t_ddpm = torch.argmin(diffs).item()
-        
-        ddim_timesteps_tensor = torch.from_numpy(self.ddim_timesteps).to(device)
-        abs_diff = torch.abs(ddim_timesteps_tensor - start_t_ddpm)
-        start_index = torch.argmin(abs_diff).item()
+        # =========================================================================
+        # [MODIFIED] 開始ステップ (start_index) の決定ロジック
+        # =========================================================================
+        if phase3_num_steps is not None:
+            # 引数で回数が指定された場合、ノイズ分散を無視してその回数を優先
+            # start_index は 0-indexed なので、例えば1回ならindex 0, 50回ならindex 49
+            requested_index = int(phase3_num_steps) - 1
+            # 範囲内にクリップ (0 ~ S-1)
+            start_index = max(0, min(requested_index, S - 1))
+            
+            if verbose:
+                print(f"[Phase 3 Override] Force sampling for {phase3_num_steps} steps (Index: {start_index}/{S-1})")
+        else:
+            # 通常ロジック: ノイズ分散に基づいて開始位置を計算
+            target_alpha = 1.0 / (1.0 + est_noise_var)
+            diffs = torch.abs(self.alphas_cumprod.to(device) - target_alpha)
+            start_t_ddpm = torch.argmin(diffs).item()
+            
+            ddim_timesteps_tensor = torch.from_numpy(self.ddim_timesteps).to(device)
+            abs_diff = torch.abs(ddim_timesteps_tensor - start_t_ddpm)
+            start_index = torch.argmin(abs_diff).item()
+            
+            if verbose:
+                print(f"[Phase 3 Auto] Estimated start index: {start_index}/{S-1} based on variance {est_noise_var:.4f}")
         
         # 2. Initialization
         z_init = z_init.to(device)
@@ -2235,6 +2244,7 @@ class DDIMSampler(object):
         with torch.no_grad():
             z_mean = z_init.mean()
             z_std = z_init.std()
+            # Resetには引き続き物理的なノイズ分散(est_noise_var)を使用する
             img = compute_new_initial_latent(
                 y, current_H.detach(), est_noise_var, 
                 z_mean, z_std
@@ -2243,12 +2253,13 @@ class DDIMSampler(object):
         # ============================================================
         # Phase 3: Main GCR Sampling Loop
         # ============================================================
+        # start_index は上で決定したものを使用
         timesteps = self.ddim_timesteps[:start_index+1]
         time_range = np.flip(timesteps)
         iterator = tqdm(time_range, desc='GCR (Burst+Reset)', total=len(time_range))
 
-        # [NEW] 指定されたバッチインデックスのみ保存
-        img_history = [img[monitor_batch_idx].detach().cpu().clone()]
+        # 指定されたバッチのみ抽出して保存
+        img_history = [img[monitor_indices].detach().cpu().clone()]
 
         for i, step in enumerate(iterator):
             index = np.where(self.ddim_timesteps == step)[0][0]
@@ -2323,8 +2334,8 @@ class DDIMSampler(object):
                 img = img_prev_ddim - scaled_grad
                 img = torch.clamp(img, min=-3.0, max=3.0)
                 
-                # [NEW] 指定インデックスのみ保存
-                img_history.append(img[monitor_batch_idx].detach().cpu().clone())
+                # 指定されたバッチのみ抽出して履歴に追加
+                img_history.append(img[monitor_indices].detach().cpu().clone())
 
                 if verbose and (i % 1 == 0):
                     logs = {"Loss": f"{loss_val.item():.2f}"}
@@ -2332,5 +2343,4 @@ class DDIMSampler(object):
                         logs["H_err"] = f"{torch.norm(current_H - H_true).item():.3f}"
                     iterator.set_postfix(logs)
 
-        # img_history を返り値に追加
         return img, current_H, H_history, burst_loss_history, main_loss_history, img_history

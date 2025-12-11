@@ -19,7 +19,7 @@ MIMO Streams: 2x1024 complex symbols
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 [Info] Low SNR (-5dB): Reducing Zeta to 0.0300
 Starting Proposed Sampling... Steps=200, Zeta=0.03
-  > Effective Noise Var: 2.64802 (Matched with Benchmark)
+  > Effective Noise Var: 2.64596 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr-5.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -29,7 +29,7 @@ Saved result for SNR -5
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 [Info] Low SNR (-2dB): Reducing Zeta to 0.0300
 Starting Proposed Sampling... Steps=200, Zeta=0.03
-  > Effective Noise Var: 2.24961 (Matched with Benchmark)
+  > Effective Noise Var: 2.24208 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr-2.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -39,7 +39,7 @@ Saved result for SNR -2
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 [Info] Low SNR (1dB): Reducing Zeta to 0.0300
 Starting Proposed Sampling... Steps=200, Zeta=0.03
-  > Effective Noise Var: 1.64066 (Matched with Benchmark)
+  > Effective Noise Var: 1.61828 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr1.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -49,7 +49,7 @@ Saved result for SNR 1
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 [Info] Low SNR (4dB): Reducing Zeta to 0.0300
 Starting Proposed Sampling... Steps=200, Zeta=0.03
-  > Effective Noise Var: 1.13451 (Matched with Benchmark)
+  > Effective Noise Var: 1.08442 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr4.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -58,7 +58,7 @@ Saved result for SNR 4
 ======== SNR = 7 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.83820 (Matched with Benchmark)
+  > Effective Noise Var: 0.74520 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr7.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -67,7 +67,7 @@ Saved result for SNR 7
 ======== SNR = 10 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.37924 (Matched with Benchmark)
+  > Effective Noise Var: 0.36151 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr10.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -76,7 +76,7 @@ Saved result for SNR 10
 ======== SNR = 13 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.28763 (Matched with Benchmark)
+  > Effective Noise Var: 0.29461 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr13.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -85,7 +85,7 @@ Saved result for SNR 13
 ======== SNR = 16 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.13583 (Matched with Benchmark)
+  > Effective Noise Var: 0.16678 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr16.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -94,7 +94,7 @@ Saved result for SNR 16
 ======== SNR = 19 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.11941 (Matched with Benchmark)
+  > Effective Noise Var: 0.09819 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr19.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -103,7 +103,7 @@ Saved result for SNR 19
 ======== SNR = 22 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.06637 (Matched with Benchmark)
+  > Effective Noise Var: 0.06860 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr22.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/
@@ -112,7 +112,7 @@ Saved result for SNR 22
 ======== SNR = 25 dB ========
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/nosample/estimated/
 Starting Proposed Sampling... Steps=200, Zeta=0.3
-  > Effective Noise Var: 0.04205 (Matched with Benchmark)
+  > Effective Noise Var: 0.04550 (Matched with Benchmark)
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
 Saved channel plot to outputs/MIMO_Proposed_LS/t=2_r=2/channel_plots/estimated/channel_plot_snr25.png
 Saved images to outputs/MIMO_Proposed_LS/t=2_r=2/estimated/

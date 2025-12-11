@@ -1,3 +1,4 @@
+Removing previous experiment results at: outputs/MIMO_Burst_Reset/t=2_r=2
 Loading model from models/ldm/text2img-large/model.ckpt
 autoencoder.py
 LatentDiffusion: Running in eps-prediction mode
@@ -15,762 +16,402 @@ ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
 Loading LPIPS model...
 Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
 Loading model from: /home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/weights/v0.1/alex.pth
-Saved images to ./sentimg/
+Found existing images in ./sentimg. Loading from there to preserve order...
+Monitoring batches: [0, 1, 2, 3, 4] (Total 5)
 MIMO Streams: 2x1024 complex symbols
 
-======== SNR = -5 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = -5 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 2.64595
+  > Effective Noise Var: 2.63795
+  > Optimal Phase3 Steps calculated: 43
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 43 steps (Index: 42/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 24.9936
+    Post-Burst H Error: 24.3075
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr-5.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr-5.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-5.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR -5 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-5/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5.png
-Saved result for SNR -5
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr-5.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-5_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr-5.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr-5.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr-5.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr-5.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr-5.png
+Analyzing intermediate steps for SNR -5 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr-5.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr-5.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr-5.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr-5.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr-5.png
+Plotting Average Metrics (Batch Mean) for SNR -5 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5_AVERAGE.png
+Saved all results for SNR -5
 
-======== SNR = -2 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = -2 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 2.24208
+  > Effective Noise Var: 1.95381
+  > Optimal Phase3 Steps calculated: 32
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 32 steps (Index: 31/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 19.1175
+    Post-Burst H Error: 18.7610
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr-2.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr-2.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-2.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR -2 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr-2/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2.png
-Saved result for SNR -2
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr-2.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr-2_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr-2.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr-2.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr-2.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr-2.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr-2.png
+Analyzing intermediate steps for SNR -2 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr-2.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr-2.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr-2.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr-2.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr-2.png
+Plotting Average Metrics (Batch Mean) for SNR -2 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2_AVERAGE.png
+Saved all results for SNR -2
 
-======== SNR = 1 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 1 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 1.61828
+  > Effective Noise Var: 1.63451
+  > Optimal Phase3 Steps calculated: 24
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 24 steps (Index: 23/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 14.3581
+    Post-Burst H Error: 11.7878
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr1.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr1.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr1.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 1 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr1/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1.png
-Saved result for SNR 1
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr1.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr1_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr1.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr1.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr1.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr1.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr1.png
+Analyzing intermediate steps for SNR 1 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr1.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr1.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr1.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr1.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr1.png
+Plotting Average Metrics (Batch Mean) for SNR 1 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1_AVERAGE.png
+Saved all results for SNR 1
 
-======== SNR = 4 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 4 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 1.08442
+  > Effective Noise Var: 1.03189
+  > Optimal Phase3 Steps calculated: 18
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 18 steps (Index: 17/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 9.2351
+    Post-Burst H Error: 9.1977
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr4.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr4.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr4.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 4 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr4/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4.png
-Saved result for SNR 4
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr4.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr4_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr4.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr4.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr4.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr4.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr4.png
+Analyzing intermediate steps for SNR 4 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr4.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr4.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr4.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr4.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr4.png
+Plotting Average Metrics (Batch Mean) for SNR 4 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4_AVERAGE.png
+Saved all results for SNR 4
 
-======== SNR = 7 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 7 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.74520
+  > Effective Noise Var: 0.59316
+  > Optimal Phase3 Steps calculated: 14
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 14 steps (Index: 13/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 6.0189
+    Post-Burst H Error: 8.3114
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr7.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr7.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr7.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 7 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr7/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7.png
-Saved result for SNR 7
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr7.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr7_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr7.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr7.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr7.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr7.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr7.png
+Analyzing intermediate steps for SNR 7 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr7.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr7.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr7.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr7.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr7.png
+Plotting Average Metrics (Batch Mean) for SNR 7 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7_AVERAGE.png
+Saved all results for SNR 7
 
-======== SNR = 10 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 10 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.36151
+  > Effective Noise Var: 0.42222
+  > Optimal Phase3 Steps calculated: 10
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 10 steps (Index: 9/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 7.1155
+    Post-Burst H Error: 5.8395
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr10.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr10.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr10.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 10 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr10/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10.png
-Saved result for SNR 10
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr10.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr10_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr10.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr10.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr10.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr10.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr10.png
+Analyzing intermediate steps for SNR 10 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr10.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr10.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr10.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr10.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr10.png
+Plotting Average Metrics (Batch Mean) for SNR 10 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10_AVERAGE.png
+Saved all results for SNR 10
 
-======== SNR = 13 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 13 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.29461
+  > Effective Noise Var: 0.26750
+  > Optimal Phase3 Steps calculated: 8
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 8 steps (Index: 7/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 4.0123
+    Post-Burst H Error: 4.6759
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr13.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr13.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr13.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 13 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr13/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13.png
-Saved result for SNR 13
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr13.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr13_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr13.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr13.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr13.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr13.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr13.png
+Analyzing intermediate steps for SNR 13 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr13.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr13.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr13.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr13.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr13.png
+Plotting Average Metrics (Batch Mean) for SNR 13 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13_AVERAGE.png
+Saved all results for SNR 13
 
-======== SNR = 16 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 16 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.16678
+  > Effective Noise Var: 0.15144
+  > Optimal Phase3 Steps calculated: 5
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 5 steps (Index: 4/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 2.9512
+    Post-Burst H Error: 2.3780
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr16.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr16.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr16.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 16 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr16/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16.png
-Saved result for SNR 16
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr16.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr16_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr16.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr16.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr16.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr16.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr16.png
+Analyzing intermediate steps for SNR 16 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr16.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr16.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr16.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr16.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr16.png
+Plotting Average Metrics (Batch Mean) for SNR 16 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16_AVERAGE.png
+Saved all results for SNR 16
 
-======== SNR = 19 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 19 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.09819
+  > Effective Noise Var: 0.11199
+  > Optimal Phase3 Steps calculated: 4
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 4 steps (Index: 3/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 2.3617
+    Post-Burst H Error: 2.3540
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr19.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr19.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr19.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 19 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr19/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19.png
-Saved result for SNR 19
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr19.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr19_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr19.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr19.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr19.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr19.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr19.png
+Analyzing intermediate steps for SNR 19 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr19.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr19.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr19.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr19.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr19.png
+Plotting Average Metrics (Batch Mean) for SNR 19 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19_AVERAGE.png
+Saved all results for SNR 19
 
-======== SNR = 22 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 22 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.06860
+  > Effective Noise Var: 0.07198
+  > Optimal Phase3 Steps calculated: 3
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 3 steps (Index: 2/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 1.5618
+    Post-Burst H Error: 1.9111
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr22.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr22.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr22.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 22 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr22/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22.png
-Saved result for SNR 22
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr22.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr22_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr22.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr22.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr22.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr22.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr22.png
+Analyzing intermediate steps for SNR 22 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr22.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr22.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr22.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr22.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr22.png
+Plotting Average Metrics (Batch Mean) for SNR 22 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22_AVERAGE.png
+Saved all results for SNR 22
 
-======== SNR = 25 dB (Monitoring Batch [2]) ========
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/nosample/estimated/
+======== SNR = 25 dB ========
+Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.04550
+  > Effective Noise Var: 0.03923
+  > Optimal Phase3 Steps calculated: 2
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Override] Force sampling for 2 steps (Index: 1/199)
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 0.9697
+    Post-Burst H Error: 1.0991
 --> [Phase 2] Resetting Latent with Improved H...
-Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/trajectory_snr25.png
-Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/channel_plot_snr25.png
-Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr25.png
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated/
-Analyzing intermediate steps for SNR 25 (Batch 2)...
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved images to outputs/MIMO_Burst_Reset/t=2_r=2/estimated_process/snr25/
-Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25.png
-Saved result for SNR 25
+  -> Processing plots for Batch 0 (List Index 0)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/channel_plot_snr25.png
+Saved loss evolution plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/loss_evolution_snr25_total.png
+  -> Processing plots for Batch 1 (List Index 1)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/channel_plot_snr25.png
+  -> Processing plots for Batch 2 (List Index 2)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/channel_plot_snr25.png
+  -> Processing plots for Batch 3 (List Index 3)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/channel_plot_snr25.png
+  -> Processing plots for Batch 4 (List Index 4)
+Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr25.png
+Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr25.png
+Analyzing intermediate steps for SNR 25 (Indices: [0, 1, 2, 3, 4])...
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr25.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr25.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr25.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr25.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr25.png
+Plotting Average Metrics (Batch Mean) for SNR 25 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25_AVERAGE.png
+Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25_AVERAGE.png
+Saved all results for SNR 25

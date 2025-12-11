@@ -2,6 +2,7 @@ import argparse, os, sys, glob
 import torch
 import numpy as np
 import random
+import re
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
@@ -26,11 +27,9 @@ class MatrixOperator:
     def __mul__(self, other):
         return torch.matmul(self.tensor, other)
 
-def plot_channel_evolution(H_true, H_init, H_final, save_path):
+def plot_channel_evolution(H_true, H_init, H_final, save_path, batch_label=""):
     """
     チャネル推定の可視化。
-    Proposed(Standard DPS)では H_init と H_final は完全に一致しますが、
-    GCRとの比較用ベースラインとして保存します。
     """
     # バッチの先頭[0]を取得し、CPUへ移動・平坦化
     h_gt = H_true[0].detach().cpu().numpy().flatten()
@@ -53,7 +52,7 @@ def plot_channel_evolution(H_true, H_init, H_final, save_path):
     plt.axvline(0, color='black', linewidth=0.5, alpha=0.5)
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.legend()
-    plt.title("Channel Estimation (Proposed: Fixed)")
+    plt.title(f"Channel Estimation (Proposed: Fixed) {batch_label}")
     plt.xlabel("Real Part")
     plt.ylabel("Imaginary Part")
     
@@ -61,7 +60,7 @@ def plot_channel_evolution(H_true, H_init, H_final, save_path):
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
-    print(f"Saved channel plot to {save_path}")
+    # print(f"Saved channel plot to {save_path}")
 
 def seed_everything(seed):
     torch.manual_seed(seed)
@@ -70,37 +69,32 @@ def seed_everything(seed):
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
 
+# --- [Modified] Batch Loading Helpers ---
 def get_image_paths(dir_path):
-    """ディレクトリ内の全画像パスを取得してソートして返す"""
     image_paths = []
     supported_formats = ["*.jpg", "*.jpeg", "*.png"]
     for fmt in supported_formats:
         image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
-    image_paths.sort()
+    # 自然順ソート
+    image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
     return image_paths
 
 def load_images_from_paths(paths, image_size=(256, 256)):
-    """指定されたパスのリストから画像を読み込んでTensorにする"""
     transform = transforms.Compose([
         transforms.Resize(image_size),
         transforms.ToTensor()
     ])
-    
-    if not paths:
-        return torch.empty(0)
-
     tensors_list = []
-    for path in tqdm(paths, desc="Loading Image Batch"):
+    for path in tqdm(paths, desc="Loading Batch", leave=False):
         try:
             img = Image.open(path).convert("RGB")
             tensors_list.append(transform(img))
         except Exception as e:
             print(f"Error loading {path}: {e}")
-
     if not tensors_list:
         return torch.empty(0)
-        
     return torch.stack(tensors_list, dim=0)
+# ----------------------------------------
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
@@ -115,7 +109,10 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-def save_img_individually(img, path):
+def save_img_individually(img, path, start_index=0):
+    """
+    start_index: バッチ処理時の通し番号の開始位置
+    """
     if len(img.shape) == 3: img = img.unsqueeze(0)
     
     dirname = os.path.dirname(path)
@@ -123,15 +120,15 @@ def save_img_individually(img, path):
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
     
-    # 全スクリプトで挙動を揃えるため、明示的にクリップを入れる
     img = torch.clamp(img, 0.0, 1.0)
 
     for i in range(img.shape[0]):
-        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
-    print(f"Saved images to {dirname}/")
-
+        global_idx = start_index + i
+        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{global_idx}{ext}"))
+    # print(f"Saved images to {dirname}/")
 
 def remove_png(path):
+    if not os.path.exists(path): return
     for file in glob.glob(f'{path}/*.png'):
         try: os.remove(file)
         except: pass
@@ -184,6 +181,9 @@ if __name__ == "__main__":
     P_power = 1.0 
     Perfect_Estimate = False
     
+    # Batch Size Config
+    BATCH_SIZE = 20
+    
     base_experiment_name = f"MIMO_Proposed_LS/t={t_mimo}_r={r_mimo}"
     
     parser.add_argument("--input_path", type=str, default="input_img")
@@ -195,7 +195,6 @@ if __name__ == "__main__":
     parser.add_argument("--scale", type=float, default=5.0)
     parser.add_argument("--dps_scale", type=float, default=0.3)
     parser.add_argument("--seed", type=int, default=42, help="random seed for reproducibility")
-    parser.add_argument("--batch_processing_size", type=int, default=20, help="Number of images to process at once to avoid OOM")
     
     opt = parser.parse_args()
 
@@ -210,7 +209,7 @@ if __name__ == "__main__":
     opt.outdir = os.path.join(opt.outdir, suffix)
     opt.nosample_outdir = os.path.join(opt.nosample_outdir, suffix)
     
-    # Channel Plot output (Matched to GCR structure)
+    # Channel Plot output
     channel_outdir = os.path.join(base_out_path, "channel_plots", suffix)
 
     os.makedirs(opt.outdir, exist_ok=True)
@@ -218,75 +217,86 @@ if __name__ == "__main__":
     os.makedirs(opt.nosample_outdir, exist_ok=True)
     os.makedirs(channel_outdir, exist_ok=True)
     
+    # 最初の実行時のみフォルダを空にする
     remove_png(opt.outdir)
     remove_png(channel_outdir)
 
-    # Load Model (Load once)
+    # Load Model (1回だけロード)
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model = model.to(device)
     sampler = DDIMSampler(model)
 
-    # Get all image paths
-    all_image_paths = get_image_paths(opt.input_path)
+    # ------------------------------------------------------------------
+    # Determine Image Source and Paths
+    # ------------------------------------------------------------------
+    existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
+                    glob.glob(os.path.join(opt.sentimgdir, "*.jpg"))
+    
+    source_dir = ""
+    is_new_data = False
+    
+    if len(existing_imgs) > 0:
+        print(f"Found existing images in {opt.sentimgdir}. Loading from there...")
+        source_dir = opt.sentimgdir
+    else:
+        print(f"No existing images in {opt.sentimgdir}. Loading from {opt.input_path}...")
+        source_dir = opt.input_path
+        is_new_data = True 
+
+    all_image_paths = get_image_paths(source_dir)
     total_images = len(all_image_paths)
-    print(f"Found {total_images} images in {opt.input_path}")
     
     if total_images == 0:
-        print("No images found. Exiting.")
-        sys.exit()
+        raise ValueError(f"No images found in {source_dir}")
 
-    # =========================================================
-    # Batch Processing Loop
-    # =========================================================
-    chunk_size = opt.batch_processing_size
+    print(f"Total images: {total_images}. Processing in batches of {BATCH_SIZE}...")
 
-    for chunk_start_idx in range(0, total_images, chunk_size):
-        chunk_end_idx = min(chunk_start_idx + chunk_size, total_images)
-        current_batch_paths = all_image_paths[chunk_start_idx:chunk_end_idx]
+    # ==========================================
+    #  Batch Processing Loop
+    # ==========================================
+    for batch_start_idx in range(0, total_images, BATCH_SIZE):
+        batch_end_idx = min(batch_start_idx + BATCH_SIZE, total_images)
+        current_batch_paths = all_image_paths[batch_start_idx : batch_end_idx]
         
-        print(f"\nProcessing Batch: {chunk_start_idx} to {chunk_end_idx-1} ({len(current_batch_paths)} images)")
+        print(f"\nProcessing Batch: {batch_start_idx} to {batch_end_idx - 1} ({len(current_batch_paths)} images)")
         
-        # Load Images for current chunk
+        # Load Batch
         img = load_images_from_paths(current_batch_paths).to(device)
-        batch_size = img.shape[0]
         
-        # Save Original (using start_idx for correct numbering)
-        save_img_individually(img, opt.sentimgdir + "/original.png", start_idx=chunk_start_idx)
+        # 新規データの場合はオリジナルを保存
+        if is_new_data:
+            save_img_individually(img, opt.sentimgdir + "/original.png", start_index=batch_start_idx)
+
+        batch_size = img.shape[0]
 
         # Encode & Normalize
-        with torch.no_grad():
-            z = model.encode_first_stage(img)
-            z = model.get_first_stage_encoding(z).detach()
+        z = model.encode_first_stage(img)
+        z = model.get_first_stage_encoding(z).detach()
         
         z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
         z_var = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
         eps = 1e-7
         z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
         
-        # ----------------------------------------------------------------
         # 1. Map Latent to MIMO Streams
-        # ----------------------------------------------------------------
         s_0_real = z_norm / np.sqrt(2.0)
         s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
         s_0 = s_0.to(device)
         
         L_len = s_0.shape[2]
-        # print(f"MIMO Streams: {t_mimo}x{L_len} complex symbols")
 
-        # ----------------------------------------------------------------
         # 2. Pilot Signal Setup
-        # ----------------------------------------------------------------
         t_vec = torch.arange(t_mimo, device=device)
         N_vec = torch.arange(N_pilot, device=device)
         tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
         P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
         P = P.to(device) 
 
-        # Simulation Loop
+        # Simulation Loop (SNR)
         for snr in range(-5, 26, 3): 
-            print(f"  > SNR = {snr} dB")
+            # print(f"  SNR = {snr} dB")
             
             noise_variance = t_mimo / (10**(snr/10))
             sigma_n = np.sqrt(noise_variance / 2.0)
@@ -327,37 +337,28 @@ if __name__ == "__main__":
             Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
             
             inv_mat = torch.inverse(Gram + Reg)
-            W_mmse = torch.matmul(inv_mat, H_hat_H) # (B, t, r)
+            W_mmse = torch.matmul(inv_mat, H_hat_H) 
             
-            # Equalization
-            s_mmse = torch.matmul(W_mmse, Y) # (B, t, L)
+            s_mmse = torch.matmul(W_mmse, Y) 
             
             # Save MMSE Result
             z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
             z_init_mmse = z_init_real * np.sqrt(2.0)
             
             z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
-            with torch.no_grad():
-                rec_nosample = model.decode_first_stage(z_nosample)
-            save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png", start_idx=chunk_start_idx)
+            rec_nosample = model.decode_first_stage(z_nosample)
+            save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png", start_index=batch_start_idx)
             
             # E. Prepare for Proposed Method (DPS)
-            
-            # [Corrected] Noise Variance Normalization
-            W_W_H = torch.matmul(W_mmse, W_mmse.mH) # (B, t, t)
+            W_W_H = torch.matmul(W_mmse, W_mmse.mH) 
             noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
             
-            # MMSE後の物理的な残留ノイズ分散
             post_mmse_noise_var_raw = eff_noise * noise_power_factor
             
-            # z_initの信号分散で正規化して、Samplerが期待する「相対ノイズ分散」に変換
             actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
             actual_var_flat = (actual_std.flatten()) ** 2
-            
-            # これがbench_MMSE.pyと同じスケールのノイズ分散になる
             effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
             
-            # Guidance Variance (Sigma_inv)
             eff_var_scalar = noise_variance + sigma_e2
             Sigma_inv = 1.0 / eff_var_scalar
             
@@ -368,16 +369,12 @@ if __name__ == "__main__":
                 z = mimo_streams_to_latent(s, shape)
                 return z * np.sqrt(2.0)
 
-            # Input Normalization
             z_init_normalized = z_init_mmse / (actual_std + 1e-8)
-            
             cond = model.get_learned_conditioning(batch_size * [""])
 
-            # [Match GCR] Adaptive Guidance Scale
             current_zeta = opt.dps_scale
             if snr < 5:
                 current_zeta *= 0.1
-                # print(f"[Info] Low SNR ({snr}dB): Reducing Zeta to {current_zeta:.4f}")
             
             # Call Proposed Sampling
             samples, H_final_est = sampler.proposed_dps_sampling(
@@ -385,37 +382,29 @@ if __name__ == "__main__":
                 batch_size=batch_size,
                 shape=z.shape[1:4], 
                 conditioning=cond,
-                
                 y=Y,                 
                 H_hat=H_hat, 
                 Sigma_inv=torch.tensor(Sigma_inv, device=device),
                 z_init=z_init_normalized, 
                 zeta=current_zeta,
-                
                 mapper=forward_mapper,
                 inv_mapper=backward_mapper,
-                
                 initial_noise_variance=effective_noise_variance,
-                
                 eta=0.0,
                 verbose=False
             )
             
-            # --- [Match GCR] Plot Channel Evolution ---
-            # Save only for the first batch to avoid overwriting or too many plots
-            if chunk_start_idx == 0:
-                plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}.png")
-                plot_channel_evolution(H, H_hat, H_final_est, plot_path)
-            # ------------------------------------
+            # Plot Channel Evolution (各バッチで実行し、ファイル名にバッチ番号を付与)
+            plot_path = os.path.join(channel_outdir, f"channel_plot_snr{snr}_batch{batch_start_idx}.png")
+            plot_channel_evolution(H, H_hat, H_final_est, plot_path, batch_label=f"(Batch {batch_start_idx})")
             
             # Denormalize & Decode
             z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
-            with torch.no_grad():
-                rec_proposed = model.decode_first_stage(z_restored)
+            rec_proposed = model.decode_first_stage(z_restored)
             
-            save_img_individually(rec_proposed, f"{opt.outdir}/proposed_snr{snr}.png", start_idx=chunk_start_idx)
-            
-        # End of SNR loop
-        # Clear GPU memory for next batch
-        del img, z, s_0, H, Y, samples, rec_proposed
+            save_img_individually(rec_proposed, f"{opt.outdir}/proposed_snr{snr}.png", start_index=batch_start_idx)
+        
+        # バッチ終了ごとにメモリ解放
         torch.cuda.empty_cache()
+
+    print("All batches processed.")
