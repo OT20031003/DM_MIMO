@@ -2,7 +2,7 @@ import argparse, os, sys, glob
 import torch
 import numpy as np
 import random
-import re  # 【修正】自然順ソート用にreモジュールを追加
+import re
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
@@ -44,8 +44,7 @@ def load_images_as_tensors(dir_path, image_size=(256, 256)):
         # print(f"Warning: No images found in {dir_path}")
         return torch.empty(0)
 
-    # 【重要・修正】ファイル名に含まれる数値を考慮して自然順ソートを行う
-    # これにより original_2.png が original_10.png より先に来るようになる
+    # ファイル名に含まれる数値を考慮して自然順ソートを行う
     image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
 
     tensors_list = []
@@ -104,7 +103,6 @@ def remove_png(path):
 
 # ==========================================
 #  Mappers (Latent <-> MIMO Streams)
-#  ※mimo_dps_burst_reset.pyと同じロジックを使用
 # ==========================================
 def latent_to_mimo_streams(z_real, t_antennas):
     """
@@ -149,7 +147,7 @@ def mimo_streams_to_latent(s, original_shape):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
-    # MIMO Parameters (Burst Reset Scriptと統一)
+    # MIMO Parameters
     t_mimo = 2 
     r_mimo = 2 
     N_pilot = 2 
@@ -192,9 +190,8 @@ if __name__ == "__main__":
     sampler = DDIMSampler(model)
 
     # ------------------------------------------------------------------
-    # [Modified] Load Images: Check sentimgdir first to preserve order
+    # Load Images
     # ------------------------------------------------------------------
-    # sentimgdir に画像があるか確認
     existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
                     glob.glob(os.path.join(opt.sentimgdir, "*.jpg"))
     
@@ -211,20 +208,22 @@ if __name__ == "__main__":
         raise ValueError("No images loaded! Please check input paths.")
         
     batch_size = img.shape[0]
-    # ------------------------------------------------------------------
     
+    # ------------------------------------------------------------------
     # 1. Encode to Latent Space
-    z = model.encode_first_stage(img)
+    # ------------------------------------------------------------------
+    # [FIX] Convert [0, 1] -> [-1, 1] to match LDM requirement
+    img_m11 = img * 2.0 - 1.0
+    z = model.encode_first_stage(img_m11)
     z = model.get_first_stage_encoding(z).detach()
     
-    # Normalize Latent (Burst Scriptと同様の正規化)
+    # Normalize Latent
     z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
     z_var_original = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
     eps = 1e-7
     z_norm = (z - z_mean) / (torch.sqrt(z_var_original) + eps)
     
     # 2. Map to MIMO Streams
-    # Burst Scriptと同じスケーリング (s = z / sqrt(2))
     s_0_real = z_norm / np.sqrt(2.0) 
     s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
     s_0 = s_0.to(device)
@@ -240,10 +239,10 @@ if __name__ == "__main__":
     P = P.to(device)
 
     # Simulation Loop
-    min_snr = -5
-    max_snr = 25
+    min_snr = 0
+    max_snr = 15
     
-    for snr in range(min_snr, max_snr + 1, 3): 
+    for snr in range(min_snr, max_snr + 1, 1): 
         print(f"\n======== SNR = {snr} dB (Benchmark: MMSE) ========")
         
         noise_variance = t_mimo / (10**(snr/10))
@@ -278,7 +277,6 @@ if __name__ == "__main__":
         Y = torch.matmul(H, s_0) + W
         
         # D. MMSE Equalization
-        # Burst Scriptと同様に推定誤差分散(sigma_e2)を含めた正則化を行う
         eff_noise = sigma_e2 + noise_variance
         
         H_hat_H = H_hat.mH
@@ -297,36 +295,31 @@ if __name__ == "__main__":
         # No-Sample Result (単純復号画像の保存)
         z_nosample = z_mmse_scaled * (torch.sqrt(z_var_original) + eps) + z_mean
         rec_nosample = model.decode_first_stage(z_nosample)
+        
+        # [FIX] Rescale [-1, 1] -> [0, 1] for saving
+        rec_nosample = torch.clamp((rec_nosample + 1.0) / 2.0, 0.0, 1.0)
         save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png")
 
         # F. Blind Diffusion Sampling (No DPS, No Guidance)
         # =========================================================
-        # ここでBurst Scriptと同様のノイズ分散計算を行い、
-        # 適切な開始ステップからDiffusionを開始する
         
         # 1. 入力を標準正規分布に正規化 (Robust Scaling)
         actual_std = z_mmse_scaled.std(dim=(1, 2, 3), keepdim=True)
         z_input_for_sampler = z_mmse_scaled / (actual_std + 1e-8)
         
-        # 2. MMSE後の残留ノイズレベルの推定 (Burst Scriptと同じロジック)
-        # 対角成分の平均からノイズ増幅率を計算
+        # 2. MMSE後の残留ノイズレベルの推定
         W_W_H = torch.matmul(W_mmse, W_mmse.mH)
         noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
         
-        # 残留ノイズ分散 = (物理ノイズ + 推定誤差) * 増幅率
         post_mmse_noise_var = eff_noise * noise_power_factor
         
         # 3. Samplerへ渡すために、入力分散に対する相対的なノイズ分散へ変換
-        # 入力 z_input_for_sampler は分散1.0に正規化されているため、
-        # 物理的な残留ノイズ分散も同じ比率でスケーリングする必要がある
         actual_var_flat = (actual_std.flatten()) ** 2
-        # スカラー平均をとってSamplerに渡す
         effective_noise_variance = (post_mmse_noise_var / actual_var_flat).mean()
         
         cond = model.get_learned_conditioning(batch_size * [""])
         
         # 4. Sampling
-        # Guidance (DPS/GCR) なしで、MMSE画像を初期値としてデノイズのみ行う
         samples = sampler.MIMO_decide_starttimestep_ddim_sampling(
             S=opt.ddim_steps,
             batch_size=batch_size,
@@ -334,7 +327,7 @@ if __name__ == "__main__":
             x_T=z_input_for_sampler,       # 正規化済み入力
             conditioning=cond,
             noise_variance=effective_noise_variance, # 計算したノイズレベル
-            starttimestep=None,            # <--- ★ここを追加 (Noneにしないと自動計算されない)
+            starttimestep=None,
             verbose=False
         )
 
@@ -342,5 +335,7 @@ if __name__ == "__main__":
         z_restored = samples * (torch.sqrt(z_var_original) + eps) + z_mean
         rec_bench = model.decode_first_stage(z_restored)
         
+        # [FIX] Rescale [-1, 1] -> [0, 1] for saving
+        rec_bench = torch.clamp((rec_bench + 1.0) / 2.0, 0.0, 1.0)
         save_img_individually(rec_bench, f"{opt.outdir}/bench_snr{snr}.png")
         print(f"Saved result for SNR {snr}")

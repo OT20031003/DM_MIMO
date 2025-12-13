@@ -1,0 +1,116 @@
+Output Directory: outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Found existing images in ./sentimg. Loading from there to preserve order...
+MIMO Streams: 2x1024 complex symbols
+
+======== SNR = -5 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.27595821022987366
+ddim.py start_timesteps after clamp S = 200 : 501
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR -5
+
+======== SNR = -2 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.3167419135570526
+ddim.py start_timesteps after clamp S = 200 : 471
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR -2
+
+======== SNR = 1 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.3891061842441559
+ddim.py start_timesteps after clamp S = 200 : 423
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 1
+
+======== SNR = 4 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.46972140669822693
+ddim.py start_timesteps after clamp S = 200 : 373
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 4
+
+======== SNR = 7 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.5854936838150024
+ddim.py start_timesteps after clamp S = 200 : 303
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 7
+
+======== SNR = 10 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.7408092021942139
+ddim.py start_timesteps after clamp S = 200 : 209
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 10
+
+======== SNR = 13 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.8091879487037659
+ddim.py start_timesteps after clamp S = 200 : 164
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 13
+
+======== SNR = 16 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.8658244609832764
+ddim.py start_timesteps after clamp S = 200 : 123
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 16
+
+======== SNR = 19 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.9014374017715454
+ddim.py start_timesteps after clamp S = 200 : 95
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 19
+
+======== SNR = 22 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.920707643032074
+ddim.py start_timesteps after clamp S = 200 : 78
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 22
+
+======== SNR = 25 dB (Benchmark: MMSE) ========
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/nosample/estimated/
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+ddim.py alphas_cumprod = torch.Size([1000])
+ddim.py, alpha_bar_u = 0.9513959884643555
+ddim.py start_timesteps after clamp S = 200 : 51
+Saved images to outputs/MIMO_Benchmark_MMSE/t=2_r=2/estimated/
+Saved result for SNR 25

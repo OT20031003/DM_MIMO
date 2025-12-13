@@ -28,10 +28,10 @@ echo "Finished Proposed DPS at $(date)"
 echo "[3/3] Running mimo_dps_burst.py..."
 python -m scripts.mimo_dps_burst_reset > execution_logs/log_burst.txt 2>&1
 echo "Finished Burst Reset at $(date)"
-# --- 4. Importance Burst Reset ---
-echo "[3/3] Running mimo_importance.py..."
-python -m scripts.mimo_importance > execution_logs/log_importance.txt 2>&1
-echo "Finished Burst Reset at $(date)"
+# # --- 4. Importance Burst Reset ---
+# echo "[3/3] Running mimo_importance.py..."
+# python -m scripts.mimo_importance > execution_logs/log_importance.txt 2>&1
+# echo "Finished Burst Reset at $(date)"
 
 echo "==========================================="
 echo "All jobs finished at $(date)"

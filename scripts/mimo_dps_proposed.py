@@ -2,7 +2,7 @@ import argparse, os, sys, glob
 import torch
 import numpy as np
 import random
-import re  # 【修正】自然順ソート用にreモジュールを追加
+import re  # 自然順ソート用
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm, trange
@@ -11,7 +11,6 @@ from torchvision.utils import make_grid
 from torchvision import transforms
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
-from ldm.models.diffusion.plms import PLMSSampler
 from torchvision import utils as vutil
 import lpips
 import matplotlib.pyplot as plt
@@ -80,11 +79,9 @@ def load_images_as_tensors(dir_path, image_size=(256, 256)):
         image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
     
     if not image_paths:
-        # print(f"Warning: No images found in {dir_path}")
         return torch.empty(0)
 
-    # 【重要・修正】ファイル名に含まれる数値を考慮して自然順ソートを行う
-    # これにより original_2.png が original_10.png より先に来るようになる
+    # ファイル名に含まれる数値を考慮して自然順ソートを行う
     image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
 
     tensors_list = []
@@ -118,12 +115,13 @@ def save_img_individually(img, path):
     ext = os.path.splitext(path)[1]
     os.makedirs(dirname, exist_ok=True)
     
-    # 全スクリプトで挙動を揃えるため、明示的にクリップを入れる
+    # 安全のため明示的にクリップを入れる
     img = torch.clamp(img, 0.0, 1.0)
 
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
     print(f"Saved images to {dirname}/")
+
 def remove_png(path):
     for file in glob.glob(f'{path}/*.png'):
         try: os.remove(file)
@@ -221,7 +219,7 @@ if __name__ == "__main__":
     sampler = DDIMSampler(model)
 
     # ------------------------------------------------------------------
-    # [Modified] Load Images: Check sentimgdir first to preserve order
+    # Load Images
     # ------------------------------------------------------------------
     # sentimgdir に画像があるか確認
     existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
@@ -243,7 +241,9 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
 
     # Encode & Normalize
-    z = model.encode_first_stage(img)
+    # [FIX] Convert [0, 1] -> [-1, 1] to match LDM requirement
+    img_m11 = img * 2.0 - 1.0
+    z = model.encode_first_stage(img_m11)
     z = model.get_first_stage_encoding(z).detach()
     
     z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
@@ -271,7 +271,7 @@ if __name__ == "__main__":
     P = P.to(device) 
 
     # Simulation Loop
-    for snr in range(-5, 26, 3): 
+    for snr in range(0, 16, 1): 
         print(f"\n======== SNR = {snr} dB ========")
         
         noise_variance = t_mimo / (10**(snr/10))
@@ -324,11 +324,14 @@ if __name__ == "__main__":
         
         z_nosample = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
         rec_nosample = model.decode_first_stage(z_nosample)
+        
+        # [FIX] Rescale [-1, 1] -> [0, 1] for saving
+        rec_nosample = torch.clamp((rec_nosample + 1.0) / 2.0, 0.0, 1.0)
         save_img_individually(rec_nosample, f"{opt.nosample_outdir}/mmse_snr{snr}.png")
         
         # E. Prepare for Proposed Method (DPS)
         
-        # [Corrected] Noise Variance Normalization
+        # Noise Variance Calculation
         W_W_H = torch.matmul(W_mmse, W_mmse.mH) # (B, t, t)
         noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
         
@@ -339,7 +342,6 @@ if __name__ == "__main__":
         actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
         actual_var_flat = (actual_std.flatten()) ** 2
         
-        # これがbench_MMSE.pyと同じスケールのノイズ分散になる
         effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
         
         # Guidance Variance (Sigma_inv)
@@ -368,7 +370,6 @@ if __name__ == "__main__":
         print(f"  > Effective Noise Var: {effective_noise_variance.item():.5f} (Matched with Benchmark)")
         
         # Call Proposed Sampling
-        # Returns tuple (img, H_final) to be symmetric with GCR
         samples, H_final_est = sampler.proposed_dps_sampling(
             S=opt.ddim_steps,
             batch_size=batch_size,
@@ -384,7 +385,6 @@ if __name__ == "__main__":
             mapper=forward_mapper,
             inv_mapper=backward_mapper,
             
-            # 修正済みの正規化分散を渡す
             initial_noise_variance=effective_noise_variance,
             
             eta=0.0,
@@ -400,5 +400,7 @@ if __name__ == "__main__":
         z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
         rec_proposed = model.decode_first_stage(z_restored)
         
+        # [FIX] Rescale [-1, 1] -> [0, 1] for saving
+        rec_proposed = torch.clamp((rec_proposed + 1.0) / 2.0, 0.0, 1.0)
         save_img_individually(rec_proposed, f"{opt.outdir}/proposed_snr{snr}.png")
         print(f"Saved result for SNR {snr}")

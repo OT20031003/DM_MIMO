@@ -547,11 +547,12 @@ if __name__ == "__main__":
     P = P.to(device) 
 
     # Simulation Loop
-    min_snr_sim = -5
-    max_snr_sim = 25
+    min_snr_sim = 0
+    max_snr_sim = 15
+
     gt_imgs = img 
 
-    for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
+    for snr in range(min_snr_sim, max_snr_sim + 1, 1): 
         print(f"\n======== SNR = {snr} dB ========")
         print(f"Monitoring: {monitor_indices}")
         
