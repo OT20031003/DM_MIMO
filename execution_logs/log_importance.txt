@@ -1,0 +1,241 @@
+/home/naaa/diffusion/Latent-Diffusion/scripts/mimo_importance.py:385: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  pl_sd = torch.load(ckpt, map_location="cpu")
+/home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/lpips.py:107: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.load_state_dict(torch.load(model_path, map_location='cpu'), strict=False)
+Removing previous experiment results at: outputs/MIMO_Burst_Reset_Importance/t=2_r=2
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Loading LPIPS model...
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/weights/v0.1/alex.pth
+Found existing images in ./sentimg. Loading from there to preserve order...
+Loading Images from ./sentimg:   0%|          | 0/20 [00:00<?, ?it/s]/home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/torchvision/transforms/functional.py:96: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  img = torch.ByteTensor(torch.ByteStorage.from_buffer(pic.tobytes()))
+Loading Images from ./sentimg: 100%|██████████| 20/20 [00:00<00:00, 200.85it/s]
+/home/naaa/diffusion/Latent-Diffusion/scripts/mimo_importance.py:82: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.imp_model.load_state_dict(torch.load(model_path, map_location=device), strict=False)
+Monitoring batches: [0, 1, 2, 3, 4] (Total 5)
+[ImportanceManager] Loading importance model from checkpoints/importance_model/student_epoch_10.pth
+[ImportanceManager] Power Allocation (Phi^2): [0.9, 0.09999999999999998]
+MIMO Transmission Prepared: 2x1024 symbols (Weighted & Sorted)
+
+======== SNR = -5 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.57200
+  > Phase3 Steps: 43
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 43 steps (Index: 42/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 31.9821
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/43 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/43 [00:01<?, ?it/s, Loss=1.26, H_err=46.662]GCR (Importance):   2%|▏         | 1/43 [00:01<00:44,  1.06s/it, Loss=1.26, H_err=46.662]GCR (Importance):   2%|▏         | 1/43 [00:02<00:44,  1.06s/it, Loss=1.10, H_err=45.069]GCR (Importance):   5%|▍         | 2/43 [00:02<00:41,  1.02s/it, Loss=1.10, H_err=45.069]GCR (Importance):   5%|▍         | 2/43 [00:03<00:41,  1.02s/it, Loss=1.68, H_err=46.503]GCR (Importance):   7%|▋         | 3/43 [00:03<00:40,  1.00s/it, Loss=1.68, H_err=46.503]GCR (Importance):   7%|▋         | 3/43 [00:04<00:40,  1.00s/it, Loss=1.12, H_err=46.186]GCR (Importance):   9%|▉         | 4/43 [00:04<00:38,  1.00it/s, Loss=1.12, H_err=46.186]GCR (Importance):   9%|▉         | 4/43 [00:05<00:38,  1.00it/s, Loss=1.68, H_err=47.020]GCR (Importance):  12%|█▏        | 5/43 [00:05<00:37,  1.01it/s, Loss=1.68, H_err=47.020]GCR (Importance):  12%|█▏        | 5/43 [00:05<00:37,  1.01it/s, Loss=1.12, H_err=46.412]GCR (Importance):  14%|█▍        | 6/43 [00:06<00:36,  1.01it/s, Loss=1.12, H_err=46.412]GCR (Importance):  14%|█▍        | 6/43 [00:06<00:36,  1.01it/s, Loss=1.69, H_err=47.047]GCR (Importance):  16%|█▋        | 7/43 [00:06<00:35,  1.01it/s, Loss=1.69, H_err=47.047]GCR (Importance):  16%|█▋        | 7/43 [00:07<00:35,  1.01it/s, Loss=1.13, H_err=46.377]GCR (Importance):  19%|█▊        | 8/43 [00:07<00:34,  1.01it/s, Loss=1.13, H_err=46.377]GCR (Importance):  19%|█▊        | 8/43 [00:08<00:34,  1.01it/s, Loss=1.70, H_err=46.888]GCR (Importance):  21%|██        | 9/43 [00:08<00:33,  1.01it/s, Loss=1.70, H_err=46.888]GCR (Importance):  21%|██        | 9/43 [00:09<00:33,  1.01it/s, Loss=1.13, H_err=46.210]GCR (Importance):  23%|██▎       | 10/43 [00:09<00:32,  1.01it/s, Loss=1.13, H_err=46.210]GCR (Importance):  23%|██▎       | 10/43 [00:10<00:32,  1.01it/s, Loss=1.71, H_err=46.644]GCR (Importance):  26%|██▌       | 11/43 [00:10<00:31,  1.01it/s, Loss=1.71, H_err=46.644]GCR (Importance):  26%|██▌       | 11/43 [00:11<00:31,  1.01it/s, Loss=1.14, H_err=45.978]GCR (Importance):  28%|██▊       | 12/43 [00:11<00:30,  1.01it/s, Loss=1.14, H_err=45.978]GCR (Importance):  28%|██▊       | 12/43 [00:12<00:30,  1.01it/s, Loss=1.71, H_err=46.368]GCR (Importance):  30%|███       | 13/43 [00:12<00:29,  1.01it/s, Loss=1.71, H_err=46.368]GCR (Importance):  30%|███       | 13/43 [00:13<00:29,  1.01it/s, Loss=1.14, H_err=45.716]GCR (Importance):  33%|███▎      | 14/43 [00:13<00:28,  1.01it/s, Loss=1.14, H_err=45.716]GCR (Importance):  33%|███▎      | 14/43 [00:14<00:28,  1.01it/s, Loss=1.72, H_err=46.078]GCR (Importance):  35%|███▍      | 15/43 [00:14<00:27,  1.00it/s, Loss=1.72, H_err=46.078]GCR (Importance):  35%|███▍      | 15/43 [00:15<00:27,  1.00it/s, Loss=1.15, H_err=45.446]GCR (Importance):  37%|███▋      | 16/43 [00:15<00:27,  1.01s/it, Loss=1.15, H_err=45.446]GCR (Importance):  37%|███▋      | 16/43 [00:16<00:27,  1.01s/it, Loss=1.72, H_err=45.795]GCR (Importance):  40%|███▉      | 17/43 [00:16<00:26,  1.01s/it, Loss=1.72, H_err=45.795]GCR (Importance):  40%|███▉      | 17/43 [00:18<00:26,  1.01s/it, Loss=1.15, H_err=45.181]GCR (Importance):  42%|████▏     | 18/43 [00:18<00:25,  1.01s/it, Loss=1.15, H_err=45.181]GCR (Importance):  42%|████▏     | 18/43 [00:19<00:25,  1.01s/it, Loss=1.73, H_err=45.525]GCR (Importance):  44%|████▍     | 19/43 [00:19<00:24,  1.01s/it, Loss=1.73, H_err=45.525]GCR (Importance):  44%|████▍     | 19/43 [00:20<00:24,  1.01s/it, Loss=1.15, H_err=44.925]GCR (Importance):  47%|████▋     | 20/43 [00:20<00:23,  1.01s/it, Loss=1.15, H_err=44.925]GCR (Importance):  47%|████▋     | 20/43 [00:21<00:23,  1.01s/it, Loss=1.73, H_err=45.269]GCR (Importance):  49%|████▉     | 21/43 [00:21<00:22,  1.01s/it, Loss=1.73, H_err=45.269]GCR (Importance):  49%|████▉     | 21/43 [00:22<00:22,  1.01s/it, Loss=1.15, H_err=44.686]GCR (Importance):  51%|█████     | 22/43 [00:22<00:21,  1.01s/it, Loss=1.15, H_err=44.686]GCR (Importance):  51%|█████     | 22/43 [00:23<00:21,  1.01s/it, Loss=1.73, H_err=45.033]GCR (Importance):  53%|█████▎    | 23/43 [00:23<00:20,  1.01s/it, Loss=1.73, H_err=45.033]GCR (Importance):  53%|█████▎    | 23/43 [00:24<00:20,  1.01s/it, Loss=1.15, H_err=44.464]GCR (Importance):  56%|█████▌    | 24/43 [00:24<00:19,  1.01s/it, Loss=1.15, H_err=44.464]GCR (Importance):  56%|█████▌    | 24/43 [00:25<00:19,  1.01s/it, Loss=1.74, H_err=44.818]GCR (Importance):  58%|█████▊    | 25/43 [00:25<00:18,  1.01s/it, Loss=1.74, H_err=44.818]GCR (Importance):  58%|█████▊    | 25/43 [00:26<00:18,  1.01s/it, Loss=1.14, H_err=44.264]GCR (Importance):  60%|██████    | 26/43 [00:26<00:17,  1.01s/it, Loss=1.14, H_err=44.264]GCR (Importance):  60%|██████    | 26/43 [00:27<00:17,  1.01s/it, Loss=1.74, H_err=44.625]GCR (Importance):  63%|██████▎   | 27/43 [00:27<00:16,  1.01s/it, Loss=1.74, H_err=44.625]GCR (Importance):  63%|██████▎   | 27/43 [00:28<00:16,  1.01s/it, Loss=1.14, H_err=44.084]GCR (Importance):  65%|██████▌   | 28/43 [00:28<00:15,  1.01s/it, Loss=1.14, H_err=44.084]GCR (Importance):  65%|██████▌   | 28/43 [00:29<00:15,  1.01s/it, Loss=1.73, H_err=44.454]GCR (Importance):  67%|██████▋   | 29/43 [00:29<00:14,  1.01s/it, Loss=1.73, H_err=44.454]GCR (Importance):  67%|██████▋   | 29/43 [00:30<00:14,  1.01s/it, Loss=1.14, H_err=43.928]GCR (Importance):  70%|██████▉   | 30/43 [00:30<00:13,  1.01s/it, Loss=1.14, H_err=43.928]GCR (Importance):  70%|██████▉   | 30/43 [00:31<00:13,  1.01s/it, Loss=1.73, H_err=44.308]GCR (Importance):  72%|███████▏  | 31/43 [00:31<00:12,  1.01s/it, Loss=1.73, H_err=44.308]GCR (Importance):  72%|███████▏  | 31/43 [00:32<00:12,  1.01s/it, Loss=1.13, H_err=43.797]GCR (Importance):  74%|███████▍  | 32/43 [00:32<00:11,  1.01s/it, Loss=1.13, H_err=43.797]GCR (Importance):  74%|███████▍  | 32/43 [00:33<00:11,  1.01s/it, Loss=1.73, H_err=44.188]GCR (Importance):  77%|███████▋  | 33/43 [00:33<00:10,  1.01s/it, Loss=1.73, H_err=44.188]GCR (Importance):  77%|███████▋  | 33/43 [00:34<00:10,  1.01s/it, Loss=1.12, H_err=43.691]GCR (Importance):  79%|███████▉  | 34/43 [00:34<00:09,  1.02s/it, Loss=1.12, H_err=43.691]GCR (Importance):  79%|███████▉  | 34/43 [00:35<00:09,  1.02s/it, Loss=1.72, H_err=44.093]GCR (Importance):  81%|████████▏ | 35/43 [00:35<00:08,  1.02s/it, Loss=1.72, H_err=44.093]GCR (Importance):  81%|████████▏ | 35/43 [00:36<00:08,  1.02s/it, Loss=1.11, H_err=43.613]GCR (Importance):  84%|████████▎ | 36/43 [00:36<00:07,  1.02s/it, Loss=1.11, H_err=43.613]GCR (Importance):  84%|████████▎ | 36/43 [00:37<00:07,  1.02s/it, Loss=1.71, H_err=44.026]GCR (Importance):  86%|████████▌ | 37/43 [00:37<00:06,  1.02s/it, Loss=1.71, H_err=44.026]GCR (Importance):  86%|████████▌ | 37/43 [00:38<00:06,  1.02s/it, Loss=1.10, H_err=43.564]GCR (Importance):  88%|████████▊ | 38/43 [00:38<00:05,  1.02s/it, Loss=1.10, H_err=43.564]GCR (Importance):  88%|████████▊ | 38/43 [00:39<00:05,  1.02s/it, Loss=1.70, H_err=43.990]GCR (Importance):  91%|█████████ | 39/43 [00:39<00:04,  1.02s/it, Loss=1.70, H_err=43.990]GCR (Importance):  91%|█████████ | 39/43 [00:40<00:04,  1.02s/it, Loss=1.09, H_err=43.548]GCR (Importance):  93%|█████████▎| 40/43 [00:40<00:03,  1.02s/it, Loss=1.09, H_err=43.548]GCR (Importance):  93%|█████████▎| 40/43 [00:41<00:03,  1.02s/it, Loss=1.69, H_err=43.989]GCR (Importance):  95%|█████████▌| 41/43 [00:41<00:02,  1.02s/it, Loss=1.69, H_err=43.989]GCR (Importance):  95%|█████████▌| 41/43 [00:42<00:02,  1.02s/it, Loss=1.07, H_err=43.572]GCR (Importance):  98%|█████████▊| 42/43 [00:42<00:01,  1.02s/it, Loss=1.07, H_err=43.572]GCR (Importance):  98%|█████████▊| 42/43 [00:43<00:01,  1.02s/it, Loss=1.68, H_err=44.033]GCR (Importance): 100%|██████████| 43/43 [00:43<00:00,  1.02s/it, Loss=1.68, H_err=44.033]GCR (Importance): 100%|██████████| 43/43 [00:43<00:00,  1.01s/it, Loss=1.68, H_err=44.033]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR -5...
+Saved all results for SNR -5
+
+======== SNR = -2 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.44325
+  > Phase3 Steps: 32
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 32 steps (Index: 31/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 25.8106
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/32 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/32 [00:01<?, ?it/s, Loss=1.42, H_err=36.993]GCR (Importance):   3%|▎         | 1/32 [00:01<00:31,  1.01s/it, Loss=1.42, H_err=36.993]GCR (Importance):   3%|▎         | 1/32 [00:02<00:31,  1.01s/it, Loss=1.16, H_err=32.161]GCR (Importance):   6%|▋         | 2/32 [00:02<00:30,  1.01s/it, Loss=1.16, H_err=32.161]GCR (Importance):   6%|▋         | 2/32 [00:03<00:30,  1.01s/it, Loss=1.84, H_err=35.024]GCR (Importance):   9%|▉         | 3/32 [00:03<00:29,  1.01s/it, Loss=1.84, H_err=35.024]GCR (Importance):   9%|▉         | 3/32 [00:04<00:29,  1.01s/it, Loss=1.37, H_err=34.261]GCR (Importance):  12%|█▎        | 4/32 [00:04<00:28,  1.01s/it, Loss=1.37, H_err=34.261]GCR (Importance):  12%|█▎        | 4/32 [00:05<00:28,  1.01s/it, Loss=1.87, H_err=34.880]GCR (Importance):  16%|█▌        | 5/32 [00:05<00:27,  1.01s/it, Loss=1.87, H_err=34.880]GCR (Importance):  16%|█▌        | 5/32 [00:06<00:27,  1.01s/it, Loss=1.38, H_err=34.274]GCR (Importance):  19%|█▉        | 6/32 [00:06<00:26,  1.01s/it, Loss=1.38, H_err=34.274]GCR (Importance):  19%|█▉        | 6/32 [00:07<00:26,  1.01s/it, Loss=1.87, H_err=34.627]GCR (Importance):  22%|██▏       | 7/32 [00:07<00:25,  1.01s/it, Loss=1.87, H_err=34.627]GCR (Importance):  22%|██▏       | 7/32 [00:08<00:25,  1.01s/it, Loss=1.38, H_err=34.134]GCR (Importance):  25%|██▌       | 8/32 [00:08<00:24,  1.02s/it, Loss=1.38, H_err=34.134]GCR (Importance):  25%|██▌       | 8/32 [00:09<00:24,  1.02s/it, Loss=1.87, H_err=34.411]GCR (Importance):  28%|██▊       | 9/32 [00:09<00:23,  1.02s/it, Loss=1.87, H_err=34.411]GCR (Importance):  28%|██▊       | 9/32 [00:10<00:23,  1.02s/it, Loss=1.38, H_err=33.957]GCR (Importance):  31%|███▏      | 10/32 [00:10<00:22,  1.03s/it, Loss=1.38, H_err=33.957]GCR (Importance):  31%|███▏      | 10/32 [00:11<00:22,  1.03s/it, Loss=1.87, H_err=34.215]GCR (Importance):  34%|███▍      | 11/32 [00:11<00:21,  1.03s/it, Loss=1.87, H_err=34.215]GCR (Importance):  34%|███▍      | 11/32 [00:12<00:21,  1.03s/it, Loss=1.38, H_err=33.780]GCR (Importance):  38%|███▊      | 12/32 [00:12<00:20,  1.03s/it, Loss=1.38, H_err=33.780]GCR (Importance):  38%|███▊      | 12/32 [00:13<00:20,  1.03s/it, Loss=1.86, H_err=34.032]GCR (Importance):  41%|████      | 13/32 [00:13<00:19,  1.03s/it, Loss=1.86, H_err=34.032]GCR (Importance):  41%|████      | 13/32 [00:14<00:19,  1.03s/it, Loss=1.37, H_err=33.612]GCR (Importance):  44%|████▍     | 14/32 [00:14<00:18,  1.03s/it, Loss=1.37, H_err=33.612]GCR (Importance):  44%|████▍     | 14/32 [00:15<00:18,  1.03s/it, Loss=1.86, H_err=33.863]GCR (Importance):  47%|████▋     | 15/32 [00:15<00:17,  1.03s/it, Loss=1.86, H_err=33.863]GCR (Importance):  47%|████▋     | 15/32 [00:16<00:17,  1.03s/it, Loss=1.37, H_err=33.456]GCR (Importance):  50%|█████     | 16/32 [00:16<00:16,  1.03s/it, Loss=1.37, H_err=33.456]GCR (Importance):  50%|█████     | 16/32 [00:17<00:16,  1.03s/it, Loss=1.85, H_err=33.706]GCR (Importance):  53%|█████▎    | 17/32 [00:17<00:15,  1.03s/it, Loss=1.85, H_err=33.706]GCR (Importance):  53%|█████▎    | 17/32 [00:18<00:15,  1.03s/it, Loss=1.36, H_err=33.313]GCR (Importance):  56%|█████▋    | 18/32 [00:18<00:14,  1.03s/it, Loss=1.36, H_err=33.313]GCR (Importance):  56%|█████▋    | 18/32 [00:19<00:14,  1.03s/it, Loss=1.85, H_err=33.564]GCR (Importance):  59%|█████▉    | 19/32 [00:19<00:13,  1.03s/it, Loss=1.85, H_err=33.564]GCR (Importance):  59%|█████▉    | 19/32 [00:20<00:13,  1.03s/it, Loss=1.36, H_err=33.184]GCR (Importance):  62%|██████▎   | 20/32 [00:20<00:12,  1.03s/it, Loss=1.36, H_err=33.184]GCR (Importance):  62%|██████▎   | 20/32 [00:21<00:12,  1.03s/it, Loss=1.84, H_err=33.437]GCR (Importance):  66%|██████▌   | 21/32 [00:21<00:11,  1.03s/it, Loss=1.84, H_err=33.437]GCR (Importance):  66%|██████▌   | 21/32 [00:22<00:11,  1.03s/it, Loss=1.35, H_err=33.069]GCR (Importance):  69%|██████▉   | 22/32 [00:22<00:10,  1.03s/it, Loss=1.35, H_err=33.069]GCR (Importance):  69%|██████▉   | 22/32 [00:23<00:10,  1.03s/it, Loss=1.83, H_err=33.322]GCR (Importance):  72%|███████▏  | 23/32 [00:23<00:09,  1.03s/it, Loss=1.83, H_err=33.322]GCR (Importance):  72%|███████▏  | 23/32 [00:24<00:09,  1.03s/it, Loss=1.34, H_err=32.968]GCR (Importance):  75%|███████▌  | 24/32 [00:24<00:08,  1.03s/it, Loss=1.34, H_err=32.968]GCR (Importance):  75%|███████▌  | 24/32 [00:25<00:08,  1.03s/it, Loss=1.82, H_err=33.222]GCR (Importance):  78%|███████▊  | 25/32 [00:25<00:07,  1.03s/it, Loss=1.82, H_err=33.222]GCR (Importance):  78%|███████▊  | 25/32 [00:26<00:07,  1.03s/it, Loss=1.33, H_err=32.881]GCR (Importance):  81%|████████▏ | 26/32 [00:26<00:06,  1.03s/it, Loss=1.33, H_err=32.881]GCR (Importance):  81%|████████▏ | 26/32 [00:27<00:06,  1.03s/it, Loss=1.80, H_err=33.138]GCR (Importance):  84%|████████▍ | 27/32 [00:27<00:05,  1.03s/it, Loss=1.80, H_err=33.138]GCR (Importance):  84%|████████▍ | 27/32 [00:28<00:05,  1.03s/it, Loss=1.32, H_err=32.811]GCR (Importance):  88%|████████▊ | 28/32 [00:28<00:04,  1.03s/it, Loss=1.32, H_err=32.811]GCR (Importance):  88%|████████▊ | 28/32 [00:29<00:04,  1.03s/it, Loss=1.79, H_err=33.070]GCR (Importance):  91%|█████████ | 29/32 [00:29<00:03,  1.03s/it, Loss=1.79, H_err=33.070]GCR (Importance):  91%|█████████ | 29/32 [00:30<00:03,  1.03s/it, Loss=1.30, H_err=32.759]GCR (Importance):  94%|█████████▍| 30/32 [00:30<00:02,  1.03s/it, Loss=1.30, H_err=32.759]GCR (Importance):  94%|█████████▍| 30/32 [00:31<00:02,  1.03s/it, Loss=1.77, H_err=33.024]GCR (Importance):  97%|█████████▋| 31/32 [00:31<00:01,  1.03s/it, Loss=1.77, H_err=33.024]GCR (Importance):  97%|█████████▋| 31/32 [00:32<00:01,  1.03s/it, Loss=1.29, H_err=32.738]GCR (Importance): 100%|██████████| 32/32 [00:32<00:00,  1.03s/it, Loss=1.29, H_err=32.738]GCR (Importance): 100%|██████████| 32/32 [00:32<00:00,  1.02s/it, Loss=1.29, H_err=32.738]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR -2...
+Saved all results for SNR -2
+
+======== SNR = 1 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.43829
+  > Phase3 Steps: 24
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 24 steps (Index: 23/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 18.0767
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/24 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/24 [00:01<?, ?it/s, Loss=0.95, H_err=27.873]GCR (Importance):   4%|▍         | 1/24 [00:01<00:23,  1.02s/it, Loss=0.95, H_err=27.873]GCR (Importance):   4%|▍         | 1/24 [00:02<00:23,  1.02s/it, Loss=1.61, H_err=23.037]GCR (Importance):   8%|▊         | 2/24 [00:02<00:22,  1.02s/it, Loss=1.61, H_err=23.037]GCR (Importance):   8%|▊         | 2/24 [00:03<00:22,  1.02s/it, Loss=1.75, H_err=23.367]GCR (Importance):  12%|█▎        | 3/24 [00:03<00:21,  1.02s/it, Loss=1.75, H_err=23.367]GCR (Importance):  12%|█▎        | 3/24 [00:04<00:21,  1.02s/it, Loss=2.32, H_err=23.710]GCR (Importance):  17%|█▋        | 4/24 [00:04<00:20,  1.02s/it, Loss=2.32, H_err=23.710]GCR (Importance):  17%|█▋        | 4/24 [00:05<00:20,  1.02s/it, Loss=1.82, H_err=22.964]GCR (Importance):  21%|██        | 5/24 [00:05<00:19,  1.02s/it, Loss=1.82, H_err=22.964]GCR (Importance):  21%|██        | 5/24 [00:06<00:19,  1.02s/it, Loss=2.36, H_err=23.526]GCR (Importance):  25%|██▌       | 6/24 [00:06<00:18,  1.02s/it, Loss=2.36, H_err=23.526]GCR (Importance):  25%|██▌       | 6/24 [00:07<00:18,  1.02s/it, Loss=1.85, H_err=22.802]GCR (Importance):  29%|██▉       | 7/24 [00:07<00:17,  1.02s/it, Loss=1.85, H_err=22.802]GCR (Importance):  29%|██▉       | 7/24 [00:08<00:17,  1.02s/it, Loss=2.38, H_err=23.363]GCR (Importance):  33%|███▎      | 8/24 [00:08<00:16,  1.02s/it, Loss=2.38, H_err=23.363]GCR (Importance):  33%|███▎      | 8/24 [00:09<00:16,  1.02s/it, Loss=1.86, H_err=22.667]GCR (Importance):  38%|███▊      | 9/24 [00:09<00:15,  1.02s/it, Loss=1.86, H_err=22.667]GCR (Importance):  38%|███▊      | 9/24 [00:10<00:15,  1.02s/it, Loss=2.39, H_err=23.212]GCR (Importance):  42%|████▏     | 10/24 [00:10<00:14,  1.02s/it, Loss=2.39, H_err=23.212]GCR (Importance):  42%|████▏     | 10/24 [00:11<00:14,  1.02s/it, Loss=1.86, H_err=22.541]GCR (Importance):  46%|████▌     | 11/24 [00:11<00:13,  1.02s/it, Loss=1.86, H_err=22.541]GCR (Importance):  46%|████▌     | 11/24 [00:12<00:13,  1.02s/it, Loss=2.40, H_err=23.071]GCR (Importance):  50%|█████     | 12/24 [00:12<00:12,  1.02s/it, Loss=2.40, H_err=23.071]GCR (Importance):  50%|█████     | 12/24 [00:13<00:12,  1.02s/it, Loss=1.86, H_err=22.419]GCR (Importance):  54%|█████▍    | 13/24 [00:13<00:11,  1.02s/it, Loss=1.86, H_err=22.419]GCR (Importance):  54%|█████▍    | 13/24 [00:14<00:11,  1.02s/it, Loss=2.40, H_err=22.938]GCR (Importance):  58%|█████▊    | 14/24 [00:14<00:10,  1.02s/it, Loss=2.40, H_err=22.938]GCR (Importance):  58%|█████▊    | 14/24 [00:15<00:10,  1.02s/it, Loss=1.86, H_err=22.300]GCR (Importance):  62%|██████▎   | 15/24 [00:15<00:09,  1.02s/it, Loss=1.86, H_err=22.300]GCR (Importance):  62%|██████▎   | 15/24 [00:16<00:09,  1.02s/it, Loss=2.39, H_err=22.814]GCR (Importance):  67%|██████▋   | 16/24 [00:16<00:08,  1.02s/it, Loss=2.39, H_err=22.814]GCR (Importance):  67%|██████▋   | 16/24 [00:17<00:08,  1.02s/it, Loss=1.86, H_err=22.185]GCR (Importance):  71%|███████   | 17/24 [00:17<00:07,  1.04s/it, Loss=1.86, H_err=22.185]GCR (Importance):  71%|███████   | 17/24 [00:18<00:07,  1.04s/it, Loss=2.39, H_err=22.697]GCR (Importance):  75%|███████▌  | 18/24 [00:18<00:06,  1.03s/it, Loss=2.39, H_err=22.697]GCR (Importance):  75%|███████▌  | 18/24 [00:19<00:06,  1.03s/it, Loss=1.85, H_err=22.074]GCR (Importance):  79%|███████▉  | 19/24 [00:19<00:05,  1.04s/it, Loss=1.85, H_err=22.074]GCR (Importance):  79%|███████▉  | 19/24 [00:20<00:05,  1.04s/it, Loss=2.38, H_err=22.587]GCR (Importance):  83%|████████▎ | 20/24 [00:20<00:04,  1.04s/it, Loss=2.38, H_err=22.587]GCR (Importance):  83%|████████▎ | 20/24 [00:21<00:04,  1.04s/it, Loss=1.84, H_err=21.969]GCR (Importance):  88%|████████▊ | 21/24 [00:21<00:03,  1.04s/it, Loss=1.84, H_err=21.969]GCR (Importance):  88%|████████▊ | 21/24 [00:22<00:03,  1.04s/it, Loss=2.38, H_err=22.484]GCR (Importance):  92%|█████████▏| 22/24 [00:22<00:02,  1.04s/it, Loss=2.38, H_err=22.484]GCR (Importance):  92%|█████████▏| 22/24 [00:23<00:02,  1.04s/it, Loss=1.83, H_err=21.873]GCR (Importance):  96%|█████████▌| 23/24 [00:23<00:01,  1.04s/it, Loss=1.83, H_err=21.873]GCR (Importance):  96%|█████████▌| 23/24 [00:24<00:01,  1.04s/it, Loss=2.37, H_err=22.399]GCR (Importance): 100%|██████████| 24/24 [00:24<00:00,  1.04s/it, Loss=2.37, H_err=22.399]GCR (Importance): 100%|██████████| 24/24 [00:24<00:00,  1.03s/it, Loss=2.37, H_err=22.399]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 1...
+Saved all results for SNR 1
+
+======== SNR = 4 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.29628
+  > Phase3 Steps: 18
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 18 steps (Index: 17/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 14.2248
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/18 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/18 [00:01<?, ?it/s, Loss=1.14, H_err=20.023]GCR (Importance):   6%|▌         | 1/18 [00:01<00:17,  1.01s/it, Loss=1.14, H_err=20.023]GCR (Importance):   6%|▌         | 1/18 [00:02<00:17,  1.01s/it, Loss=3.05, H_err=16.239]GCR (Importance):  11%|█         | 2/18 [00:02<00:16,  1.02s/it, Loss=3.05, H_err=16.239]GCR (Importance):  11%|█         | 2/18 [00:03<00:16,  1.02s/it, Loss=1.49, H_err=18.426]GCR (Importance):  17%|█▋        | 3/18 [00:03<00:15,  1.02s/it, Loss=1.49, H_err=18.426]GCR (Importance):  17%|█▋        | 3/18 [00:04<00:15,  1.02s/it, Loss=3.21, H_err=15.803]GCR (Importance):  22%|██▏       | 4/18 [00:04<00:14,  1.02s/it, Loss=3.21, H_err=15.803]GCR (Importance):  22%|██▏       | 4/18 [00:05<00:14,  1.02s/it, Loss=1.50, H_err=18.364]GCR (Importance):  28%|██▊       | 5/18 [00:05<00:13,  1.03s/it, Loss=1.50, H_err=18.364]GCR (Importance):  28%|██▊       | 5/18 [00:06<00:13,  1.03s/it, Loss=3.25, H_err=15.706]GCR (Importance):  33%|███▎      | 6/18 [00:06<00:12,  1.03s/it, Loss=3.25, H_err=15.706]GCR (Importance):  33%|███▎      | 6/18 [00:07<00:12,  1.03s/it, Loss=1.49, H_err=18.303]GCR (Importance):  39%|███▉      | 7/18 [00:07<00:11,  1.03s/it, Loss=1.49, H_err=18.303]GCR (Importance):  39%|███▉      | 7/18 [00:08<00:11,  1.03s/it, Loss=3.28, H_err=15.588]GCR (Importance):  44%|████▍     | 8/18 [00:08<00:10,  1.03s/it, Loss=3.28, H_err=15.588]GCR (Importance):  44%|████▍     | 8/18 [00:09<00:10,  1.03s/it, Loss=1.47, H_err=18.269]GCR (Importance):  50%|█████     | 9/18 [00:09<00:09,  1.03s/it, Loss=1.47, H_err=18.269]GCR (Importance):  50%|█████     | 9/18 [00:10<00:09,  1.03s/it, Loss=3.30, H_err=15.470]GCR (Importance):  56%|█████▌    | 10/18 [00:10<00:08,  1.03s/it, Loss=3.30, H_err=15.470]GCR (Importance):  56%|█████▌    | 10/18 [00:11<00:08,  1.03s/it, Loss=1.46, H_err=18.243]GCR (Importance):  61%|██████    | 11/18 [00:11<00:07,  1.03s/it, Loss=1.46, H_err=18.243]GCR (Importance):  61%|██████    | 11/18 [00:12<00:07,  1.03s/it, Loss=3.33, H_err=15.359]GCR (Importance):  67%|██████▋   | 12/18 [00:12<00:06,  1.03s/it, Loss=3.33, H_err=15.359]GCR (Importance):  67%|██████▋   | 12/18 [00:13<00:06,  1.03s/it, Loss=1.44, H_err=18.214]GCR (Importance):  72%|███████▏  | 13/18 [00:13<00:05,  1.03s/it, Loss=1.44, H_err=18.214]GCR (Importance):  72%|███████▏  | 13/18 [00:14<00:05,  1.03s/it, Loss=3.34, H_err=15.255]GCR (Importance):  78%|███████▊  | 14/18 [00:14<00:04,  1.03s/it, Loss=3.34, H_err=15.255]GCR (Importance):  78%|███████▊  | 14/18 [00:15<00:04,  1.03s/it, Loss=1.41, H_err=18.183]GCR (Importance):  83%|████████▎ | 15/18 [00:15<00:03,  1.03s/it, Loss=1.41, H_err=18.183]GCR (Importance):  83%|████████▎ | 15/18 [00:16<00:03,  1.03s/it, Loss=3.36, H_err=15.162]GCR (Importance):  89%|████████▉ | 16/18 [00:16<00:02,  1.03s/it, Loss=3.36, H_err=15.162]GCR (Importance):  89%|████████▉ | 16/18 [00:17<00:02,  1.03s/it, Loss=1.39, H_err=18.154]GCR (Importance):  94%|█████████▍| 17/18 [00:17<00:01,  1.03s/it, Loss=1.39, H_err=18.154]GCR (Importance):  94%|█████████▍| 17/18 [00:18<00:01,  1.03s/it, Loss=3.37, H_err=15.088]GCR (Importance): 100%|██████████| 18/18 [00:18<00:00,  1.03s/it, Loss=3.37, H_err=15.088]GCR (Importance): 100%|██████████| 18/18 [00:18<00:00,  1.03s/it, Loss=3.37, H_err=15.088]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 4...
+Saved all results for SNR 4
+
+======== SNR = 7 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.22652
+  > Phase3 Steps: 14
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 14 steps (Index: 13/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 11.7361
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/14 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/14 [00:01<?, ?it/s, Loss=1.27, H_err=15.080]GCR (Importance):   7%|▋         | 1/14 [00:01<00:13,  1.07s/it, Loss=1.27, H_err=15.080]GCR (Importance):   7%|▋         | 1/14 [00:02<00:13,  1.07s/it, Loss=7.30, H_err=13.195]GCR (Importance):  14%|█▍        | 2/14 [00:02<00:12,  1.04s/it, Loss=7.30, H_err=13.195]GCR (Importance):  14%|█▍        | 2/14 [00:03<00:12,  1.04s/it, Loss=4.04, H_err=13.703]GCR (Importance):  21%|██▏       | 3/14 [00:03<00:11,  1.04s/it, Loss=4.04, H_err=13.703]GCR (Importance):  21%|██▏       | 3/14 [00:04<00:11,  1.04s/it, Loss=7.52, H_err=12.806]GCR (Importance):  29%|██▊       | 4/14 [00:04<00:10,  1.03s/it, Loss=7.52, H_err=12.806]GCR (Importance):  29%|██▊       | 4/14 [00:05<00:10,  1.03s/it, Loss=4.09, H_err=13.706]GCR (Importance):  36%|███▌      | 5/14 [00:05<00:09,  1.03s/it, Loss=4.09, H_err=13.706]GCR (Importance):  36%|███▌      | 5/14 [00:06<00:09,  1.03s/it, Loss=7.59, H_err=12.689]GCR (Importance):  43%|████▎     | 6/14 [00:06<00:08,  1.03s/it, Loss=7.59, H_err=12.689]GCR (Importance):  43%|████▎     | 6/14 [00:07<00:08,  1.03s/it, Loss=4.12, H_err=13.661]GCR (Importance):  50%|█████     | 7/14 [00:07<00:07,  1.03s/it, Loss=4.12, H_err=13.661]GCR (Importance):  50%|█████     | 7/14 [00:08<00:07,  1.03s/it, Loss=7.66, H_err=12.616]GCR (Importance):  57%|█████▋    | 8/14 [00:08<00:06,  1.03s/it, Loss=7.66, H_err=12.616]GCR (Importance):  57%|█████▋    | 8/14 [00:09<00:06,  1.03s/it, Loss=4.14, H_err=13.601]GCR (Importance):  64%|██████▍   | 9/14 [00:09<00:05,  1.03s/it, Loss=4.14, H_err=13.601]GCR (Importance):  64%|██████▍   | 9/14 [00:10<00:05,  1.03s/it, Loss=7.71, H_err=12.555]GCR (Importance):  71%|███████▏  | 10/14 [00:10<00:04,  1.02s/it, Loss=7.71, H_err=12.555]GCR (Importance):  71%|███████▏  | 10/14 [00:11<00:04,  1.02s/it, Loss=4.16, H_err=13.537]GCR (Importance):  79%|███████▊  | 11/14 [00:11<00:03,  1.02s/it, Loss=4.16, H_err=13.537]GCR (Importance):  79%|███████▊  | 11/14 [00:12<00:03,  1.02s/it, Loss=7.76, H_err=12.499]GCR (Importance):  86%|████████▌ | 12/14 [00:12<00:02,  1.02s/it, Loss=7.76, H_err=12.499]GCR (Importance):  86%|████████▌ | 12/14 [00:13<00:02,  1.02s/it, Loss=4.17, H_err=13.474]GCR (Importance):  93%|█████████▎| 13/14 [00:13<00:01,  1.02s/it, Loss=4.17, H_err=13.474]GCR (Importance):  93%|█████████▎| 13/14 [00:14<00:01,  1.02s/it, Loss=7.78, H_err=12.450]GCR (Importance): 100%|██████████| 14/14 [00:14<00:00,  1.02s/it, Loss=7.78, H_err=12.450]GCR (Importance): 100%|██████████| 14/14 [00:14<00:00,  1.03s/it, Loss=7.78, H_err=12.450]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 7...
+Saved all results for SNR 7
+
+======== SNR = 10 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.18349
+  > Phase3 Steps: 10
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 10 steps (Index: 9/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 8.5176
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/10 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/10 [00:01<?, ?it/s, Loss=1.03, H_err=11.040]GCR (Importance):  10%|█         | 1/10 [00:01<00:09,  1.05s/it, Loss=1.03, H_err=11.040]GCR (Importance):  10%|█         | 1/10 [00:02<00:09,  1.05s/it, Loss=14.04, H_err=9.422]GCR (Importance):  20%|██        | 2/10 [00:02<00:08,  1.04s/it, Loss=14.04, H_err=9.422]GCR (Importance):  20%|██        | 2/10 [00:03<00:08,  1.04s/it, Loss=3.95, H_err=9.917] GCR (Importance):  30%|███       | 3/10 [00:03<00:07,  1.03s/it, Loss=3.95, H_err=9.917]GCR (Importance):  30%|███       | 3/10 [00:04<00:07,  1.03s/it, Loss=16.23, H_err=9.021]GCR (Importance):  40%|████      | 4/10 [00:04<00:06,  1.03s/it, Loss=16.23, H_err=9.021]GCR (Importance):  40%|████      | 4/10 [00:05<00:06,  1.03s/it, Loss=5.18, H_err=10.157]GCR (Importance):  50%|█████     | 5/10 [00:05<00:05,  1.03s/it, Loss=5.18, H_err=10.157]GCR (Importance):  50%|█████     | 5/10 [00:06<00:05,  1.03s/it, Loss=17.79, H_err=8.917]GCR (Importance):  60%|██████    | 6/10 [00:06<00:04,  1.03s/it, Loss=17.79, H_err=8.917]GCR (Importance):  60%|██████    | 6/10 [00:07<00:04,  1.03s/it, Loss=5.59, H_err=10.198]GCR (Importance):  70%|███████   | 7/10 [00:07<00:03,  1.02s/it, Loss=5.59, H_err=10.198]GCR (Importance):  70%|███████   | 7/10 [00:08<00:03,  1.02s/it, Loss=18.08, H_err=8.860]GCR (Importance):  80%|████████  | 8/10 [00:08<00:02,  1.02s/it, Loss=18.08, H_err=8.860]GCR (Importance):  80%|████████  | 8/10 [00:09<00:02,  1.02s/it, Loss=5.61, H_err=10.190]GCR (Importance):  90%|█████████ | 9/10 [00:09<00:01,  1.02s/it, Loss=5.61, H_err=10.190]GCR (Importance):  90%|█████████ | 9/10 [00:10<00:01,  1.02s/it, Loss=18.07, H_err=8.819]GCR (Importance): 100%|██████████| 10/10 [00:10<00:00,  1.02s/it, Loss=18.07, H_err=8.819]GCR (Importance): 100%|██████████| 10/10 [00:10<00:00,  1.03s/it, Loss=18.07, H_err=8.819]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 10...
+Saved all results for SNR 10
+
+======== SNR = 13 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.12110
+  > Phase3 Steps: 8
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 8 steps (Index: 7/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 6.9971
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/8 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/8 [00:01<?, ?it/s, Loss=2.63, H_err=8.220]GCR (Importance):  12%|█▎        | 1/8 [00:01<00:07,  1.01s/it, Loss=2.63, H_err=8.220]GCR (Importance):  12%|█▎        | 1/8 [00:02<00:07,  1.01s/it, Loss=22.60, H_err=7.237]GCR (Importance):  25%|██▌       | 2/8 [00:02<00:06,  1.01s/it, Loss=22.60, H_err=7.237]GCR (Importance):  25%|██▌       | 2/8 [00:03<00:06,  1.01s/it, Loss=5.73, H_err=7.963] GCR (Importance):  38%|███▊      | 3/8 [00:03<00:05,  1.01s/it, Loss=5.73, H_err=7.963]GCR (Importance):  38%|███▊      | 3/8 [00:04<00:05,  1.01s/it, Loss=22.51, H_err=7.230]GCR (Importance):  50%|█████     | 4/8 [00:04<00:04,  1.01s/it, Loss=22.51, H_err=7.230]GCR (Importance):  50%|█████     | 4/8 [00:05<00:04,  1.01s/it, Loss=6.38, H_err=7.949] GCR (Importance):  62%|██████▎   | 5/8 [00:05<00:03,  1.01s/it, Loss=6.38, H_err=7.949]GCR (Importance):  62%|██████▎   | 5/8 [00:06<00:03,  1.01s/it, Loss=23.50, H_err=7.161]GCR (Importance):  75%|███████▌  | 6/8 [00:06<00:02,  1.03s/it, Loss=23.50, H_err=7.161]GCR (Importance):  75%|███████▌  | 6/8 [00:07<00:02,  1.03s/it, Loss=6.69, H_err=8.002] GCR (Importance):  88%|████████▊ | 7/8 [00:07<00:01,  1.03s/it, Loss=6.69, H_err=8.002]GCR (Importance):  88%|████████▊ | 7/8 [00:08<00:01,  1.03s/it, Loss=23.96, H_err=7.091]GCR (Importance): 100%|██████████| 8/8 [00:08<00:00,  1.03s/it, Loss=23.96, H_err=7.091]GCR (Importance): 100%|██████████| 8/8 [00:08<00:00,  1.02s/it, Loss=23.96, H_err=7.091]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 13...
+Saved all results for SNR 13
+
+======== SNR = 16 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.10727
+  > Phase3 Steps: 5
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 5 steps (Index: 4/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 3.0427
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/5 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/5 [00:01<?, ?it/s, Loss=1.97, H_err=5.695]GCR (Importance):  20%|██        | 1/5 [00:01<00:04,  1.01s/it, Loss=1.97, H_err=5.695]GCR (Importance):  20%|██        | 1/5 [00:02<00:04,  1.01s/it, Loss=33.44, H_err=3.389]GCR (Importance):  40%|████      | 2/5 [00:02<00:03,  1.01s/it, Loss=33.44, H_err=3.389]GCR (Importance):  40%|████      | 2/5 [00:03<00:03,  1.01s/it, Loss=5.61, H_err=5.194] GCR (Importance):  60%|██████    | 3/5 [00:03<00:02,  1.01s/it, Loss=5.61, H_err=5.194]GCR (Importance):  60%|██████    | 3/5 [00:04<00:02,  1.01s/it, Loss=32.49, H_err=3.329]GCR (Importance):  80%|████████  | 4/5 [00:04<00:01,  1.01s/it, Loss=32.49, H_err=3.329]GCR (Importance):  80%|████████  | 4/5 [00:05<00:01,  1.01s/it, Loss=6.41, H_err=5.220] GCR (Importance): 100%|██████████| 5/5 [00:05<00:00,  1.01s/it, Loss=6.41, H_err=5.220]GCR (Importance): 100%|██████████| 5/5 [00:05<00:00,  1.01s/it, Loss=6.41, H_err=5.220]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 16...
+Saved all results for SNR 16
+
+======== SNR = 19 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.07857
+  > Phase3 Steps: 4
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 4 steps (Index: 3/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 3.2606
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/4 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/4 [00:01<?, ?it/s, Loss=4.27, H_err=4.202]GCR (Importance):  25%|██▌       | 1/4 [00:01<00:03,  1.01s/it, Loss=4.27, H_err=4.202]GCR (Importance):  25%|██▌       | 1/4 [00:02<00:03,  1.01s/it, Loss=30.15, H_err=3.223]GCR (Importance):  50%|█████     | 2/4 [00:02<00:02,  1.01s/it, Loss=30.15, H_err=3.223]GCR (Importance):  50%|█████     | 2/4 [00:03<00:02,  1.01s/it, Loss=6.73, H_err=4.174] GCR (Importance):  75%|███████▌  | 3/4 [00:03<00:01,  1.01s/it, Loss=6.73, H_err=4.174]GCR (Importance):  75%|███████▌  | 3/4 [00:04<00:01,  1.01s/it, Loss=33.15, H_err=3.148]GCR (Importance): 100%|██████████| 4/4 [00:04<00:00,  1.01s/it, Loss=33.15, H_err=3.148]GCR (Importance): 100%|██████████| 4/4 [00:04<00:00,  1.01s/it, Loss=33.15, H_err=3.148]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 19...
+Saved all results for SNR 19
+
+======== SNR = 22 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.05226
+  > Phase3 Steps: 3
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 3 steps (Index: 2/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 2.3151
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/3 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/3 [00:01<?, ?it/s, Loss=5.63, H_err=2.696]GCR (Importance):  33%|███▎      | 1/3 [00:01<00:02,  1.00s/it, Loss=5.63, H_err=2.696]GCR (Importance):  33%|███▎      | 1/3 [00:02<00:02,  1.00s/it, Loss=18.85, H_err=2.270]GCR (Importance):  67%|██████▋   | 2/3 [00:02<00:01,  1.00s/it, Loss=18.85, H_err=2.270]GCR (Importance):  67%|██████▋   | 2/3 [00:03<00:01,  1.00s/it, Loss=6.72, H_err=2.667] GCR (Importance): 100%|██████████| 3/3 [00:03<00:00,  1.00s/it, Loss=6.72, H_err=2.667]GCR (Importance): 100%|██████████| 3/3 [00:03<00:00,  1.00s/it, Loss=6.72, H_err=2.667]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 22...
+Saved all results for SNR 22
+
+======== SNR = 25 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.03341
+  > Phase3 Steps: 2
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 2 steps (Index: 1/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 1.9013
+--> [Phase 2] Resetting Latent with Improved H...
+GCR (Importance):   0%|          | 0/2 [00:00<?, ?it/s]GCR (Importance):   0%|          | 0/2 [00:01<?, ?it/s, Loss=7.44, H_err=1.895]GCR (Importance):  50%|█████     | 1/2 [00:01<00:01,  1.00s/it, Loss=7.44, H_err=1.895]GCR (Importance):  50%|█████     | 1/2 [00:02<00:01,  1.00s/it, Loss=7.23, H_err=1.892]GCR (Importance): 100%|██████████| 2/2 [00:02<00:00,  1.00s/it, Loss=7.23, H_err=1.892]GCR (Importance): 100%|██████████| 2/2 [00:02<00:00,  1.00s/it, Loss=7.23, H_err=1.892]
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR 25...
+Saved all results for SNR 25

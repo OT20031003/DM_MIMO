@@ -23,12 +23,12 @@ MIMO Streams: 2x1024 complex symbols
 ======== SNR = -5 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 2.63795
+  > Effective Noise Var: 2.62374
   > Optimal Phase3 Steps calculated: 43
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 43 steps (Index: 42/199)
+[Phase 3 Auto] Estimated start index: 100/199 based on variance 2.6237
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 24.3075
+    Post-Burst H Error: 25.5154
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr-5.png
@@ -46,25 +46,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr-5.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr-5.png
+DEBUG: rec_proposed Range = [-2.4131, 2.4496]
 Analyzing intermediate steps for SNR -5 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr-5.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr-5.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr-5.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr-5.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr-5.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr-5.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr-5.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr-5.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr-5.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr-5.png
 Plotting Average Metrics (Batch Mean) for SNR -5 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-5_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr-5_AVERAGE.png
 Saved all results for SNR -5
 
 ======== SNR = -2 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 1.95381
+  > Effective Noise Var: 2.19918
   > Optimal Phase3 Steps calculated: 32
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 32 steps (Index: 31/199)
+[Phase 3 Auto] Estimated start index: 95/199 based on variance 2.1992
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 18.7610
+    Post-Burst H Error: 18.9221
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr-2.png
@@ -82,25 +89,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr-2.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr-2.png
+DEBUG: rec_proposed Range = [-2.0191, 2.2312]
 Analyzing intermediate steps for SNR -2 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr-2.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr-2.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr-2.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr-2.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr-2.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr-2.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr-2.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr-2.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr-2.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr-2.png
 Plotting Average Metrics (Batch Mean) for SNR -2 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr-2_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr-2_AVERAGE.png
 Saved all results for SNR -2
 
 ======== SNR = 1 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 1.63451
+  > Effective Noise Var: 1.52701
   > Optimal Phase3 Steps calculated: 24
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 24 steps (Index: 23/199)
+[Phase 3 Auto] Estimated start index: 83/199 based on variance 1.5270
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 11.7878
+    Post-Burst H Error: 14.4427
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr1.png
@@ -118,25 +132,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr1.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr1.png
+DEBUG: rec_proposed Range = [-1.8405, 2.0831]
 Analyzing intermediate steps for SNR 1 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr1.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr1.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr1.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr1.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr1.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr1.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr1.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr1.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr1.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr1.png
 Plotting Average Metrics (Batch Mean) for SNR 1 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr1_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr1_AVERAGE.png
 Saved all results for SNR 1
 
 ======== SNR = 4 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 1.03189
+  > Effective Noise Var: 0.84556
   > Optimal Phase3 Steps calculated: 18
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 18 steps (Index: 17/199)
+[Phase 3 Auto] Estimated start index: 66/199 based on variance 0.8456
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 9.1977
+    Post-Burst H Error: 8.7510
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr4.png
@@ -154,25 +175,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr4.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr4.png
+DEBUG: rec_proposed Range = [-1.5768, 1.8466]
 Analyzing intermediate steps for SNR 4 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr4.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr4.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr4.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr4.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr4.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr4.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr4.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr4.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr4.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr4.png
 Plotting Average Metrics (Batch Mean) for SNR 4 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr4_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr4_AVERAGE.png
 Saved all results for SNR 4
 
 ======== SNR = 7 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.59316
+  > Effective Noise Var: 0.59902
   > Optimal Phase3 Steps calculated: 14
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 14 steps (Index: 13/199)
+[Phase 3 Auto] Estimated start index: 56/199 based on variance 0.5990
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 8.3114
+    Post-Burst H Error: 6.8902
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr7.png
@@ -190,25 +218,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr7.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr7.png
+DEBUG: rec_proposed Range = [-2.5920, 2.0134]
 Analyzing intermediate steps for SNR 7 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr7.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr7.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr7.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr7.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr7.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr7.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr7.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr7.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr7.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr7.png
 Plotting Average Metrics (Batch Mean) for SNR 7 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr7_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr7_AVERAGE.png
 Saved all results for SNR 7
 
 ======== SNR = 10 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.42222
+  > Effective Noise Var: 0.40556
   > Optimal Phase3 Steps calculated: 10
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 10 steps (Index: 9/199)
+[Phase 3 Auto] Estimated start index: 45/199 based on variance 0.4056
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 5.8395
+    Post-Burst H Error: 5.7003
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr10.png
@@ -226,25 +261,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr10.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr10.png
+DEBUG: rec_proposed Range = [-2.5750, 2.1224]
 Analyzing intermediate steps for SNR 10 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr10.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr10.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr10.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr10.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr10.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr10.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr10.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr10.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr10.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr10.png
 Plotting Average Metrics (Batch Mean) for SNR 10 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr10_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr10_AVERAGE.png
 Saved all results for SNR 10
 
 ======== SNR = 13 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.26750
+  > Effective Noise Var: 0.31655
   > Optimal Phase3 Steps calculated: 8
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 8 steps (Index: 7/199)
+[Phase 3 Auto] Estimated start index: 39/199 based on variance 0.3165
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 4.6759
+    Post-Burst H Error: 2.9899
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr13.png
@@ -262,25 +304,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr13.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr13.png
+DEBUG: rec_proposed Range = [-1.6423, 1.8188]
 Analyzing intermediate steps for SNR 13 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr13.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr13.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr13.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr13.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr13.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr13.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr13.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr13.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr13.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr13.png
 Plotting Average Metrics (Batch Mean) for SNR 13 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr13_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr13_AVERAGE.png
 Saved all results for SNR 13
 
 ======== SNR = 16 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.15144
+  > Effective Noise Var: 0.13219
   > Optimal Phase3 Steps calculated: 5
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 5 steps (Index: 4/199)
+[Phase 3 Auto] Estimated start index: 22/199 based on variance 0.1322
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 2.3780
+    Post-Burst H Error: 2.8174
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr16.png
@@ -298,25 +347,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr16.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr16.png
+DEBUG: rec_proposed Range = [-2.4248, 1.7453]
 Analyzing intermediate steps for SNR 16 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr16.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr16.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr16.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr16.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr16.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr16.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr16.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr16.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr16.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr16.png
 Plotting Average Metrics (Batch Mean) for SNR 16 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr16_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr16_AVERAGE.png
 Saved all results for SNR 16
 
 ======== SNR = 19 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.11199
+  > Effective Noise Var: 0.12346
   > Optimal Phase3 Steps calculated: 4
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 4 steps (Index: 3/199)
+[Phase 3 Auto] Estimated start index: 20/199 based on variance 0.1235
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 2.3540
+    Post-Burst H Error: 2.5115
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr19.png
@@ -334,25 +390,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr19.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr19.png
+DEBUG: rec_proposed Range = [-2.6173, 2.1567]
 Analyzing intermediate steps for SNR 19 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr19.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr19.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr19.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr19.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr19.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr19.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr19.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr19.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr19.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr19.png
 Plotting Average Metrics (Batch Mean) for SNR 19 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr19_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr19_AVERAGE.png
 Saved all results for SNR 19
 
 ======== SNR = 22 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.07198
+  > Effective Noise Var: 0.07800
   > Optimal Phase3 Steps calculated: 3
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 3 steps (Index: 2/199)
+[Phase 3 Auto] Estimated start index: 14/199 based on variance 0.0780
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 1.9111
+    Post-Burst H Error: 1.2359
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr22.png
@@ -370,25 +433,32 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr22.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr22.png
+DEBUG: rec_proposed Range = [-2.0636, 1.4391]
 Analyzing intermediate steps for SNR 22 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr22.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr22.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr22.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr22.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr22.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr22.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr22.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr22.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr22.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr22.png
 Plotting Average Metrics (Batch Mean) for SNR 22 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr22_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr22_AVERAGE.png
 Saved all results for SNR 22
 
 ======== SNR = 25 dB ========
 Monitoring: [0, 1, 2, 3, 4]
 Starting Burst-Reset Sampling... Steps=200
-  > Effective Noise Var: 0.03923
+  > Effective Noise Var: 0.05109
   > Optimal Phase3 Steps calculated: 2
 ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
-[Phase 3 Override] Force sampling for 2 steps (Index: 1/199)
+[Phase 3 Auto] Estimated start index: 10/199 based on variance 0.0511
 --> [Phase 1] Starting Burst Calibration (20 iters)...
-    Post-Burst H Error: 1.0991
+    Post-Burst H Error: 1.3719
 --> [Phase 2] Resetting Latent with Improved H...
   -> Processing plots for Batch 0 (List Index 0)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/trajectory_snr25.png
@@ -406,12 +476,19 @@ Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/b
   -> Processing plots for Batch 4 (List Index 4)
 Saved trajectory plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/trajectory_snr25.png
 Saved channel plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/channel_plot_snr25.png
+DEBUG: rec_proposed Range = [-1.5389, 1.5495]
 Analyzing intermediate steps for SNR 25 (Indices: [0, 1, 2, 3, 4])...
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/metrics_evolution_snr25.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_0/latent_change_snr25.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/metrics_evolution_snr25.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_1/latent_change_snr25.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/metrics_evolution_snr25.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_2/latent_change_snr25.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/metrics_evolution_snr25.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_3/latent_change_snr25.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/metrics_evolution_snr25.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/batch_4/latent_change_snr25.png
 Plotting Average Metrics (Batch Mean) for SNR 25 to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25_AVERAGE.png
 Saved metrics plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/metrics_evolution_snr25_AVERAGE.png
+Saved latent change plot to outputs/MIMO_Burst_Reset/t=2_r=2/channel_plots/estimated/latent_change_snr25_AVERAGE.png
 Saved all results for SNR 25

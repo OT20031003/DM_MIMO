@@ -4,18 +4,20 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset
 import numpy as np
+import random  # 【修正】ここを追加しました
 from omegaconf import OmegaConf
 from PIL import Image
 from tqdm import tqdm
 from torchvision import transforms
 from torchvision import utils as vutils
 import lpips
+from einops import rearrange
 
 # LDM imports (CompVis/latent-diffusion リポジトリの構造を前提)
 from ldm.util import instantiate_from_config
 
 # ==========================================
-#  1. Helper Functions (From mimo_dps_proposed.py)
+#  1. Helper Functions
 # ==========================================
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
@@ -30,33 +32,35 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
 # ==========================================
-#  Visualization Function
+#  2. Visualization Function (ViT対応版)
 # ==========================================
-def save_epoch_visualization(imgs, gt_imp, pred_imp, epoch, save_dir, scale_factor):
+def save_epoch_visualization(imgs, gt_imp_block, pred_imp_block, epoch, save_dir, scale_factor):
     """
-    エポックの終わりに可視化画像を保存する関数
-    GTは生の値 (gt_imp)、Predは学習時のスケールが適用されている (pred_imp)
+    可視化用関数
+    gt_imp_block, pred_imp_block: (B, 1, 8, 8) のブロック単位重要度
     """
     with torch.no_grad():
-        # GTは生の値、Predはスケールされているため、Predを逆スケールして可視化の基準を合わせる
-        pred_imp_unscaled = pred_imp / scale_factor
-
-        # 1. チャンネル平均化 (B, 4, h, w) -> (B, 1, h, w)
-        gt_mean = gt_imp.mean(dim=1, keepdim=True)
-        pred_mean = pred_imp_unscaled.mean(dim=1, keepdim=True)
-
-        # 2. アップサンプリング (入力画像サイズに合わせる)
+        # Predを逆スケールして値のレンジを合わせる（表示用）
+        pred_imp_unscaled = pred_imp_block / scale_factor
+        
+        # 入力画像サイズ (256x256想定)
         target_size = (imgs.shape[2], imgs.shape[3])
-        gt_up = torch.nn.functional.interpolate(gt_mean, size=target_size, mode='nearest')
-        pred_up = torch.nn.functional.interpolate(pred_mean, size=target_size, mode='nearest')
+        
+        # 8x8 のマップを 256x256 に拡大 (Nearest Neighborでブロック感を残す)
+        gt_up = torch.nn.functional.interpolate(gt_imp_block, size=target_size, mode='nearest')
+        pred_up = torch.nn.functional.interpolate(pred_imp_unscaled, size=target_size, mode='nearest')
 
-        # 3. 正規化 (0.0 - 1.0) 表示のため
+        # 正規化 (0.0 - 1.0) してヒートマップ化
         def normalize_batch(t):
-            # バッチ内の最小・最大を使って正規化
             mn = t.view(t.shape[0], -1).min(dim=1)[0].view(-1, 1, 1, 1)
             mx = t.view(t.shape[0], -1).max(dim=1)[0].view(-1, 1, 1, 1)
-            # max == min の場合はゼロ除算を避ける
             denom = mx - mn
             denom[denom == 0] = 1.0 
             return (t - mn) / denom
@@ -64,14 +68,15 @@ def save_epoch_visualization(imgs, gt_imp, pred_imp, epoch, save_dir, scale_fact
         gt_vis = normalize_batch(gt_up)
         pred_vis = normalize_batch(pred_up)
 
-        # 4. カラー化 (Grayscale -> RGB)
+        # Grayscale -> RGB
         gt_vis = gt_vis.repeat(1, 3, 1, 1)
         pred_vis = pred_vis.repeat(1, 3, 1, 1)
 
-        # 5. グリッド作成
-        batch_size = imgs.shape[0]
+        # 画像結合: [元画像, 正解(ブロック), 予測(ブロック)]
         combined = torch.cat([imgs.cpu(), gt_vis.cpu(), pred_vis.cpu()], dim=0)
         
+        batch_size = imgs.shape[0]
+        # グリッド作成 (各行が1つのサンプル)
         grid = vutils.make_grid(combined, nrow=batch_size, padding=2, normalize=False)
         
         save_path = os.path.join(save_dir, f"vis_epoch_{epoch+1}.jpg")
@@ -79,58 +84,76 @@ def save_epoch_visualization(imgs, gt_imp, pred_imp, epoch, save_dir, scale_fact
         print(f"Saved visualization to {save_path}")
 
 # ==========================================
-#  2. Student Model Architecture (修正済み: ReLU追加)
+#  3. ViT Model Architecture (Latent ViT)
 # ==========================================
-class ResidualBlock(nn.Module):
-    def __init__(self, channels):
+class LatentViTImportance(nn.Module):
+    def __init__(self, in_channels=4, patch_size=4, latent_size=32, dim=128, depth=4, heads=4, mlp_dim=256, dropout=0.1):
         super().__init__()
-        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
-        self.bn1 = nn.BatchNorm2d(channels)
-        self.relu = nn.ReLU(inplace=True)
-        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
-        self.bn2 = nn.BatchNorm2d(channels)
+        self.patch_size = patch_size
+        # 32x32 / 4x4 = 8x8 = 64 patches
+        self.num_patches = (latent_size // patch_size) ** 2
+        self.grid_size = latent_size // patch_size # 8
+        
+        # 1. Patch Embedding & Flatten
+        # Conv2d (stride=patch_size) でパッチ分割と埋め込みを同時に行う
+        self.patch_to_embedding = nn.Conv2d(
+            in_channels, dim, 
+            kernel_size=patch_size, stride=patch_size
+        )
+        
+        # 2. Positional Embedding
+        self.pos_embedding = nn.Parameter(torch.randn(1, self.num_patches, dim))
+        self.dropout = nn.Dropout(dropout)
+        
+        # 3. Transformer Encoder
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=dim, 
+            nhead=heads, 
+            dim_feedforward=mlp_dim, 
+            dropout=dropout, 
+            batch_first=True
+        )
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=depth)
+        
+        # 4. Output Head -> 重要度スコア (非負)
+        self.to_importance = nn.Sequential(
+            nn.LayerNorm(dim),
+            nn.Linear(dim, 1),
+            nn.ReLU() # 重要度は「量」なのでReLUで非負にする
+        )
 
     def forward(self, x):
-        residual = x
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-        out = self.conv2(x) # 修正：out = self.conv2(out) が正しいが、元のコードが out = self.conv2(x) の可能性を考慮して
-        out = self.bn2(out)
-        out += residual
-        out = self.relu(out)
-        return out
-
-class LatentImportancePredictor(nn.Module):
-    def __init__(self, in_channels=4, hidden_dim=64, num_blocks=4):
-        super().__init__()
-        self.head = nn.Sequential(
-            nn.Conv2d(in_channels, hidden_dim, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True)
-        )
-        self.body = nn.Sequential(
-            *[ResidualBlock(hidden_dim) for _ in range(num_blocks)]
-        )
-        # 修正: 最後に ReLU を追加し、出力を非負にする (スパース性向上)
-        self.tail = nn.Sequential(
-            nn.Conv2d(hidden_dim, in_channels, kernel_size=3, padding=1),
-            nn.ReLU()
-        )
-
-    def forward(self, x):
-        x = self.head(x)
-        x = self.body(x)
-        x = self.tail(x)
-        return x
+        # x: (B, 4, 32, 32)
+        
+        # Embedding: (B, dim, 8, 8)
+        x = self.patch_to_embedding(x)
+        
+        # Flatten: (B, dim, 64) -> Transpose: (B, 64, dim)
+        x = x.flatten(2).transpose(1, 2)
+        
+        # Add Position
+        x += self.pos_embedding
+        x = self.dropout(x)
+        
+        # Transformer
+        x = self.transformer(x) # (B, 64, dim)
+        
+        # Head
+        x = self.to_importance(x) # (B, 64, 1)
+        
+        # Reshape back to grid: (B, 1, 8, 8)
+        return rearrange(x, 'b (h w) c -> b c h w', h=self.grid_size, w=self.grid_size)
 
 # ==========================================
-#  3. Dataset
+#  4. Dataset
 # ==========================================
 class COCOImageDataset(Dataset):
     def __init__(self, root_dir, image_size=256):
         self.root_dir = root_dir
+        # jpg, png対応
         self.image_paths = glob.glob(os.path.join(root_dir, "*.jpg")) + \
-                           glob.glob(os.path.join(root_dir, "*.png"))
+                           glob.glob(os.path.join(root_dir, "*.png")) + \
+                           glob.glob(os.path.join(root_dir, "*.jpeg"))
         
         self.transform = transforms.Compose([
             transforms.Resize((image_size, image_size)),
@@ -150,10 +173,17 @@ class COCOImageDataset(Dataset):
             return torch.zeros(3, 256, 256)
 
 # ==========================================
-#  4. Gradient Calculation
+#  5. Gradient Calculation (Ground Truth)
 # ==========================================
 def compute_ground_truth_importance(model, lpips_loss_fn, img_tensor, device):
+    """
+    入力画像に対するLatentのLPIPS勾配を計算する
+    戻り値:
+      z_norm: (B, 4, 32, 32) 正規化されたLatent
+      importance_map: (B, 4, 32, 32) 各画素の勾配絶対値
+    """
     with torch.no_grad():
+        # LDMは [-1, 1] 入力を期待
         input_img = img_tensor.to(device) * 2.0 - 1.0
         
         z_raw = model.encode_first_stage(input_img)
@@ -165,14 +195,16 @@ def compute_ground_truth_importance(model, lpips_loss_fn, img_tensor, device):
         
         z_norm = (z_raw - z_mean) / (torch.sqrt(z_var) + eps)
     
+    # 勾配計算のため requires_grad
     z_norm.requires_grad = True
     
+    # デコード
     z_restored = z_norm * (torch.sqrt(z_var) + eps) + z_mean
-    
     scale_factor = model.scale_factor 
     z_scaled = (1.0 / scale_factor) * z_restored
     rec_img = model.first_stage_model.decode(z_scaled)
     
+    # LPIPS Loss
     loss = lpips_loss_fn(rec_img, input_img).mean()
     
     model.zero_grad()
@@ -180,23 +212,24 @@ def compute_ground_truth_importance(model, lpips_loss_fn, img_tensor, device):
     
     importance_map = z_norm.grad.abs().detach()
     
-    # ここでスケーリングせずに、生の勾配値を返します。
     return z_norm.detach(), importance_map
 
 # ==========================================
-#  5. Main Training Loop
+#  6. Main Training Loop
 # ==========================================
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--coco_path", type=str, default="val2017", help="Path to COCO val2017 directory")
+    parser.add_argument("--coco_path", type=str, default="val2017", help="Path to COCO images")
     parser.add_argument("--config", type=str, default="configs/latent-diffusion/txt2img-1p4B-eval.yaml")
     parser.add_argument("--ckpt", type=str, default="models/ldm/text2img-large/model.ckpt")
-    parser.add_argument("--save_dir", type=str, default="checkpoints/importance_model")
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--save_dir", type=str, default="checkpoints/importance_vit")
+    parser.add_argument("--epochs", type=int, default=8)
+    parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--lr", type=float, default=1e-4)
+    parser.add_argument("--seed", type=int, default=42)
     
     opt = parser.parse_args()
+    seed_everything(opt.seed)
     
     os.makedirs(opt.save_dir, exist_ok=True)
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -214,23 +247,31 @@ if __name__ == "__main__":
     for param in lpips_loss_fn.parameters():
         param.requires_grad = False
 
-    # --- Student Model ---
-    student_model = LatentImportancePredictor(in_channels=4).to(device)
-    optimizer = optim.Adam(student_model.parameters(), lr=opt.lr)
+    # --- Student Model (ViT) ---
+    print("Initializing Vision Transformer for Latent Importance...")
+    student_model = LatentViTImportance(
+        in_channels=4, 
+        patch_size=4, 
+        latent_size=32, 
+        dim=128, 
+        depth=4, 
+        heads=4
+    ).to(device)
     
-    # 修正: L1 Loss (MAE) を使用 (スパース性向上目的)
-    criterion = nn.L1Loss() 
+    optimizer = optim.Adam(student_model.parameters(), lr=opt.lr)
+    criterion = nn.L1Loss() # MAE
 
-    # 勾配スケーリングファクター (勾配が小さすぎるため学習を安定させる)
-    TARGET_SCALE = 1000.0 # 損失が 1.0 程度の範囲になるように調整してください
+    # 勾配スケーリングファクター (勾配値が小さいため)
+    TARGET_SCALE = 1000.0 
 
     # --- Data ---
     dataset = COCOImageDataset(opt.coco_path)
     dataloader = DataLoader(dataset, batch_size=opt.batch_size, shuffle=True, num_workers=4)
 
-    print(f"Start Training: {len(dataset)} images, {opt.epochs} epochs. Target Scale: {TARGET_SCALE}")
+    print(f"Start Training: {len(dataset)} images, {opt.epochs} epochs.")
 
-    z_input, gt_importance, pred_importance, imgs = None, None, None, None
+    # 可視化用に直前のバッチデータを保持する変数
+    last_imgs, last_gt_block, last_pred_block = None, None, None
 
     for epoch in range(opt.epochs):
         student_model.train()
@@ -240,33 +281,43 @@ if __name__ == "__main__":
         for imgs in pbar:
             if imgs.shape[0] == 0: continue
             
-            # 1. Generate GT (生の勾配値)
-            z_input, gt_importance = compute_ground_truth_importance(model, lpips_loss_fn, imgs, device)
+            # 1. Generate GT Importance (High Res: 32x32)
+            z_input, gt_importance_highres = compute_ground_truth_importance(model, lpips_loss_fn, imgs, device)
             
-            # スケーリングされたターゲット値
-            gt_target = gt_importance * TARGET_SCALE
+            # 2. Downsample GT to Block Importance (8x8)
+            # (B, 4, 32, 32) -> Channel Mean -> (B, 1, 32, 32) -> AvgPool -> (B, 1, 8, 8)
+            gt_imp_mean = gt_importance_highres.mean(dim=1, keepdim=True)
+            gt_target_block = torch.nn.functional.avg_pool2d(gt_imp_mean, kernel_size=4, stride=4)
             
-            # 2. Prediction
+            # Scale Target
+            gt_target_scaled = gt_target_block * TARGET_SCALE
+            
+            # 3. ViT Prediction
             optimizer.zero_grad()
+            # input z is (B, 4, 32, 32), output is (B, 1, 8, 8)
             pred_importance = student_model(z_input)
             
-            # 3. Loss (L1 Loss)
-            loss = criterion(pred_importance, gt_target)
+            # 4. Loss
+            loss = criterion(pred_importance, gt_target_scaled)
             loss.backward()
             optimizer.step()
             
             total_loss += loss.item()
             pbar.set_postfix({"Loss": loss.item()})
-        
+            
+            # 保持 (可視化用)
+            last_imgs = imgs
+            last_gt_block = gt_target_scaled
+            last_pred_block = pred_importance
+
         # === エポック終了時の可視化と保存 ===
-        if imgs is not None and gt_importance is not None and pred_importance is not None:
-            # gt_importance: 生の値
-            # pred_importance: スケーリングされた予測値
-            save_epoch_visualization(imgs, gt_importance, pred_importance, epoch, opt.save_dir, TARGET_SCALE)
+        if last_imgs is not None:
+            # GTはスケール済みなのでそのまま、Predもスケール済みが出ている
+            save_epoch_visualization(last_imgs, last_gt_block, last_pred_block, epoch, opt.save_dir, TARGET_SCALE)
 
         # Checkpoint Save
-        save_path = os.path.join(opt.save_dir, f"student_epoch_{epoch+1}.pth")
+        save_path = os.path.join(opt.save_dir, f"vit_importance_epoch_{epoch+1}.pth")
         torch.save(student_model.state_dict(), save_path)
-        print(f"Epoch {epoch+1} Saved. Loss: {total_loss / len(dataloader):.6f}")
+        print(f"Epoch {epoch+1} Saved. Avg Loss: {total_loss / len(dataloader):.6f}")
 
     print("Training Finished.")

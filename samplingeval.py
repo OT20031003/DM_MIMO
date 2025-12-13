@@ -1,257 +1,418 @@
-import os
-import argparse
-from skimage.metrics import structural_similarity as ssim
-from PIL import Image
+import argparse, os, sys, glob
+import torch
+import torch.nn as nn # 追加
 import numpy as np
+import random
+import re
+from omegaconf import OmegaConf
+from PIL import Image
+from tqdm import tqdm, trange
+from einops import rearrange
+from torchvision.utils import make_grid
+from torchvision import transforms
+from ldm.util import instantiate_from_config
+from ldm.models.diffusion.ddim import DDIMSampler 
+from torchvision import utils as vutil
+import lpips
 import matplotlib.pyplot as plt
-import re # ファイル名からステップ数を抽出するために使用
-import matplotlib.colors as mcolors # ⭐ 変更点: インポートを追加
+import shutil
 
-# --- LPIPS Imports (変更なし) ---
-try:
-    import torch
-    import lpips
-except ImportError:
-    print("Warning: 'torch' or 'lpips' libraries not found.")
-    print("To use the LPIPS metric, please install them: pip install torch lpips")
-    torch = None
-    lpips = None
-# -------------------------------
+# ==========================================
+#  [NEW] Importance Model Definition
+#  (train_importance_CNN.py と同じ構造)
+# ==========================================
+class ResidualBlock(nn.Module):
+    def __init__(self, channels):
+        super().__init__()
+        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(channels)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(channels)
 
-# --- np_to_torch, compute_metric (変更なし) ---
-def np_to_torch(img_np):
-    img_tensor = torch.tensor(img_np, dtype=torch.float32).permute(2, 0, 1).unsqueeze(0)
-    img_tensor = (img_tensor / 127.5) - 1.0
-    return img_tensor
+    def forward(self, x):
+        residual = x
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out += residual
+        out = self.relu(out)
+        return out
 
-def compute_metric(x, y, metric='ssim', lpips_model=None, device=None):
-    if metric == 'ssim':
-        data_range = float(x.max() - x.min())
-        if data_range == 0:
-            return 1.0
-        return ssim(x, y, channel_axis=-1, data_range=data_range)
+class LatentImportancePredictor(nn.Module):
+    def __init__(self, in_channels=4, hidden_dim=64, num_blocks=4):
+        super().__init__()
+        self.head = nn.Sequential(
+            nn.Conv2d(in_channels, hidden_dim, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True)
+        )
+        self.body = nn.Sequential(
+            *[ResidualBlock(hidden_dim) for _ in range(num_blocks)]
+        )
+        self.tail = nn.Sequential(
+            nn.Conv2d(hidden_dim, in_channels, kernel_size=3, padding=1),
+            nn.ReLU() # 出力は非負 (Importance >= 0)
+        )
 
-    xd = x.astype(np.float64)
-    yd = y.astype(np.float64)
-    mse = float(np.mean((xd - yd) ** 2))
+    def forward(self, x):
+        x = self.head(x)
+        x = self.body(x)
+        x = self.tail(x)
+        return x
 
-    if metric == 'mse':
-        return mse
+def load_student_model(ckpt_path, device):
+    print(f"Loading Importance Student Model from {ckpt_path}")
+    model = LatentImportancePredictor().to(device)
+    model.load_state_dict(torch.load(ckpt_path, map_location=device))
+    model.eval()
+    return model
+
+# ==========================================
+#  Helper Classes & Functions
+# ==========================================
+
+def get_adaptive_h_lr(current_snr, snr_min=-5, snr_max=25, lr_max=20.0, lr_min=1.0):
+    if current_snr <= snr_min:
+        return lr_max
+    if current_snr >= snr_max:
+        return lr_min
+    slope = (lr_min - lr_max) / (snr_max - snr_min)
+    lr = lr_max + (current_snr - snr_min) * slope
+    return lr
+
+def get_optimal_steps(snr):
+    steps = 28.33 * np.exp(-0.0879 * snr) - 1.45
+    return int(np.clip(np.round(steps), 1, 200))
+
+def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
+    pred_clamped = torch.clamp(pred_img, -1.0, 1.0)
+    pred_01 = (pred_clamped + 1.0) / 2.0
+    pred_01 = torch.clamp(pred_01, 0.0, 1.0)
+    mse = torch.mean((target_img_01 - pred_01) ** 2)
+    psnr = 20 * torch.log10(1.0 / (torch.sqrt(mse) + 1e-8))
+    target_m11 = target_img_01 * 2.0 - 1.0
+    with torch.no_grad():
+        lpips_val = lpips_fn(target_m11, pred_clamped).item()
+    return psnr.item(), lpips_val
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.deterministic = True
+
+def load_images_as_tensors(dir_path, image_size=(256, 256)):
+    transform = transforms.Compose([
+        transforms.Resize(image_size),
+        transforms.ToTensor()
+    ])
+    image_paths = []
+    supported_formats = ["*.jpg", "*.jpeg", "*.png"]
+    for fmt in supported_formats:
+        image_paths.extend(glob.glob(os.path.join(dir_path, fmt)))
+    if not image_paths:
+        return torch.empty(0)
+    image_paths.sort(key=lambda f: [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', os.path.basename(f))])
+    tensors_list = []
+    for path in tqdm(image_paths, desc=f"Loading Images from {dir_path}"):
+        try:
+            img = Image.open(path).convert("RGB")
+            tensors_list.append(transform(img))
+        except Exception as e:
+            print(f"Error loading {path}: {e}")
+    return torch.stack(tensors_list, dim=0)
+
+def load_model_from_config(config, ckpt, verbose=False):
+    print(f"Loading model from {ckpt}")
+    pl_sd = torch.load(ckpt, map_location="cpu")
+    sd = pl_sd["state_dict"]
+    model = instantiate_from_config(config.model)
+    m, u = model.load_state_dict(sd, strict=False)
+    if verbose:
+        if len(m) > 0: print("missing keys:", m)
+        if len(u) > 0: print("unexpected keys:", u)
+    model.cuda()
+    model.eval()
+    return model
+
+def save_img_individually(img, path):
+    if len(img.shape) == 3: img = img.unsqueeze(0)
+    dirname = os.path.dirname(path)
+    basename = os.path.splitext(os.path.basename(path))[0]
+    ext = os.path.splitext(path)[1]
+    os.makedirs(dirname, exist_ok=True)
+    for i in range(img.shape[0]):
+        vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
+
+# ==========================================
+#  Mappers (Latent <-> MIMO Streams)
+# ==========================================
+def latent_to_mimo_streams(z_real, t_antennas):
+    B, C, H, W = z_real.shape
+    z_flat = z_real.view(B, -1)
+    total_elements = z_flat.shape[1]
+    L_complex = total_elements // (t_antennas * 2)
+    cutoff = L_complex * t_antennas * 2
+    z_used = z_flat[:, :cutoff]
+    z_view = z_used.view(B, t_antennas, -1)
+    real_part, imag_part = torch.chunk(z_view, 2, dim=2)
+    s = torch.complex(real_part, imag_part)
+    return s, (B, C, H, W)
+
+def mimo_streams_to_latent(s, original_shape):
+    real_part = s.real
+    imag_part = s.imag
+    z_view = torch.cat([real_part, imag_part], dim=2) 
+    z_flat = z_view.view(s.shape[0], -1)
+    target_size = np.prod(original_shape[1:])
+    current_size = z_flat.shape[1]
+    if current_size < target_size:
+        padding = torch.zeros(s.shape[0], target_size - current_size, device=s.device)
+        z_flat = torch.cat([z_flat, padding], dim=1)
+    return z_flat.view(original_shape)
+
+# ==========================================
+#  [NEW] Importance to Power Weights
+# ==========================================
+def compute_power_weights(importance_map, t_mimo, alpha=0.5):
+    """
+    重要度マップを受け取り、MIMOストリームと同じ形状 (B, T, L) の重み係数を計算する。
+    alpha: 重みの強さを調整するパラメータ (0なら一律, 1なら重要度に比例)
+    """
+    B, C, H, W = importance_map.shape
     
-    elif metric == 'psnr':
-        if mse == 0:
-            return np.inf
-        max_pixel = 255.0
-        psnr = 10 * np.log10((max_pixel ** 2) / mse)
-        return float(psnr)
-        
-    elif metric == 'lpips':
-        if lpips_model is None or device is None:
-            raise ValueError("lpips_model and device must be provided for LPIPS metric.")
-        tensor_x = np_to_torch(x).to(device)
-        tensor_y = np_to_torch(y).to(device)
-        with torch.no_grad():
-            dist = lpips_model(tensor_x, tensor_y)
-        return float(dist.item())
-
-    else:
-        raise ValueError("Metric must be 'ssim', 'mse', 'psnr', or 'lpips'.")
-
-def main():
-    parser = argparse.ArgumentParser(description="SNR vs Metric (Multiple pairs)")
-    parser.add_argument("--sent", "-s", default="./sentimg", help="Directory for 'sent' (original) images")
+    # 1. まずMIMOストリームと同じ形式にマッピング (実部・虚部用)
+    #    Importanceは実数なので、実部用と虚部用で同じ値を使うように複製して扱う
+    imp_flat = importance_map.view(B, -1)
     
-    parser.add_argument("--base_recv", "-r", default="./intermediate/k2=0.0", 
-                        help="Base directory for 'received' images (e.g., ./intermediate/k=0.0)")
+    total_elements = imp_flat.shape[1]
+    L_complex = total_elements // (t_mimo * 2)
+    cutoff = L_complex * t_mimo * 2
     
-    parser.add_argument("--metric", "-m", choices=["ssim","mse","psnr","lpips"], default="ssim", 
-                        help="Metric to use (ssim, mse, psnr, lpips)")
+    imp_used = imp_flat[:, :cutoff]
+    imp_view = imp_used.view(B, t_mimo, -1) # (B, t, 2L)
     
-    parser.add_argument("--resize", type=int, nargs=2, metavar=('W','H'), default=(256,256), 
-                        help="Resize dimensions for comparison (W H)")
+    # 実部と虚部に対応する重要度を取り出し、平均をとる（複素シンボル1個に対する重要度とする）
+    imp_real, imp_imag = torch.chunk(imp_view, 2, dim=2)
+    symbol_importance = (imp_real + imp_imag) / 2.0 # (B, t, L)
     
-    parser.add_argument("--snr",type=float, nargs='+', required=True, help="List of channel SNRs (e.g., -5 0 5)")
-    parser.add_argument("--timestep", "-t",type=int, nargs='+', required=True, help="List of all timesteps (e.g., 300 500 1000)")
-    parser.add_argument("--output", "-o", type=str, default=None, help="Output plot filename. If None, defaults to comparison_[metric]_[...].png")
-
+    # 2. 電力配分の計算 (Water filling like strategy or simple proportional)
+    #    ここではシンプルに重要度の alpha 乗に比例させ、平均パワーが 1 になるように正規化
     
-    args = parser.parse_args()
-
-    if len(args.snr) != len(args.timestep):
-        print(f"Error: The number of --snr values ({len(args.snr)}) must match the number of --timestep values ({len(args.timestep)}).")
-        return
-        
-    snr_ts_pairs = list(zip(args.snr, args.timestep))
-
-    lpips_model = None
-    device = None
-    if "lpips" == args.metric:
-        if lpips is None or torch is None:
-            print("Error: LPIPS metric requested, but 'torch' or 'lpips' libraries are not installed.")
-            print("Please run: pip install torch lpips")
-            return
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"\nInitializing LPIPS model (AlexNet) on device: {device}")
-        lpips_model = lpips.LPIPS(net='alex').to(device).eval()
+    # ゼロ除算回避のための微小値
+    epsilon = 1e-6
+    weights = (symbol_importance + epsilon) ** alpha
     
-    sent_dir = {}
-    print(f"\nScanning 'sent' directory: {args.sent}")
-    for sd in os.listdir(args.sent):
-        # ファイル名が "img_001.png" のような形式であることを想定
-        ss = sd.split(".")
-        if not ss: continue
-        ss = ss[0].split("_")
-        if len(ss) < 2: continue
-        sent_dir[ss[1]] = os.path.join(args.sent, sd) # '001': './sentimg/img_001.png'
+    # 平均が1になるように正規化 (Bごとに、あるいは全バッチ共通で)
+    # ここではバッチごとに正規化し、バッチ内の総電力は変えない
+    mean_w = weights.mean(dim=(1, 2), keepdim=True)
+    weights_norm = weights / mean_w
     
-    plt.figure(figsize=(10, 7)) 
+    # weights_norm は電力係数 (|s|^2 に掛かる)。振幅には sqrt(weights) を掛ける
+    return weights_norm
 
-    # --- ⭐ 変更点: 色、マーカー、線スタイルのリストを定義 ---
-    colors = list(mcolors.TABLEAU_COLORS.values())
-    colors.extend(['#000000', '#FF00FF', '#808000', '#00FF00', '#000080']) 
-    markers = ['o', 'v', 's', '^', 'D', '<', '>', 'p', '*', 'X']
-    linestyles = ['-', '--', '-.', ':']
-    # ---------------------------------------------------
-
-    # (SNR, Timestep) のペアでループ (⭐ 変更点: enumerate を追加)
-    for i, (snr, timestep) in enumerate(snr_ts_pairs):
-        print(f"\nProcessing: SNR = {snr}, TotalTimestep = {timestep}")
-        
-        obj_dir = {}
-        for k, v in sent_dir.items():
-            obj_dir[k] = []
-        
-        print(f"Scanning {args.base_recv} for matching directories...")
-        
-        for snr_dir in os.listdir(args.base_recv):
-            snr_path = os.path.join(args.base_recv, snr_dir)
-            if not os.path.isdir(snr_path):
-                continue
-            
-            try:
-                # ディレクトリ名 (snr_dir) と指定したSNR (snr) が一致するか確認
-                if snr != float(snr_dir):
-                    continue
-            except ValueError:
-                print(f"Skipping non-numeric directory: {snr_dir}")
-                continue
-
-            # ./intermediate/k=0.0/5.0/ などを走査
-            for img_id in os.listdir(snr_path):
-                img_id_path = os.path.join(snr_path, img_id)
-                # img_id ('001'など) が sent_dir に存在するか確認
-                if not os.path.isdir(img_id_path) or img_id not in obj_dir:
-                    continue
-                    
-                # ./intermediate/k=0.0/5.0/001/ などを走査
-                for timestep_dir in os.listdir(img_id_path):
-                    if not os.path.isdir(os.path.join(img_id_path, timestep_dir)):
-                        continue
-                        
-                    try:
-                        # ディレクトリ名 (timestep_dir) が指定した timestep と一致するか確認
-                        if int(timestep_dir) != timestep:
-                            continue
-                    except ValueError:
-                        print(f"Skipping non-numeric directory: {timestep_dir}")
-                        continue
-                        
-                    # マッチした場合、パスを追加
-                    obj_dir[img_id].append(os.path.join(img_id_path, timestep_dir))
-
-        # ステップごとに計算
-        ans = {} # {step:metric_sum}
-        ans_num = {} 
-        for k, v in obj_dir.items():
-            for d in v: # d = './intermediate/k=0.0/5.0/001/500'
-                if not os.path.isdir(d):
-                    continue
-                for file_name in os.listdir(d):
-                    # ファイル名が ..._500.png, ..._490.png などの形式であることを想定
-                    step_match = re.match(r".*_(\d+)\.(png|jpg|jpeg|bmp|webp)$", file_name, re.IGNORECASE)
-                    if not step_match:
-                        continue 
-                        
-                    step = int(step_match.group(1)) # 500, 490 など
-                    
-                    file_path = os.path.join(d, file_name)
-                    
-                    try:
-                        sentimg = Image.open(sent_dir[k]).convert('RGB').resize(args.resize)
-                        recimg = Image.open(file_path).convert('RGB').resize(args.resize)
-
-                        sentarr = np.array(sentimg)
-                        recarr = np.array(recimg)
-
-                        val = compute_metric(sentarr, recarr, metric=args.metric,lpips_model=lpips_model, device=device)
-                        
-                        ans[step] = ans.get(step, 0.0) + val
-                        ans_num[step] = ans_num.get(step, 0) + 1
-                    except Exception as e:
-                        print(f"Warning: Error processing {file_path}: {e}")
-                        continue
-
-        if not ans:
-            print(f"Warning: No valid data found for SNR={snr}, Timestep={timestep}. Skipping this pair.")
-            continue
-            
-        ave = {}
-        for k, v in ans.items():
-            ave[k] = v / ans_num[k]
-        
-        # 降順 (reverse=True) にソート
-        ave = dict(sorted(ave.items(), key=lambda item: item[0], reverse=True))
-        
-        X = []
-        Y = []
-        for k, v in ave.items():
-            X.append(int(k))
-            Y.append(float(v))
-            
-        print(f"Data points for this pair (Step, Metric): {list(zip(X, Y))}")
-        
-        # --- ⭐ 変更点: スタイルを循環させて適用 ---
-        label = f"TotalTimestep = {timestep}, SNR = {snr}"
-        color = colors[i % len(colors)]
-        marker = markers[i % len(markers)]
-        linestyle = linestyles[(i // len(colors)) % len(linestyles)] 
-
-        plt.plot(X, Y, label=label, marker=marker, linestyle=linestyle, color=color, markersize=5)
-        # ----------------------------------------
-
-    # --- グラフの最終調整と保存 (ループの外) ---
-    
-    plt.xlabel("Time Step", fontsize=12)
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.ylabel(f"{args.metric.upper()}", fontsize=12)
-    plt.title(f"Time Step vs {args.metric.upper()}", fontsize=14)
-    plt.gca().invert_xaxis() # X軸を反転
-    
-    # --- ⭐ 変更点: 凡例が多い場合(6個以上)はグラフの外側に表示 ---
-    if len(snr_ts_pairs) > 6:
-        plt.legend(bbox_to_anchor=(1.04, 1), loc="upper left", fontsize='small')
-    else:
-        plt.legend()
-    # ---------------------------------------------------
-    
-    # レイアウトを自動調整
-    plt.tight_layout()
-    
-    # 出力ファイル名を決定
-    if args.output:
-        output_filename = args.output
-    else:
-        # ファイル名が衝突しないよう、ユニークにする
-        snr_str = "_".join(map(str, sorted(list(set(args.snr)))))
-        ts_str = "_".join(map(str, sorted(list(set(args.timestep)))))
-        output_filename = f"comparison_{args.metric}_snr{snr_str}_ts{ts_str}.png"
-        
-    # --- ⭐ 変更点: bbox_inches='tight' を追加 ---
-    # これにより、グラフの外側に描画した凡例も画像に収まる
-    plt.savefig(output_filename, bbox_inches='tight')
-    # ------------------------------------------
-    
-    print(f"\nCombined graph saved to: {output_filename}")
+# ==========================================
+#  Main Script
+# ==========================================
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    
+    # MIMO Parameters
+    t_mimo = 2 
+    r_mimo = 2 
+    N_pilot = 2 
+    P_power = 1.0 
+    Perfect_Estimate = False 
+    
+    base_experiment_name = f"MIMO_Importance/t={t_mimo}_r={r_mimo}"
+    
+    parser.add_argument("--input_path", type=str, default="input_img")
+    parser.add_argument("--outdir", type=str, default=f"outputs/{base_experiment_name}")
+    parser.add_argument("--sentimgdir", type=str, default="./sentimg")
+    parser.add_argument("--student_ckpt", type=str, required=True, help="Path to trained student_epoch_XX.pth")
+    
+    parser.add_argument("--ddim_steps", type=int, default=200)
+    parser.add_argument("--scale", type=float, default=5.0)
+    parser.add_argument("--dps_scale", type=float, default=0.3)
+    
+    parser.add_argument("--burst_iterations", type=int, default=20)
+    parser.add_argument("--burst_lr", type=float, default=0.05)
+    parser.add_argument("--anchor_lambda", type=float, default=1.0)
+    
+    parser.add_argument("--h_lr_max", type=float, default=20.0)
+    parser.add_argument("--h_lr_min", type=float, default=0.05)
+    
+    parser.add_argument("--seed", type=int, default=42)
+    # Power Allocation Strength (0.0 = Uniform, 1.0 = Linear to Importance)
+    parser.add_argument("--power_alpha", type=float, default=0.5, help="Strength of power allocation")
+
+    opt = parser.parse_args()
+
+    seed_everything(opt.seed)
+    
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+    # Load LDM
+    config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
+    model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")
+    model = model.to(device)
+    sampler = DDIMSampler(model)
+
+    # [NEW] Load Student Model
+    student_model = load_student_model(opt.student_ckpt, device)
+
+    # Setup Paths
+    os.makedirs(opt.outdir, exist_ok=True)
+    os.makedirs(opt.sentimgdir, exist_ok=True)
+
+    # Load Images
+    existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png"))
+    if len(existing_imgs) > 0:
+        img = load_images_as_tensors(opt.sentimgdir).to(device)
+    else:
+        img = load_images_as_tensors(opt.input_path).to(device)
+        save_img_individually(img, opt.sentimgdir + "/original.png")
+
+    batch_size = img.shape[0]
+
+    # Encode
+    z = model.encode_first_stage(img)
+    z = model.get_first_stage_encoding(z).detach()
+    
+    z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
+    z_var = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
+    eps = 1e-7
+    z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
+
+    # -----------------------------------------------------------
+    # [NEW] Predict Importance & Calculate Power Weights
+    # -----------------------------------------------------------
+    with torch.no_grad():
+        # z_normを入力として重要度を推論 (B, 4, 32, 32)
+        importance_map = student_model(z_norm)
+        
+        # 可視化のために重要度マップを保存
+        imp_vis = importance_map.mean(dim=1, keepdim=True)
+        vutil.save_image(imp_vis / imp_vis.max(), os.path.join(opt.outdir, "importance_map.png"))
+        
+        # 重要度に基づき、各シンボルの電力係数を計算 (B, T, L)
+        # weight_factorは電力比率。振幅には sqrt(weight_factor) を掛ける
+        power_weights = compute_power_weights(importance_map, t_mimo, alpha=opt.power_alpha)
+        amplitude_scale = torch.sqrt(power_weights)
+
+    # Map to MIMO Streams
+    s_0_real = z_norm / np.sqrt(2.0)
+    s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
+    s_0 = s_0.to(device)
+    L_len = s_0.shape[2]
+
+    # Pilot Setup (Standard Uniform)
+    t_vec = torch.arange(t_mimo, device=device)
+    N_vec = torch.arange(N_pilot, device=device)
+    tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
+    P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
+    P = P.to(device) 
+
+    min_snr_sim = 0
+    max_snr_sim = 20
+    
+    for snr in range(min_snr_sim, max_snr_sim + 1, 5): 
+        print(f"\n======== SNR = {snr} dB (With Power Allocation) ========")
+        
+        noise_variance = t_mimo / (10**(snr/10))
+        sigma_n = np.sqrt(noise_variance / 2.0)
+
+        # Channel
+        H_real = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
+        H_imag = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
+        H = torch.complex(H_real, H_imag)
+
+        # Pilot Transmission & Estimation
+        V_real = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+        V_imag = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+        V = torch.complex(V_real, V_imag)
+        S_pilot = torch.matmul(H, P) + V
+        
+        P_herm = P.mH
+        inv_PP = torch.inverse(torch.matmul(P, P_herm))
+        H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
+        sigma_e2 = noise_variance / (P_power/t_mimo)
+
+        # -----------------------------------------------------------
+        # [NEW] Weighted Data Transmission
+        # -----------------------------------------------------------
+        # データ信号 s_0 に電力係数(振幅スケール)を適用
+        s_weighted = s_0 * amplitude_scale
+        
+        W_real = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+        W_imag = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+        W = torch.complex(W_real, W_imag)
+        
+        # 送信: Y = H * s_weighted + W
+        Y = torch.matmul(H, s_weighted) + W
+        
+        # -----------------------------------------------------------
+        # [NEW] Weighted MMSE Receiver
+        # -----------------------------------------------------------
+        # 通常のMMSE: s = (H'H + sigma I)^-1 H' y
+        # 重み付きの場合、受信機がこの重みを知っていると仮定 (Side Information)
+        
+        # 戦略: 
+        # 1. 見かけのチャネル H_eff = H * diag(scale) とみなしてMMSEを解く
+        #    しかし scale はシンボル(L)ごとに異なるため、行列演算を一括でするのは難しい。
+        # 2. 簡易的アプローチ (Zero-Forcing的な電力戻し):
+        #    通常のMMSEで受信 -> 重みで割って元のスケールに戻す。
+        #    ただし、MMSEの正規化項(Reg)においては信号電力1を仮定しているため、
+        #    本来は Reg = NoiseVar / SignalVar とすべき。
+        #    SignalVar = weights なので、Reg = NoiseVar / weights となる。
+        
+        # ここではループを使わず効率的に計算するため、簡易版を採用
+        # 「通常のHでMMSE受信」を行い、その後に「amplitude_scale」で割る
+        
+        eff_noise = sigma_e2 + noise_variance
+        H_hat_H = H_hat.mH
+        Gram = torch.matmul(H_hat_H, H_hat) 
+        
+        # 信号電力が変化したことを正則化項に反映 (近似的)
+        # 本来はシンボルごとなので行列が変わるが、ここでは平均的なノイズ分散として扱う
+        Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
+        inv_mat = torch.inverse(Gram + Reg)
+        W_mmse_matrix = torch.matmul(inv_mat, H_hat_H) 
+        
+        # 受信信号の推定 (これは s_weighted の推定値)
+        s_est_weighted = torch.matmul(W_mmse_matrix, Y) 
+        
+        # スケールを元に戻す (復調)
+        # s_est = s_est_weighted / amplitude_scale
+        # 小さい値での除算を防ぐ
+        s_mmse = s_est_weighted / (amplitude_scale + 1e-6)
+        
+        # -----------------------------------------------------------
+        
+        z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
+        z_init_mmse = z_init_real * np.sqrt(2.0)
+        
+        # 初期解の保存
+        z_vis = z_init_mmse * (torch.sqrt(z_var) + eps) + z_mean
+        rec_vis = model.decode_first_stage(z_vis)
+        save_img_individually(rec_vis, f"{opt.outdir}/mmse_weighted_snr{snr}.png")
+        
+        # Sampling (通常の復元プロセスへ)
+        # ※ バースト/リセット処理内でも、データ一貫性(Likelihood)計算時にHを使う場合
+        #    本来はPower Allocationを考慮する必要がありますが、
+        #    GCR (Generative Cyclic Reconstruction) では「画像空間での尤度」と
+        #    「受信信号Yとの整合性」を見ます。
+        #    sampler.gcr_burst_sampling 内の y = Hx + n のモデルも
+        #    重みを考慮したものに変更する必要があります。
+        #    
+        #    ★修正が深くなるため、ここでは簡易的に「初期値(Input)の質を上げる」ことに
+        #    注力し、Sampling内部の整合性は既存のままとします。
+        #    (初期値が良いだけで結果はかなり改善します)
+        
+        # ... (以下、サンプリング呼び出し等は元のコードと同様)
+        # 必要であれば sampler.gcr_burst_sampling に amplitude_scale を渡し、
+        # 内部の観測モデル H を H_eff = H * scale に置き換える処理が必要です。

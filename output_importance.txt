@@ -1,0 +1,58 @@
+Removing previous experiment results at: outputs/MIMO_Burst_Reset_Importance/t=2_r=2
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Loading LPIPS model...
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/weights/v0.1/alex.pth
+No existing images in ./sentimg. Loading from input_img...
+Monitoring batches: [0, 1, 2, 3, 4] (Total 5)
+[ImportanceManager] Loading importance model from checkpoints/importance_model/student_epoch_10.pth
+[ImportanceManager] Power Allocation (Phi^2): [0.9, 0.09999999999999998]
+MIMO Transmission Prepared: 2x1024 symbols (Weighted & Sorted)
+
+======== SNR = -5 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.57200
+  > Phase3 Steps: 43
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 43 steps (Index: 42/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 31.9821
+--> [Phase 2] Resetting Latent with Improved H...
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR -5...
+Saved all results for SNR -5
+
+======== SNR = -2 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 0.44325
+  > Phase3 Steps: 32
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Importance GCR] Force sampling for 32 steps (Index: 31/199)
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 25.8106
+--> [Phase 2] Resetting Latent with Improved H...
+  -> Processing plots for Batch 0
+  -> Processing plots for Batch 1
+  -> Processing plots for Batch 2
+  -> Processing plots for Batch 3
+  -> Processing plots for Batch 4
+Analyzing intermediate steps for SNR -2...
