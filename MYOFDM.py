@@ -97,12 +97,10 @@ def gcr_burst_sampling_fixed(self,
         Gram = torch.matmul(H_herm, H_batch)
         
         # Reg項の作成（ブロードキャスト対応）
-        # Gram: [B, REs, Tx, Tx] or [B, Tx, Tx]
         Tx = Gram.shape[-1]
         eye = torch.eye(Tx, device=H_batch.device).unsqueeze(0) # [1, Tx, Tx]
         
         # 4Dの場合、Regを [1, 1, Tx, Tx] に拡張するか、自動ブロードキャストに任せる
-        # torchのブロードキャストは右揃えなので [1, Tx, Tx] は [B, REs, Tx, Tx] に足せる
         Reg = noise_pwr * eye
         
         inv_mat = torch.inverse(Gram + Reg)
@@ -211,12 +209,6 @@ def gcr_burst_sampling_fixed(self,
             weighted_res = residual * Sigma_inv
             
             # 損失計算 (次元数によらず全要素平均)
-            loss_data = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / residual.numel() * residual.shape[0] 
-            # Note: numelで割るとバッチ平均にならないので、batch倍するか、単純にmeanをとるか調整が必要ですが
-            # 元コードに合わせています (K_dim計算が元コードにある場合はそれに従う)
-            
-            # 元コードの K_dim = residual.shape[1] * residual.shape[2] は 3D前提。
-            # 4Dの場合、 REs * Rx * 1 なので shape[1]*shape[2] でよい
             K_dim = np.prod(residual.shape[1:]) 
             loss_data = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / (batch_size * K_dim) * batch_size
 
@@ -368,6 +360,36 @@ def get_adaptive_h_lr(current_snr, snr_min=0, snr_max=20, lr_max=20.0, lr_min=1.
 def get_optimal_steps(snr):
     steps = 28.33 * np.exp(-0.0879 * snr) - 1.45
     return int(np.clip(np.round(steps), 1, 200))
+
+# 【追加】チャネル推定誤差の推移プロット
+def plot_h_loss_evolution(burst_loss, main_loss, save_path):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    
+    # Phase 1: Burst Loss
+    ax1.plot(burst_loss, color='orange', linewidth=1.5)
+    ax1.set_title("Phase 1: Burst Calibration Loss (Batch Sum)")
+    ax1.set_xlabel("Iteration")
+    ax1.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
+    ax1.grid(True, linestyle='--', alpha=0.6)
+    if len(burst_loss) > 0:
+        ax1.text(len(burst_loss)*0.7, burst_loss[0]*0.9, f"Start: {burst_loss[0]:.4f}", color='black')
+        ax1.text(len(burst_loss)*0.7, burst_loss[-1]*1.1, f"End: {burst_loss[-1]:.4f}", color='red')
+
+    # Phase 3: Main Loss
+    ax2.plot(main_loss, color='green', linewidth=1.5)
+    ax2.set_title("Phase 3: Main GCR Sampling Loss (Batch Sum)")
+    ax2.set_xlabel("Sampling Step (Process Order)")
+    ax2.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
+    ax2.grid(True, linestyle='--', alpha=0.6)
+    if len(main_loss) > 0:
+        ax2.text(len(main_loss)*0.05, main_loss[0], f"Start: {main_loss[0]:.4f}", color='black', verticalalignment='bottom')
+        ax2.text(len(main_loss)*0.7, main_loss[-1], f"End: {main_loss[-1]:.4f}", color='red', verticalalignment='top')
+
+    plt.suptitle("Evolution of Channel Estimation Error (Squared Norm)", fontsize=14)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved loss evolution plot to {save_path}")
 
 def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
     steps = range(len(psnr_list))
@@ -534,7 +556,7 @@ if __name__ == "__main__":
     parser.add_argument("--ddim_steps", type=int, default=200)
     parser.add_argument("--burst_iterations", type=int, default=20)
     parser.add_argument("--burst_lr", type=float, default=0.05)
-    parser.add_argument("--anchor_lambda", type=float, default=0.0)
+    parser.add_argument("--anchor_lambda", type=float, default=1.0)
     parser.add_argument("--h_lr_max", type=float, default=20.0)
     parser.add_argument("--h_lr_min", type=float, default=0.05)
     parser.add_argument("--dps_scale", type=float, default=0.3)
@@ -693,17 +715,18 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # 5. SNR Loop
     # ---------------------------------------------------------
-    min_snr_sim = 15
-    max_snr_sim = 15
+    min_snr_sim = -10
+    max_snr_sim = 20
     
-    for snr in range(min_snr_sim, max_snr_sim + 1, 1):
+    for snr in range(min_snr_sim, max_snr_sim + 1, 3):
         print(f"\n======== SNR = {snr} dB (OFDM-MIMO) ========")
         
-        no = 1.0 / (10**(snr/10.0))
+        no = num_streams_per_tx / (10**(snr/10.0))
         
         # --- A. Transmission ---
         x_rg = rg_mapper(x_data_tf) 
         
+        # Channel Generation
         cir = cdl(batch_size=batch_size, num_time_steps=rg.num_ofdm_symbols, sampling_frequency=1/rg.ofdm_symbol_duration)
         frequencies = subcarrier_frequencies(rg.fft_size, rg.subcarrier_spacing)
         h_freq = cir_to_ofdm_channel(frequencies, *cir, normalize=True)
@@ -734,24 +757,28 @@ if __name__ == "__main__":
         print("Preparing GCR for OFDM...")
         
         # ガードバンド/ヌル除去 (有効サブキャリアのみ抽出)
+        # H_hat と H_true (GT) の両方に適用して、サンプラー内で次元を一致させます
         y_eff_tf = remove_nulled_scs(y_rg)
-        y_eff_np = y_eff_tf.numpy()
+        h_hat_eff = remove_nulled_scs(h_hat)
+        h_true_eff = remove_nulled_scs(h_freq)
         
-        h_hat_np = h_hat.numpy() 
+        y_eff_np = y_eff_tf.numpy()
+        h_hat_np = h_hat_eff.numpy() 
+        h_true_np = h_true_eff.numpy()
 
         # 次元調整 (Squeeze singleton dims)
-        if h_hat_np.ndim == 7: # [B, 1, Rx, 1, Tx, F, T]
-            h_hat_np = h_hat_np[:, 0, :, 0, :, :, :]
-        elif h_hat_np.ndim == 6: # [B, 1, Rx, Tx, F, T]
-            if h_hat_np.shape[1] == 1:
-                h_hat_np = h_hat_np.squeeze(1)
+        # Sionna shapes: [B, 1, Rx, 1, Tx, F, T] (for channel) or [B, 1, Rx, F, T] (for y)
+        if h_hat_np.ndim == 7:
+            h_hat_np = h_hat_np[:, 0, :, 0, :, :, :] # -> [B, Rx, Tx, F, T]
+            h_true_np = h_true_np[:, 0, :, 0, :, :, :]
 
-        if y_eff_np.ndim == 5: # [B, 1, Rx, F, T]
+        if y_eff_np.ndim == 5:
              if y_eff_np.shape[1] == 1:
-                y_eff_np = y_eff_np.squeeze(1)
+                y_eff_np = y_eff_np.squeeze(1) # -> [B, Rx, F, T]
 
-        H_torch_full = torch.from_numpy(h_hat_np).to(device) # [B, Rx, Tx, F, T]
-        Y_torch_full = torch.from_numpy(y_eff_np).to(device)  # [B, Rx, F, T]
+        H_torch_full = torch.from_numpy(h_hat_np).to(device) 
+        H_true_full = torch.from_numpy(h_true_np).to(device)
+        Y_torch_full = torch.from_numpy(y_eff_np).to(device)  
         
         if H_torch_full.ndim != 5:
              raise ValueError(f"H_torch_full dim mismatch: Expected 5, got {H_torch_full.ndim}. Shape: {H_torch_full.shape}")
@@ -760,6 +787,7 @@ if __name__ == "__main__":
         num_REs = nF * nT
         
         H_for_sampler = H_torch_full.permute(0, 3, 4, 1, 2).reshape(B, num_REs, Rx, Tx)
+        H_true_for_sampler = H_true_full.permute(0, 3, 4, 1, 2).reshape(B, num_REs, Rx, Tx)
         Y_for_sampler = Y_torch_full.permute(0, 2, 3, 1).reshape(B, num_REs, Rx, 1)
         
         eff_noise_var_scalar = np.mean(no_eff.numpy())
@@ -787,6 +815,7 @@ if __name__ == "__main__":
         print(f"Starting GCR Sampling... Steps={opt.ddim_steps}")
         
         try:
+            # 【変更】H_true を渡す
             samples, H_final, H_hist, b_loss, m_loss, img_hist = sampler.gcr_burst_sampling(
                 S=opt.ddim_steps,
                 batch_size=batch_size,
@@ -805,6 +834,7 @@ if __name__ == "__main__":
                 inv_mapper=backward_mapper_ofdm,
                 initial_noise_variance=eff_noise_var_scalar,
                 monitor_indices=monitor_indices,
+                H_true=H_true_for_sampler,  # Ground Truth Channel
                 verbose=True
             )
             
@@ -813,6 +843,11 @@ if __name__ == "__main__":
             rec_final_01 = torch.clamp((rec_final + 1.0) / 2.0, 0.0, 1.0)
             save_img_individually(rec_final_01, f"{opt.outdir}/burst_reset_snr{snr}.png")
             
+            # 【追加】チャネル損失プロットの作成
+            print("Plotting Channel Estimation Loss...")
+            loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}.png")
+            plot_h_loss_evolution(b_loss, m_loss, loss_plot_path)
+
             print("Analyzing results...")
             
             all_psnr = []
