@@ -284,23 +284,24 @@ def mimo_streams_to_latent(s, original_shape):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    # ハードコードされたパラメータ（これらが引数になっていない場合はここから取得）
     t_mimo = 2 
     r_mimo = 2 
     N_pilot = 2 
     P_power = 1.0 
     Perfect_Estimate = False 
-    base_experiment_name = f"MIMO_Burst_Reset/t={t_mimo}_r={r_mimo}"
-    # python -m scripts.mimo_dps_burst_reset > output_burst.txt
+
+    # --- 修正点: ここではデフォルトパスを一時的なものにしておき、parse_args後に上書きします ---
     parser.add_argument("--input_path", type=str, default="input_img")
-    parser.add_argument("--outdir", type=str, default=f"outputs/{base_experiment_name}")
-    parser.add_argument("--nosample_outdir", type=str, default=f"outputs/{base_experiment_name}/nosample")
+    parser.add_argument("--outdir", type=str, default=None) # 後で設定するためNoneまたはプレースホルダ
+    parser.add_argument("--nosample_outdir", type=str, default=None)
     parser.add_argument("--sentimgdir", type=str, default="./sentimg")
     parser.add_argument("--ddim_steps", type=int, default=200)
     parser.add_argument("--scale", type=float, default=5.0)
     parser.add_argument("--dps_scale", type=float, default=0.3)
     parser.add_argument("--burst_iterations", type=int, default=20)
     parser.add_argument("--burst_lr", type=float, default=0.05)
-    parser.add_argument("--anchor_lambda", type=float, default=1.0)
+    parser.add_argument("--anchor_lambda", type=float, default=0.0)
     parser.add_argument("--h_lr_max", type=float, default=20.0)
     parser.add_argument("--h_lr_min", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=42)
@@ -311,13 +312,41 @@ if __name__ == "__main__":
 
     seed_everything(opt.seed)
     
+    # --- 修正点: ここでパラメータを含むディレクトリ名を動的に作成 ---
+    # 例: t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3
+    param_str = (f"t={t_mimo}_r={r_mimo}_"
+                 f"steps={opt.ddim_steps}_"
+                 f"burst={opt.burst_iterations}_"
+                 f"blr={opt.burst_lr}_"
+                 f"lam={opt.anchor_lambda}_"
+                 f"zeta={opt.dps_scale}")
+
+    base_experiment_name = f"MIMO_Burst_Reset/{param_str}"
+    
+    # 引数でoutdirが指定されていなければ、自動生成したパスを使用
+    if opt.outdir is None:
+        opt.outdir = f"outputs/{base_experiment_name}"
+    
+    if opt.nosample_outdir is None:
+        opt.nosample_outdir = f"outputs/{base_experiment_name}/nosample"
+
+    # base_out_path もこの新しいパスに合わせる
+    base_out_path = opt.outdir # outputs/MIMO_Burst_Reset/t=... のルート
+    
+    # -------------------------------------------------------------
+
     suffix = "perfect" if Perfect_Estimate else "estimated"
-    base_out_path = f"outputs/{base_experiment_name}"
+    
+    # base_out_pathの掃除 (suffixをつける前のルートディレクトリをリセットする場合)
     if os.path.exists(base_out_path):
         print(f"Removing previous experiment results at: {base_out_path}")
         shutil.rmtree(base_out_path)
+    
+    # 実際の保存先には suffix (estimated/perfect) を付与
     opt.outdir = os.path.join(opt.outdir, suffix)
     opt.nosample_outdir = os.path.join(opt.nosample_outdir, suffix)
+    
+    # チャンネルプロット等の保存先も更新
     channel_outdir = os.path.join(base_out_path, "channel_plots", suffix)
     intermediates_base_dir = os.path.join(base_out_path, f"{suffix}_process")
 
@@ -326,6 +355,8 @@ if __name__ == "__main__":
     os.makedirs(opt.nosample_outdir, exist_ok=True)
     os.makedirs(channel_outdir, exist_ok=True)
     os.makedirs(intermediates_base_dir, exist_ok=True)
+
+    print(f"Experiment outputs will be saved to: {opt.outdir}")
 
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")
@@ -389,10 +420,10 @@ if __name__ == "__main__":
     P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
     P = P.to(device) 
 
-    min_snr_sim = -5
-    max_snr_sim = 25
+    min_snr_sim = 0
+    max_snr_sim = 15
 
-    for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
+    for snr in range(min_snr_sim, max_snr_sim + 1, 1): 
         print(f"\n======== SNR = {snr} dB ========")
         print(f"Monitoring: {monitor_indices}")
         

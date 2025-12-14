@@ -201,11 +201,11 @@ def get_style(method_key, mode_key):
 
     return color, linestyle, marker
 
-def plot_results(results, metric_name, t, r):
+def plot_results(results, metric_name, t, r, args=None):
     """
     results: list of tuples (x_vals, y_vals, label, method_key, mode_key)
     """
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8)) # 少しサイズを大きくして凡例のスペースを確保
     
     for x_vals, y_vals, label, method_key, mode_key in results:
         if not x_vals: continue
@@ -214,16 +214,22 @@ def plot_results(results, metric_name, t, r):
         
         plt.plot(x_vals, y_vals, marker=m, linestyle=l, label=label, color=c, markersize=8, linewidth=2)
     
-    plt.xlabel("SNR (dB)", fontsize=12)
-    plt.ylabel(f"{metric_name.upper()}", fontsize=12)
-    plt.title(f"MIMO ({t}x{r}) Evaluation - {metric_name.upper()}", fontsize=14)
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.legend()
+    plt.xlabel("SNR (dB)", fontsize=14)
+    plt.ylabel(f"{metric_name.upper()}", fontsize=14)
     
-    # Filename includes all plotted info implicitly
+    # タイトルにもパラメータを少し入れる
+    title_str = f"MIMO ({t}x{r}) Evaluation - {metric_name.upper()}"
+    plt.title(title_str, fontsize=16)
+    
+    plt.grid(True, linestyle='--', alpha=0.6)
+    
+    # 凡例を枠外に出すか、見やすく配置
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize=10)
+    
+    # Filename includes basic info
     out_filename = f"eval_mimo_t{t}_r{r}_{metric_name}.png"
     plt.tight_layout()
-    plt.savefig(out_filename, bbox_inches='tight')
+    plt.savefig(out_filename, dpi=300, bbox_inches='tight')
     print(f"\n[Plot Saved] {out_filename}")
 
 def main():
@@ -233,16 +239,19 @@ def main():
     parser.add_argument("--t", type=int, default=2, help="Transmit antennas")
     parser.add_argument("--r", type=int, default=2, help="Receive antennas")
     
+    # --- New Arguments to match Folder Structure ---
+    parser.add_argument("--ddim_steps", type=int, default=200)
+    parser.add_argument("--burst_iterations", type=int, default=20)
+    parser.add_argument("--burst_lr", type=float, default=0.05)
+    parser.add_argument("--anchor_lambda", type=float, default=0.0)
+    parser.add_argument("--dps_scale", type=float, default=0.3)
+    # -----------------------------------------------
+
     # Selection Arguments
     parser.add_argument("--modes", nargs='+', default=["estimated", "perfect"], 
                         choices=["estimated", "perfect"], 
                         help="CSI Estimation modes to include (space separated)")
     
-    # Targets corresponding strictly to the provided files:
-    # 1. burst_reset -> mimo_dps_burst_reset.py (GCR Anchor/Burst)
-    # 2. proposed    -> mimo_dps_proposed.py (Standard DPS)
-    # 3. mmse_bench  -> bench_MMSE.py (Diffusion)
-    # 4. mmse_linear -> bench_MMSE.py (No Sample)
     parser.add_argument("--targets", nargs='+', 
                         default=["burst_reset", "proposed", "mmse_bench", "mmse_linear"], 
                         choices=["burst_reset", "proposed", "mmse_bench", "mmse_linear"],
@@ -251,46 +260,66 @@ def main():
     parser.add_argument("--sent", "-s", default="./sentimg", help="Directory containing original images (original_X.png)")
     parser.add_argument("--metric", "-m", choices=["ssim","mse","psnr","lpips","all"], default="lpips", help="Metric to use")
     parser.add_argument("--resize", type=int, default=256, help="Image resize dimension (square)")
-    # python eval_dps_gcr.py -m all --modes estimated
+    
     args = parser.parse_args()
 
     # ==========================================
-    # Define Paths (Based on provided script outputs)
+    # Define Paths (Dynamic Construction)
     # ==========================================
     
-    # Path from bench_MMSE.py
+    # 1. Burst Reset Path (Complex Parameter String)
+    burst_param_str = (f"t={args.t}_r={args.r}_"
+                       f"steps={args.ddim_steps}_"
+                       f"burst={args.burst_iterations}_"
+                       f"blr={args.burst_lr}_"
+                       f"lam={args.anchor_lambda}_"
+                       f"zeta={args.dps_scale}")
+    base_burst = f"outputs/MIMO_Burst_Reset/{burst_param_str}"
+
+    # 2. Proposed Path (Assuming standard DPS params: t, r, steps, zeta)
+    # NOTE: If proposed.py uses a different schema, adjust this. 
+    # Here we assume a simpler subset for standard proposed.
+    proposed_param_str = (f"t={args.t}_r={args.r}_"
+                          f"steps={args.ddim_steps}_"
+                          f"zeta={args.dps_scale}")
+    base_proposed = f"outputs/MIMO_Proposed_LS/{proposed_param_str}"
+    
+    # 3. Benchmark Path (Usually just antenna config)
     base_benchmark = f"outputs/MIMO_Benchmark_MMSE/t={args.t}_r={args.r}"
     
-    # Path from mimo_dps_proposed.py
-    base_proposed = f"outputs/MIMO_Proposed_LS/t={args.t}_r={args.r}"
-    
-    # Path from mimo_dps_burst_reset.py
-    base_burst = f"outputs/MIMO_Burst_Reset/t={args.t}_r={args.r}"
-    
+    print(f"Looking for Burst Results at: {base_burst}")
+    print(f"Looking for Proposed Results at: {base_proposed}")
+    print(f"Looking for Benchmark Results at: {base_benchmark}")
+
     # Construct the list of paths to evaluate
     eval_targets = []
 
     for mode in args.modes:
+        mode_label = "Est" if mode == "estimated" else "Perf"
+        
         for target in args.targets:
             if target == "burst_reset":
                 path = os.path.join(base_burst, mode)
-                label = f"Proposed (Burst+GCR) [{mode}]"
+                # 凡例にパラメータを表示
+                label = (f"Burst+GCR [{mode_label}]\n"
+                         f"(iter={args.burst_iterations}, lr={args.burst_lr}, $\lambda$={args.anchor_lambda})")
                 eval_targets.append((path, label, "burst_reset", mode))
 
             elif target == "proposed":
                 path = os.path.join(base_proposed, mode)
-                label = f"Proposed (DPS) [{mode}]"
+                # 凡例にパラメータを表示
+                label = (f"Proposed DPS [{mode_label}]\n"
+                         f"($\zeta$={args.dps_scale})")
                 eval_targets.append((path, label, "proposed", mode))
             
             elif target == "mmse_bench":
                 path = os.path.join(base_benchmark, mode)
-                label = f"MMSE + Blind Diffusion [{mode}]"
+                label = f"MMSE+Diff [{mode_label}]"
                 eval_targets.append((path, label, "mmse_bench", mode))
             
             elif target == "mmse_linear":
-                # Linear results are in a 'nosample' subdirectory
                 path = os.path.join(base_benchmark, "nosample", mode)
-                label = f"Linear MMSE (No Diffusion) [{mode}]"
+                label = f"Linear MMSE [{mode_label}]"
                 eval_targets.append((path, label, "mmse_linear", mode))
 
     metrics_to_run = ["ssim", "psnr", "lpips"] if args.metric == "all" else [args.metric]
@@ -327,7 +356,7 @@ def main():
                 print(f"  [Skipping] Path not found: {path}")
 
         if plot_data:
-            plot_results(plot_data, metric, args.t, args.r)
+            plot_results(plot_data, metric, args.t, args.r, args)
         else:
             print("No valid data found to plot. Please check directory paths and file naming.")
 

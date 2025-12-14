@@ -181,7 +181,7 @@ if __name__ == "__main__":
     os.makedirs(opt.sentimgdir, exist_ok=True)
     os.makedirs(opt.nosample_outdir, exist_ok=True)
     remove_png(opt.outdir)
-
+    remove_png(opt.nosample_outdir)
     # Load Model
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")

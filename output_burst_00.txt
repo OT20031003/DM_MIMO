@@ -1,0 +1,31 @@
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Loading LPIPS model...
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/ldm/lib/python3.8/site-packages/lpips/weights/v0.1/alex.pth
+Found existing images in ./sentimg. Loading from there to preserve order...
+Monitoring batches: [0, 1, 2, 3, 4] (Total 5)
+MIMO Streams: 2x1024 complex symbols
+
+======== SNR = 0 dB ========
+Monitoring: [0, 1, 2, 3, 4]
+Starting Burst-Reset Sampling... Steps=200
+  > Effective Noise Var: 1.77576
+  > Optimal Phase3 Steps calculated: 27
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Auto] Estimated start index: 88/199 based on variance 1.7758
+--> [Phase 1] Starting Burst Calibration (20 iters)...
+    Post-Burst H Error: 45.6737
+--> [Phase 2] Resetting Latent with Improved H...
