@@ -47,7 +47,6 @@ from sionna.phy.utils import ebnodb2no
 # ==========================================
 #  [PATCH] DDIM Sampler Fix for OFDM (4D H)
 # ==========================================
-# ddim.py の gcr_burst_sampling をオーバーライドし、4次元 H (OFDM) に対応させます
 @torch.no_grad()
 def gcr_burst_sampling_fixed(self,
                                S,
@@ -672,7 +671,6 @@ if __name__ == "__main__":
         save_img_individually(img_01, opt.sentimgdir + "/original.png")
 
     batch_size = img_01.shape[0]
-    # バッチサイズの確認ログ
     print(f"\n=============================================")
     print(f"  [INFO] Batch Size = {batch_size}")
     print(f"  (Loaded {batch_size} images from input directory)")
@@ -720,16 +718,63 @@ if __name__ == "__main__":
     x_data_np = s_reshaped.cpu().numpy()
     x_data_tf = tf.convert_to_tensor(x_data_np, dtype=tf.complex64)
     
+    # =========================================================================
+    # [FIXED] Robust Data Index Calculation (Differential Method)
+    # =========================================================================
+    print("Computing OFDM Data Indices via Differential Trace...")
+    
+    # 1. Input A: All Ones
+    dummy_data_ones = tf.ones([1, 1, num_streams_per_tx, rg.num_data_symbols], dtype=tf.complex64)
+    grid_ones_tf = remove_nulled_scs(rg_mapper(dummy_data_ones))
+    grid_ones_np = grid_ones_tf.numpy()
+    
+    # 2. Input B: All Zeros
+    dummy_data_zeros = tf.zeros([1, 1, num_streams_per_tx, rg.num_data_symbols], dtype=tf.complex64)
+    grid_zeros_tf = remove_nulled_scs(rg_mapper(dummy_data_zeros))
+    grid_zeros_np = grid_zeros_tf.numpy()
+    
+    # 3. Helper to Flatten [Batch, Tx, Stream, Time, Freq] -> [Total_REs]
+    def get_flat_grid(grid_np):
+        # Sionna versions might output 4D or 5D
+        if grid_np.ndim == 5:
+            # [Batch, Tx, Stream, Time, Freq] -> use first stream
+            return grid_np[0, 0, 0, :, :].flatten()
+        elif grid_np.ndim == 4:
+            # [Batch, Stream, Time, Freq]
+            return grid_np[0, 0, :, :].flatten()
+        else:
+            # Fallback for unexpected shapes
+            return grid_np.reshape(-1, grid_np.shape[-2], grid_np.shape[-1])[0].flatten()
+
+    flat_ones = get_flat_grid(grid_ones_np)
+    flat_zeros = get_flat_grid(grid_zeros_np)
+
+    # 4. Difference (Pilots cancel out, Data remains)
+    diff_mag = np.abs(flat_ones - flat_zeros)
+    
+    # 5. Thresholding
+    data_indices_np = np.where(diff_mag > 1e-4)[0]
+    data_indices_torch = torch.from_numpy(data_indices_np).long().to(device)
+    
+    num_total_REs_per_stream = flat_ones.size
+    print(f"Total REs per stream: {num_total_REs_per_stream}")
+    print(f"Valid Data Indices Found: {len(data_indices_torch)} (Expected: {rg.num_data_symbols})")
+
+    # Safety Check
+    if len(data_indices_torch) != rg.num_data_symbols:
+        print(f"WARNING: Index count mismatch! Found {len(data_indices_torch)}, Expected {rg.num_data_symbols}")
+        if len(data_indices_torch) > rg.num_data_symbols:
+            data_indices_torch = data_indices_torch[:int(rg.num_data_symbols)]
+    
     # ---------------------------------------------------------
     # 5. SNR Loop
     # ---------------------------------------------------------
-    min_snr_sim = -5
+    min_snr_sim = 25
     max_snr_sim = 25
     
     for snr in range(min_snr_sim, max_snr_sim + 1, 3):
         print(f"\n======== SNR = {snr} dB (OFDM-MIMO {t_mimo}x{r_mimo}) ========")
         
-        # [Corrected] Scale noise by number of transmit streams to match MIMO SNR definition
         no = num_streams_per_tx / (10**(snr/10.0))
         
         # --- A. Transmission ---
@@ -767,13 +812,16 @@ if __name__ == "__main__":
         y_eff_tf = remove_nulled_scs(y_rg)
         y_eff_np = y_eff_tf.numpy()
         
-        h_hat_np = h_hat.numpy() 
+ 
+        h_hat_eff_tf = remove_nulled_scs(h_hat)  # 追加
+        h_hat_np = h_hat_eff_tf.numpy()          # 変更
+
         h_true_eff = remove_nulled_scs(h_freq)
         h_true_np = h_true_eff.numpy()
 
-        if h_hat_np.ndim == 7: # [B, 1, Rx, 1, Tx, F, T]
+        if h_hat_np.ndim == 7: # [B, 1, Rx, 1, Tx, T, F]
             h_hat_np = h_hat_np[:, 0, :, 0, :, :, :]
-        elif h_hat_np.ndim == 6: # [B, 1, Rx, Tx, F, T]
+        elif h_hat_np.ndim == 6: 
             if h_hat_np.shape[1] == 1:
                 h_hat_np = h_hat_np.squeeze(1)
 
@@ -782,42 +830,64 @@ if __name__ == "__main__":
         elif h_true_np.ndim == 6 and h_true_np.shape[1] == 1:
             h_true_np = h_true_np.squeeze(1)
 
-        if y_eff_np.ndim == 5: # [B, 1, Rx, F, T]
+        if y_eff_np.ndim == 5: # [B, 1, Rx, T, F]
              if y_eff_np.shape[1] == 1:
                 y_eff_np = y_eff_np.squeeze(1)
 
-        H_torch_full = torch.from_numpy(h_hat_np).to(device) # [B, Rx, Tx, F, T]
+        H_torch_full = torch.from_numpy(h_hat_np).to(device) # [B, Rx, Tx, T, F]
         H_true_full = torch.from_numpy(h_true_np).to(device)
-        Y_torch_full = torch.from_numpy(y_eff_np).to(device)  # [B, Rx, F, T]
+        Y_torch_full = torch.from_numpy(y_eff_np).to(device)  # [B, Rx, T, F]
         
         if H_torch_full.ndim != 5:
              raise ValueError(f"H_torch_full dim mismatch: Expected 5, got {H_torch_full.ndim}. Shape: {H_torch_full.shape}")
 
-        B, Rx, Tx, nF, nT = H_torch_full.shape
-        num_REs = nF * nT
+        # Flatten Time and Freq dimensions together to match 'REs' in sampler
+        B, Rx, Tx, nT, nF = H_torch_full.shape
+        num_REs = nT * nF
         
-        H_for_sampler = H_torch_full.permute(0, 3, 4, 1, 2).reshape(B, num_REs, Rx, Tx)
-        H_true_for_sampler = H_true_full.permute(0, 3, 4, 1, 2).reshape(B, num_REs, Rx, Tx)
-        Y_for_sampler = Y_torch_full.permute(0, 2, 3, 1).reshape(B, num_REs, Rx, 1)
+        H_for_sampler = H_torch_full.reshape(B, Rx, Tx, num_REs).permute(0, 3, 1, 2) # [B, REs, Rx, Tx]
+        H_true_for_sampler = H_true_full.reshape(B, Rx, Tx, num_REs).permute(0, 3, 1, 2)
+        Y_for_sampler = Y_torch_full.reshape(B, Rx, num_REs).permute(0, 2, 1).unsqueeze(-1) # [B, REs, Rx, 1]
         
         eff_noise_var_scalar = np.mean(no_eff.numpy())
         Sigma_inv_scalar = 1.0 / (eff_noise_var_scalar + 1e-8)
         
-        # [Mapper Update] Use dynamic batch size 'curr_B'
+        # =====================================================================
+        # [FIX] Define Mapper with Correct Indexing (Scatter/Gather)
+        # =====================================================================
         def forward_mapper_ofdm(z_in):
             curr_B = z_in.shape[0]
-            s = latent_to_complex_symbols(z_in) 
-            target_len = num_REs * num_streams_per_tx
-            s_padded = pad_to_length(s, target_len, dim=1)
-            s_view = s_padded.view(curr_B, num_streams_per_tx, num_REs) # [B, Tx, REs]
-            s_out = s_view.permute(0, 2, 1).unsqueeze(-1) # [B, REs, Tx, 1]
+            s_data = latent_to_complex_symbols(z_in) # [B, num_data_syms * streams]
+            
+            # target size for scatter source
+            s_data = pad_to_length(s_data, total_grid_capacity, dim=1) 
+            s_data_view = s_data.view(curr_B, num_streams_per_tx, -1) # [B, Strm, DataLen]
+            
+            # 空のグリッドを作成 [B, Strm, TotalREs]
+            grid_full = torch.zeros(curr_B, num_streams_per_tx, num_total_REs_per_stream, 
+                                    dtype=s_data.dtype, device=device)
+            
+            # Scatter: データがある場所(data_indices)に値を埋める
+            # 形状ブロードキャスト: [B, Strm, DataLen] -> indices [DataLen]
+            grid_full[:, :, data_indices_torch] = s_data_view
+            
+            # Samplerが期待する形状 [B, REs, Tx, 1] に変換
+            s_out = grid_full.permute(0, 2, 1).unsqueeze(-1)
+            
             return s_out, (curr_B, *z.shape[1:])
 
         def backward_mapper_ofdm(s_in, shape):
+            # s_in: [B, REs, Tx, 1]
             curr_B = s_in.shape[0]
             s_view = s_in.squeeze(-1).permute(0, 2, 1) # [B, Tx, REs]
-            s_flat = s_view.reshape(curr_B, -1) 
+            
+            # Gather: データがある場所だけ抜き出す
+            s_extracted = s_view[:, :, data_indices_torch] # [B, Tx, DataLen]
+            
+            s_flat = s_extracted.reshape(curr_B, -1) 
             return complex_symbols_to_latent(s_flat, shape)
+        
+        # =====================================================================
 
         z_init_norm = z_init_mmse / (z_init_mmse.std() + 1e-8)
         

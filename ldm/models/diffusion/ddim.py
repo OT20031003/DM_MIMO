@@ -2650,3 +2650,320 @@ class DDIMSampler(object):
 
         return img, current_H, H_history, burst_loss_history, main_loss_history, img_history
     
+    # ------------------------------------------------------------------------------------------------
+    # [NEW] Uncertainty Aware Sampling Method
+    # ------------------------------------------------------------------------------------------------
+    @torch.no_grad()
+    def gcr_uncertainty_sampling(self,
+               S,
+               batch_size,
+               shape,
+               conditioning=None,
+               y=None, 
+               H_hat=None,          
+               Sigma_inv=None,      
+               z_init=None,
+               burst_iterations=50,   
+               burst_lr=0.1,          
+               anchor_lambda=1.0,     
+               h_lr=0.01,             
+               zeta=1.0,              
+               mapper=None,         
+               inv_mapper=None,     
+               initial_noise_variance=None,
+               eta=0., 
+               verbose=True, 
+               unconditional_guidance_scale=1., 
+               unconditional_conditioning=None,
+               H_true=None,
+               monitor_indices=None,
+               phase3_num_steps=None,
+               
+               # New Arguments for Uncertainty
+               uncertainty_interval=10,
+               num_uncertainty_samples=4, # M in Eq. 14
+               kappa=1.0, # Weight for additive noise variance in Eq. 14
+               **kwargs
+               ):
+        """
+        GCR Sampling with Periodic Aleatoric Uncertainty Estimation.
+        
+        Implements Equation 14-16 logic from the paper.
+        - Updates uncertainty map U_t every `uncertainty_interval` steps.
+        - Uses U_t to weight the data consistency gradient.
+        - Returns history of U_t for visualization.
+        """
+        
+        if monitor_indices is None: monitor_indices = [0]
+        
+        # --- Helper: Reset Logic (Same as gcr_burst_sampling) ---
+        def compute_new_initial_latent(y_batch, H_batch, noise_pwr, target_mean, target_std):
+            B_local, r, t = H_batch.shape
+            H_herm = H_batch.mH
+            Gram = torch.matmul(H_herm, H_batch)
+            Reg = noise_pwr * torch.eye(t, device=H_batch.device).unsqueeze(0)
+            inv_mat = torch.inverse(Gram + Reg)
+            W_mmse = torch.matmul(inv_mat, H_herm)
+            s_new = torch.matmul(W_mmse, y_batch)
+            z_raw = inv_mapper(s_new, (B_local, *shape))
+            z_flat = z_raw.view(B_local, -1)
+            batch_mean = z_flat.mean(dim=1, keepdim=True)
+            batch_std = z_flat.std(dim=1, keepdim=True)
+            view_shape = (B_local,) + (1,) * (z_raw.ndim - 1)
+            batch_mean = batch_mean.view(view_shape)
+            batch_std = batch_std.view(view_shape)
+            z_new = (z_raw - batch_mean) / (batch_std + 1e-8)
+            z_new = z_new * target_std + target_mean
+            return z_new
+
+        # 1. Setup & Schedule
+        self.make_schedule(ddim_num_steps=S, ddim_eta=eta, verbose=False)
+        device = self.model.betas.device
+        
+        if initial_noise_variance is not None:
+            est_noise_var = initial_noise_variance.mean().item() if torch.is_tensor(initial_noise_variance) else initial_noise_variance
+        else:
+            avg_precision = Sigma_inv.abs().mean().item()
+            est_noise_var = 1.0 / (avg_precision + 1e-8)
+        
+        # Start Step Determination
+        if phase3_num_steps is not None:
+            requested_index = int(phase3_num_steps) - 1
+            start_index = max(0, min(requested_index, S - 1))
+            if verbose: print(f"[Uncertainty GCR] Force steps: {phase3_num_steps} (Index: {start_index})")
+        else:
+            target_alpha = 1.0 / (1.0 + est_noise_var)
+            diffs = torch.abs(self.alphas_cumprod.to(device) - target_alpha)
+            start_t_ddpm = torch.argmin(diffs).item()
+            ddim_timesteps_tensor = torch.from_numpy(self.ddim_timesteps).to(device)
+            abs_diff = torch.abs(ddim_timesteps_tensor - start_t_ddpm)
+            start_index = torch.argmin(abs_diff).item()
+            if verbose: print(f"[Uncertainty GCR] Auto start index: {start_index} (Var: {est_noise_var:.4f})")
+        
+        # 2. Initialization
+        z_init = z_init.to(device)
+        img = z_init.clone()
+        if not torch.is_tensor(H_hat): raise ValueError("H_hat must be a torch.Tensor.")
+        current_H = H_hat.clone().detach().requires_grad_(True)
+        H_anchor = H_hat.clone().detach()
+        H_history = [current_H.detach().cpu().clone()]
+        burst_loss_history = []
+        main_loss_history = []
+        
+        # ============================================================
+        # Phase 1: Early Burst Calibration (Identical to Standard)
+        # ============================================================
+        if verbose: print(f"--> [Phase 1] Burst Calibration ({burst_iterations} iters)...")
+        t_start = self.ddim_timesteps[start_index]
+        ts = torch.full((batch_size,), t_start, device=device, dtype=torch.long)
+        
+        with torch.enable_grad():
+            img_in = img.detach().requires_grad_(False)
+            if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
+                e_t = self.model.apply_model(img_in, ts, conditioning)
+            else:
+                x_in = torch.cat([img_in] * 2)
+                t_in = torch.cat([ts] * 2)
+                c_in = torch.cat([unconditional_conditioning, conditioning])
+                e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+                e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
+
+            alphas = self.ddim_alphas
+            sqrt_one_minus_alphas = self.ddim_sqrt_one_minus_alphas
+            a_t = torch.full((batch_size, 1, 1, 1), alphas[start_index], device=device)
+            sqrt_one_minus_at = torch.full((batch_size, 1, 1, 1), sqrt_one_minus_alphas[start_index], device=device)
+            pred_z0_target = (img_in - sqrt_one_minus_at * e_t) / a_t.sqrt()
+            s_hat_target, _ = mapper(pred_z0_target.detach()) 
+        
+        optimizer_H = torch.optim.Adam([current_H], lr=burst_lr)
+        for i in range(burst_iterations):
+            with torch.enable_grad():
+                optimizer_H.zero_grad()
+                y_est = torch.matmul(current_H, s_hat_target)
+                residual = y - y_est
+                weighted_res = residual * Sigma_inv
+                K_dim = residual.shape[1] * residual.shape[2]
+                loss_data = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / K_dim
+                loss_anchor = 0.5 * torch.nn.functional.mse_loss(torch.view_as_real(current_H), torch.view_as_real(H_anchor))
+                total_loss = loss_data + (anchor_lambda * loss_anchor)
+                total_loss.backward()
+                optimizer_H.step()
+            if H_true is not None:
+                burst_loss_history.append(torch.norm(current_H - H_true).item()**2)
+        H_history.append(current_H.detach().cpu().clone())
+
+        # ============================================================
+        # Phase 2: Latent Reset
+        # ============================================================
+        if verbose: print("--> [Phase 2] Resetting Latent...")
+        with torch.no_grad():
+            z_mean = z_init.mean()
+            z_std = z_init.std()
+            img = compute_new_initial_latent(y, current_H.detach(), est_noise_var, z_mean, z_std)
+
+        # ============================================================
+        # Phase 3: Uncertainty-Aware Sampling Loop
+        # ============================================================
+        timesteps = self.ddim_timesteps[:start_index+1]
+        time_range = np.flip(timesteps)
+        iterator = tqdm(time_range, desc='GCR (Uncertainty)', total=len(time_range))
+        
+        # History buffers
+        img_history = [img[monitor_indices].detach().cpu().clone()]
+        uncertainty_history = [] # Stores (step_idx, U_t map)
+        
+        # Initial Uncertainty Map (Zeros or initial estimate)
+        current_uncertainty_map = torch.zeros(batch_size, 1, shape[1], shape[2], device=device)
+        current_W_t = torch.zeros_like(current_uncertainty_map)
+
+        for i, step in enumerate(iterator):
+            index = np.where(self.ddim_timesteps == step)[0][0]
+            ts = torch.full((batch_size,), step, device=device, dtype=torch.long)
+
+            # --- 1. Periodic Uncertainty Estimation ---
+            if (i % uncertainty_interval == 0):
+                with torch.no_grad():
+                    # Generate M perturbed samples
+                    M = num_uncertainty_samples
+                    # Repeat input: (B, C, H, W) -> (B*M, C, H, W)
+                    img_rep = img.repeat_interleave(M, dim=0)
+                    ts_rep = ts.repeat_interleave(M, dim=0)
+                    
+                    # Add perturbation (Aleatoric noise)
+                    noise_perturb = torch.randn_like(img_rep) * 0.05 # Small perturbation sigma
+                    img_perturbed = img_rep + noise_perturb
+                    
+                    if unconditional_conditioning is not None and unconditional_guidance_scale != 1.:
+                        # Batched CFG for efficiency
+                        # Note: This increases VRAM usage significantly. 
+                        # If OOM occurs, run loop M times instead of batching.
+                        if hasattr(conditioning, "repeat_interleave"): # Check if tensor
+                            c_rep = conditioning.repeat_interleave(M, dim=0)
+                            uc_rep = unconditional_conditioning.repeat_interleave(M, dim=0)
+                        else: # List/dict conditioning
+                             c_rep = [c for c in conditioning for _ in range(M)] # Simplified assumption
+                             uc_rep = [u for u in unconditional_conditioning for _ in range(M)]
+
+                        # For simplicity in this snippet, assumes tensor conditioning or handles via model
+                        # Fallback to simple loop to be safe with VRAM and types
+                        eps_preds = []
+                        for m in range(M):
+                            # Slice
+                            img_m = img_perturbed[m*batch_size : (m+1)*batch_size]
+                            ts_m = ts # same ts
+                            
+                            x_in = torch.cat([img_m] * 2)
+                            t_in = torch.cat([ts_m] * 2)
+                            c_in = torch.cat([unconditional_conditioning, conditioning])
+                            e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+                            e_m = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
+                            eps_preds.append(e_m)
+                        
+                        eps_stack = torch.stack(eps_preds, dim=0) # (M, B, C, H, W)
+                    else:
+                        e_t_rep = self.model.apply_model(img_perturbed, ts_rep, conditioning.repeat_interleave(M, dim=0))
+                        eps_stack = e_t_rep.view(M, batch_size, *shape)
+
+                    # Calculate Variance (Eq. 14)
+                    variance_map = torch.var(eps_stack, dim=0).mean(dim=1, keepdim=True) # (B, 1, H, W)
+                    
+                    # Add additive noise term (simplification of Eq 14 term 2)
+                    current_uncertainty_map = variance_map + kappa * est_noise_var
+                    
+                    # Normalize to [0, 1] for Weighting Mask W_t
+                    # Min-Max normalization per batch item
+                    flat_u = current_uncertainty_map.view(batch_size, -1)
+                    min_u = flat_u.min(dim=1, keepdim=True)[0].view(batch_size, 1, 1, 1)
+                    max_u = flat_u.max(dim=1, keepdim=True)[0].view(batch_size, 1, 1, 1)
+                    current_W_t = (current_uncertainty_map - min_u) / (max_u - min_u + 1e-8)
+                    
+                    # Store history for visualization
+                    # Only store monitored indices to save RAM
+                    monitored_u = current_uncertainty_map[monitor_indices].detach().cpu().clone()
+                    uncertainty_history.append((i, monitored_u)) # (step_index, map)
+
+            # --- 2. Gradient Computation with Uncertainty Weighting ---
+            with torch.enable_grad():
+                img_in = img.detach().requires_grad_(True)
+                
+                # Standard Prediction
+                if unconditional_conditioning is None or unconditional_guidance_scale == 1.:
+                    e_t = self.model.apply_model(img_in, ts, conditioning)
+                else:
+                    x_in = torch.cat([img_in] * 2)
+                    t_in = torch.cat([ts] * 2)
+                    c_in = torch.cat([unconditional_conditioning, conditioning])
+                    e_t_uncond, e_t = self.model.apply_model(x_in, t_in, c_in).chunk(2)
+                    e_t = e_t_uncond + unconditional_guidance_scale * (e_t - e_t_uncond)
+
+                alphas = self.ddim_alphas
+                sqrt_one_minus_alphas = self.ddim_sqrt_one_minus_alphas
+                a_t = torch.full((batch_size, 1, 1, 1), alphas[index], device=device)
+                sqrt_one_minus_at = torch.full((batch_size, 1, 1, 1), sqrt_one_minus_alphas[index], device=device)
+                pred_z0 = (img_in - sqrt_one_minus_at * e_t) / a_t.sqrt()
+
+                s_hat, _ = mapper(pred_z0) 
+                y_est = torch.matmul(current_H, s_hat)
+                residual = y - y_est
+                weighted_res = residual * Sigma_inv 
+                K_dim = residual.shape[1] * residual.shape[2] 
+                loss_val = 0.5 * torch.sum(torch.conj(residual) * weighted_res).real / K_dim
+                
+                grads = torch.autograd.grad(loss_val, [img_in, current_H])
+                guidance_grad = grads[0]
+                h_grad = grads[1]
+
+                # --- Apply Uncertainty Weighting (Eq. 15 Logic) ---
+                # "Trust model (prior) where uncertainty is high (W_t approx 1)"
+                # "Trust data (guidance) where uncertainty is low (W_t approx 0)"
+                # guidance_grad is the gradient of the Data Consistency term.
+                # So we scale it by (1 - W_t).
+                
+                adaptive_weight = (1.0 - current_W_t)
+                guidance_grad = guidance_grad * adaptive_weight
+                
+                # Note: Eq 15 also adds a term for minimizing uncertainty J_unc, 
+                # but we focus on the weighting aspect here as requested.
+
+            # --- 3. Update H ---
+            if h_lr > 0:
+                with torch.no_grad():
+                    # Similar weighting for H update could be applied
+                    # norm_h_grad = h_grad ...
+                    # For now keeping standard logic to isolate image uncertainty effect
+                    h_grad_norm_tensor = torch.linalg.norm(h_grad)
+                    if h_grad_norm_tensor > 1e-8:
+                        norm_h_grad = h_grad / h_grad_norm_tensor
+                    else:
+                        norm_h_grad = torch.zeros_like(h_grad)
+                    current_H = current_H - h_lr * norm_h_grad
+                    current_H = current_H.detach().requires_grad_(True)
+            H_history.append(current_H.detach().cpu().clone())
+            if H_true is not None:
+                main_loss_history.append(torch.norm(current_H - H_true).item()**2)
+
+            # --- 4. Update z ---
+            max_timestep = self.ddim_timesteps[-1]
+            decay_factor = step / max_timestep
+            current_zeta = zeta * decay_factor
+            scaled_grad = guidance_grad * current_zeta
+            scaled_grad = torch.clamp(scaled_grad, min=-1.0, max=1.0)
+
+            with torch.no_grad():
+                alphas_prev = self.ddim_alphas_prev
+                sigmas = self.ddim_sigmas
+                a_prev = torch.full((batch_size, 1, 1, 1), alphas_prev[index], device=device)
+                sigma_t = torch.full((batch_size, 1, 1, 1), sigmas[index], device=device)
+                dir_xt = (1. - a_prev - sigma_t**2).sqrt() * e_t
+                noise = sigma_t * noise_like(img.shape, device, False) * eta
+                img_prev_ddim = a_prev.sqrt() * pred_z0 + dir_xt + noise
+                
+                img = img_prev_ddim - scaled_grad
+                img = torch.clamp(img, min=-3.0, max=3.0)
+                
+                img_history.append(img[monitor_indices].detach().cpu().clone())
+
+                if verbose and (i % 10 == 0):
+                    iterator.set_postfix({"Loss": f"{loss_val.item():.2f}"})
+
+        return img, current_H, H_history, burst_loss_history, main_loss_history, img_history, uncertainty_history

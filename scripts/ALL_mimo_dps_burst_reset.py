@@ -310,8 +310,8 @@ if __name__ == "__main__":
     parser.add_argument("--dps_scale", type=float, default=0.3)
     parser.add_argument("--burst_iterations", type=int, default=20)
     parser.add_argument("--burst_lr", type=float, default=0.05)
-    parser.add_argument("--anchor_lambda", type=float, default=0.0)
-    parser.add_argument("--h_lr_max", type=float, default=20.0)
+    parser.add_argument("--anchor_lambda", type=float, default=1.0)
+    parser.add_argument("--h_lr_max", type=float, default=10.0)
     parser.add_argument("--h_lr_min", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--monitor_range", type=int, nargs=2, default=[0, 5], 

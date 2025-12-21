@@ -1,0 +1,78 @@
+Experiment outputs will be saved to: outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/hybrid_env/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+Loading existing images from ./sentimg...
+
+=============================================
+  [INFO] Batch Size = 20
+  (Loaded 20 images from input directory)
+=============================================
+
+Monitoring indices: [0, 1, 2, 3, 4] (Saved to intermediate process)
+Latent Symbols: 2048, Grid Capacity: 2816
+Computing OFDM Data Indices via Differential Trace...
+Total REs per stream: 1536
+Valid Data Indices Found: 1408 (Expected: 1408)
+
+======== SNR = 25 dB (OFDM-MIMO 2x2) ========
+[Saver] Saving 20 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/nosample/estimated (base: mmse_ofdm_snr25)
+Preparing GCR for OFDM...
+Starting GCR Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+[Phase 3 Auto] Estimated start index: 5/199 based on variance 0.0227
+--> [Phase 1] Starting Burst Calibration (1000 iters)...
+    Post-Burst H Error: 118.9033
+--> [Phase 2] Resetting Latent with Improved H...
+[Saver] Saving 20 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated (base: burst_reset_snr25)
+Saved loss evolution plot to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/channel_plots/estimated/loss_evolution_snr25.png
+Analyzing results...
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_000)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_001)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_002)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_003)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_004)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_005)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_0 (base: step_006)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_000)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_001)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_002)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_003)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_004)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_005)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_1 (base: step_006)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_000)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_001)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_002)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_003)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_004)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_005)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_2 (base: step_006)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_000)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_001)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_002)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_003)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_004)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_005)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_3 (base: step_006)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_000)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_001)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_002)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_003)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_004)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_005)
+[Saver] Saving 1 images to outputs/MIMO_OFDM_Burst/OFDM_t=2_r=2_steps=200_burst=1000_blr=5e-05/estimated_process/snr25/batch_4 (base: step_006)
+Experiment Finished.

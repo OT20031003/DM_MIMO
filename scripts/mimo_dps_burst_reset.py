@@ -420,10 +420,10 @@ if __name__ == "__main__":
     P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
     P = P.to(device) 
 
-    min_snr_sim = 0
-    max_snr_sim = 15
+    min_snr_sim = -5
+    max_snr_sim = 25
 
-    for snr in range(min_snr_sim, max_snr_sim + 1, 1): 
+    for snr in range(min_snr_sim, max_snr_sim + 1, 3): 
         print(f"\n======== SNR = {snr} dB ========")
         print(f"Monitoring: {monitor_indices}")
         
