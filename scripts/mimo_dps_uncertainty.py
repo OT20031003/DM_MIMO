@@ -5,7 +5,8 @@ import random
 import re
 from omegaconf import OmegaConf
 from PIL import Image
-from tqdm import tqdm
+from tqdm import tqdm, trange
+from einops import rearrange
 from torchvision.utils import make_grid
 from torchvision import transforms
 from ldm.util import instantiate_from_config
@@ -14,10 +15,216 @@ from torchvision import utils as vutil
 import lpips
 import matplotlib.pyplot as plt
 import shutil
+import scipy.stats
 
-# ... (Previous helper functions: get_adaptive_h_lr, get_optimal_steps, plot_channel_evolution, etc. copied from mimo_dps_burst_reset.py) ...
-# To save space in this response, I assume standard helpers are available. 
-# I will include the NEW plotting function here.
+# ==========================================
+#  Helper Classes & Functions
+# ==========================================
+
+def get_adaptive_h_lr(current_snr, snr_min=-5, snr_max=25, lr_max=20.0, lr_min=1.0):
+    if current_snr <= snr_min:
+        return lr_max
+    if current_snr >= snr_max:
+        return lr_min
+    slope = (lr_min - lr_max) / (snr_max - snr_min)
+    lr = lr_max + (current_snr - snr_min) * slope
+    return lr
+
+def get_optimal_steps(snr):
+    steps = 28.33 * np.exp(-0.0879 * snr) - 1.45
+    return int(np.clip(np.round(steps), 1, 200))
+
+def plot_channel_evolution(H_true, H_init, H_final, save_path, batch_idx=0):
+    h_gt = H_true[batch_idx].detach().cpu().numpy().flatten()
+    h_ls = H_init[batch_idx].detach().cpu().numpy().flatten()
+    h_gcr = H_final[batch_idx].detach().cpu().numpy().flatten()
+    plt.figure(figsize=(8, 8))
+    plt.scatter([], [], c='red', marker='x', s=100, linewidths=2, label='Ground Truth')
+    plt.scatter([], [], c='blue', marker='^', s=80, label='Initial LS')
+    plt.scatter([], [], c='none', edgecolors='green', marker='o', s=120, linewidths=2, label='Final Burst+GCR')
+    num_elements = len(h_gt)
+    for i in range(num_elements):
+        plt.scatter(h_gt[i].real, h_gt[i].imag, c='red', marker='x', s=100, linewidths=2)
+        plt.text(h_gt[i].real, h_gt[i].imag, f" {i}", fontsize=12, color='red', fontweight='bold', ha='left', va='bottom')
+        plt.scatter(h_ls[i].real, h_ls[i].imag, c='blue', marker='^', s=80)
+        plt.text(h_ls[i].real, h_ls[i].imag, f" {i}", fontsize=10, color='blue', ha='right', va='top')
+        plt.scatter(h_gcr[i].real, h_gcr[i].imag, c='none', edgecolors='green', marker='o', s=120, linewidths=2)
+        plt.text(h_gcr[i].real, h_gcr[i].imag, f" {i}", fontsize=10, color='green', ha='left', va='top')
+        plt.plot([h_ls[i].real, h_gcr[i].real], [h_ls[i].imag, h_gcr[i].imag], color='gray', linestyle=':', alpha=0.5)
+    plt.axhline(0, color='black', linewidth=0.5, alpha=0.5)
+    plt.axvline(0, color='black', linewidth=0.5, alpha=0.5)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.legend(loc='upper right')
+    plt.title(f"Channel Estimation Evolution (Batch[{batch_idx}])\nMethod: Burst Calibration")
+    plt.xlabel("Real Part")
+    plt.ylabel("Imaginary Part")
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved channel plot to {save_path}")
+
+def plot_channel_trajectory(H_history, H_true, H_init, save_path, split_index=None, batch_idx=0):
+    steps = len(H_history)
+    traj = torch.stack(H_history).cpu().numpy()[:, batch_idx, :, :].reshape(steps, -1)
+    h_gt = H_true[batch_idx].detach().cpu().numpy().flatten()
+    h_ls = H_init[batch_idx].detach().cpu().numpy().flatten()
+    plt.figure(figsize=(10, 10))
+    num_elements = traj.shape[1]
+    for i in range(num_elements):
+        if split_index is not None and split_index < steps:
+            plt.plot(traj[:split_index+1, i].real, traj[:split_index+1, i].imag, color='orange', linewidth=2.0, alpha=0.8, label='Burst Phase' if i==0 else "")
+            plt.plot(traj[split_index:, i].real, traj[split_index:, i].imag, color='green', linewidth=2.0, alpha=0.8, label='Main Phase' if i==0 else "")
+            plt.scatter(traj[split_index, i].real, traj[split_index, i].imag, c='orange', marker='s', s=40, zorder=3)
+        else:
+            plt.plot(traj[:, i].real, traj[:, i].imag, color='gray', linewidth=1, alpha=0.5)
+        plt.scatter(h_ls[i].real, h_ls[i].imag, c='blue', marker='^', s=60, zorder=4, label='Initial LS' if i==0 else "")
+        plt.text(h_ls[i].real, h_ls[i].imag, f"{i}", fontsize=10, color='blue', ha='right', va='bottom', fontweight='bold')
+        plt.scatter(traj[-1, i].real, traj[-1, i].imag, c='green', marker='o', s=80, zorder=4, label='Final Est' if i==0 else "")
+        plt.text(traj[-1, i].real, traj[-1, i].imag, f"{i}", fontsize=10, color='green', ha='left', va='top', fontweight='bold')
+        plt.scatter(h_gt[i].real, h_gt[i].imag, c='red', marker='x', s=100, linewidths=2, zorder=5, label='Ground Truth' if i==0 else "")
+        plt.text(h_gt[i].real, h_gt[i].imag, f"{i}", fontsize=12, color='red', fontweight='bold', ha='left', va='bottom')
+    plt.axhline(0, color='black', linewidth=0.5, alpha=0.5)
+    plt.axvline(0, color='black', linewidth=0.5, alpha=0.5)
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.title(f"Channel Estimation Trajectory (Batch[{batch_idx}])\nOrange: Burst Calibration, Green: Main GCR Loop")
+    plt.xlabel("Real Part")
+    plt.ylabel("Imaginary Part")
+    plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved trajectory plot to {save_path}")
+
+def plot_h_loss_evolution(burst_loss, main_loss, save_path):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    ax1.plot(burst_loss, color='orange', linewidth=1.5)
+    ax1.set_title("Phase 1: Burst Calibration Loss (Batch Sum)")
+    ax1.set_xlabel("Iteration")
+    ax1.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
+    ax1.grid(True, linestyle='--', alpha=0.6)
+    if len(burst_loss) > 0:
+        ax1.text(len(burst_loss)*0.7, burst_loss[0]*0.9, f"Start: {burst_loss[0]:.4f}", color='black')
+        ax1.text(len(burst_loss)*0.7, burst_loss[-1]*1.1, f"End: {burst_loss[-1]:.4f}", color='red')
+    ax2.plot(main_loss, color='green', linewidth=1.5)
+    ax2.set_title("Phase 3: Main GCR Sampling Loss (Batch Sum)")
+    ax2.set_xlabel("Sampling Step (Process Order)")
+    ax2.set_ylabel(r"$||H_{true} - \hat{H}||^2$")
+    ax2.grid(True, linestyle='--', alpha=0.6)
+    if len(main_loss) > 0:
+        ax2.text(len(main_loss)*0.05, main_loss[0], f"Start: {main_loss[0]:.4f}", color='black', verticalalignment='bottom')
+        ax2.text(len(main_loss)*0.7, main_loss[-1], f"End: {main_loss[-1]:.4f}", color='red', verticalalignment='top')
+    plt.suptitle("Evolution of Channel Estimation Error (Squared Norm)", fontsize=14)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved loss evolution plot to {save_path}")
+
+def calculate_metrics_single(target_img_01, pred_img, lpips_fn):
+    pred_clamped = torch.clamp(pred_img, -1.0, 1.0)
+    pred_01 = (pred_clamped + 1.0) / 2.0
+    pred_01 = torch.clamp(pred_01, 0.0, 1.0)
+    mse = torch.mean((target_img_01 - pred_01) ** 2)
+    psnr = 20 * torch.log10(1.0 / (torch.sqrt(mse) + 1e-8))
+    target_m11 = target_img_01 * 2.0 - 1.0
+    with torch.no_grad():
+        lpips_val = lpips_fn(target_m11, pred_clamped).item()
+    return psnr.item(), lpips_val
+
+def plot_metrics_evolution(psnr_list, lpips_list, save_path, snr, batch_idx=0):
+    steps = range(len(psnr_list))
+    fig, ax1 = plt.subplots(figsize=(10, 6))
+    color1 = 'tab:blue'
+    ax1.set_xlabel('Sampling Step (Process Order)')
+    ax1.set_ylabel('PSNR (dB)', color=color1)
+    line1 = ax1.plot(steps, psnr_list, color=color1, label='PSNR (Left Axis)')
+    ax1.tick_params(axis='y', labelcolor=color1)
+    ax1.grid(True, linestyle='--', alpha=0.5)
+    ax2 = ax1.twinx()  
+    color2 = 'tab:red'
+    ax2.set_ylabel('LPIPS', color=color2) 
+    line2 = ax2.plot(steps, lpips_list, color=color2, linestyle='--', label='LPIPS (Right Axis)')
+    ax2.tick_params(axis='y', labelcolor=color2)
+    lines = line1 + line2
+    labels = [l.get_label() for l in lines]
+    ax1.legend(lines, labels, loc='lower center', bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False)
+    batch_label = batch_idx if isinstance(batch_idx, str) else f"Batch[{batch_idx}]"
+    plt.title(f"Evolution of Image Quality - SNR {snr}dB ({batch_label})", y=1.1)
+    fig.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved metrics plot to {save_path}")
+
+def plot_latent_change(diff_list, save_path, snr, batch_idx=0):
+    steps = range(1, len(diff_list) + 1)
+    plt.figure(figsize=(10, 6))
+    plt.plot(steps, diff_list, color='purple', marker='.', linestyle='-', linewidth=1.0, label='Latent Change |x_t - x_{t-1}|')
+    plt.xlabel('Sampling Step (Process Order)')
+    plt.ylabel('L2 Norm of Difference')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.legend()
+    batch_label = batch_idx if isinstance(batch_idx, str) else f"Batch[{batch_idx}]"
+    plt.title(f"Latent Update Magnitude - SNR {snr}dB ({batch_label})")
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved latent change plot to {save_path}")
+
+# ==========================================
+#  [NEW] Uncertainty Visualization Functions
+# ==========================================
+def save_uncertainty_heatmap(uncertainty_map, save_path):
+    """
+    (C, H, W) または (B, C, H, W) の不確実性マップをヒートマップとして保存する。
+    チャネル次元に沿って平均をとる。
+    """
+    # 入力が (C, H, W) の場合 (3次元)
+    if uncertainty_map.ndim == 3:
+        # dim=0 (Channel) で平均化 -> (H, W)
+        uncertainty_map = uncertainty_map.mean(dim=0)
+        
+    # 入力が (B, C, H, W) の場合 (4次元)
+    elif uncertainty_map.ndim == 4:
+        # dim=1 (Channel) で平均化 -> (B, H, W)
+        uncertainty_map = uncertainty_map.mean(dim=1)
+        # バッチの先頭だけ使う -> (H, W)
+        uncertainty_map = uncertainty_map[0]
+
+    # 正規化 for visualization
+    u_min = uncertainty_map.min()
+    u_max = uncertainty_map.max()
+    u_norm = (uncertainty_map - u_min) / (u_max - u_min + 1e-8)
+    
+    u_np = u_norm.cpu().numpy() # (H, W)
+        
+    plt.figure(figsize=(6, 6))
+    plt.imshow(u_np, cmap='jet', interpolation='nearest')
+    plt.colorbar(label='Uncertainty (Normalized)')
+    plt.title(f"Uncertainty Heatmap")
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150)
+    plt.close()
+
+def plot_correlation_evolution(correlations, steps, save_path, batch_idx=0):
+    """
+    相関係数の推移をグラフ化
+    """
+    plt.figure(figsize=(10, 6))
+    plt.plot(steps, correlations, marker='o', linestyle='-', color='magenta', label='Correlation (Error vs Uncertainty)')
+    plt.xlabel('Diffusion Timestep (t)')
+    plt.ylabel('Pearson Correlation Coefficient')
+    plt.title(f"Correlation Evolution: Reconstruction Error vs Uncertainty (Batch {batch_idx})")
+    plt.gca().invert_xaxis() # tは大きい方から小さい方へ進むため
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+    print(f"Saved correlation plot to {save_path}")
+
+# ==========================================
+#  Standard Helpers
+# ==========================================
 
 def seed_everything(seed):
     torch.manual_seed(seed)
@@ -69,28 +276,26 @@ def save_img_individually(img, path):
     for i in range(img.shape[0]):
         vutil.save_image(img[i], os.path.join(dirname, f"{basename}_{i}{ext}"))
 
-def get_adaptive_h_lr(current_snr, snr_min=-5, snr_max=25, lr_max=20.0, lr_min=1.0):
-    if current_snr <= snr_min: return lr_max
-    if current_snr >= snr_max: return lr_min
-    slope = (lr_min - lr_max) / (snr_max - snr_min)
-    return lr_max + (current_snr - snr_min) * slope
-
-def get_optimal_steps(snr):
-    steps = 28.33 * np.exp(-0.0879 * snr) - 1.45
-    return int(np.clip(np.round(steps), 1, 200))
+def remove_png(path):
+    for file in glob.glob(f'{path}/*.png'):
+        try: os.remove(file)
+        except: pass
 
 def latent_to_mimo_streams(z_real, t_antennas):
     B, C, H, W = z_real.shape
     z_flat = z_real.view(B, -1)
-    L_complex = z_flat.shape[1] // (t_antennas * 2)
+    total_elements = z_flat.shape[1]
+    L_complex = total_elements // (t_antennas * 2)
     cutoff = L_complex * t_antennas * 2
     z_used = z_flat[:, :cutoff]
     z_view = z_used.view(B, t_antennas, -1)
     real_part, imag_part = torch.chunk(z_view, 2, dim=2)
-    return torch.complex(real_part, imag_part), (B, C, H, W)
+    s = torch.complex(real_part, imag_part)
+    return s, (B, C, H, W)
 
 def mimo_streams_to_latent(s, original_shape):
-    real_part, imag_part = s.real, s.imag
+    real_part = s.real
+    imag_part = s.imag
     z_view = torch.cat([real_part, imag_part], dim=2) 
     z_flat = z_view.view(s.shape[0], -1)
     target_size = np.prod(original_shape[1:])
@@ -100,113 +305,74 @@ def mimo_streams_to_latent(s, original_shape):
         z_flat = torch.cat([z_flat, padding], dim=1)
     return z_flat.view(original_shape)
 
-# ==========================================
-#  NEW: Uncertainty Correlation Plotter
-# ==========================================
-def plot_uncertainty_correlation(uncertainty_history, img_history, z_true, save_path, batch_idx=0):
-    """
-    Plots the correlation between pixel-wise squared error |z - z_restored|^2 and the uncertainty map U_t.
-    
-    Args:
-        uncertainty_history: List of tuples (step_index, map_tensor). 
-                             map_tensor is (B_sub, 1, H, W).
-        img_history: List of latent tensors (B_sub, C, H, W). All steps.
-        z_true: Ground truth latent (B_sub, C, H, W).
-    """
-    
-    correlations = []
-    steps = []
-    
-    # Extract only the steps where uncertainty was calculated
-    unc_step_indices = [u[0] for u in uncertainty_history]
-    unc_maps = [u[1][batch_idx, 0] for u in uncertainty_history] # (H, W)
-    
-    # Precompute z_true magnitude for normalization (optional, here using raw SE)
-    z_true_b = z_true[batch_idx] # (C, H, W)
-    
-    for i, step_idx in enumerate(unc_step_indices):
-        if step_idx >= len(img_history): break
-        
-        # Get restored latent at this step
-        z_restored = img_history[step_idx][batch_idx] # (C, H, W)
-        
-        # Calculate Squared Error Map (aggregated over channels)
-        # Error = sum((z - z_hat)^2, dim=0) -> (H, W)
-        error_map = torch.sum((z_true_b - z_restored)**2, dim=0)
-        
-        # Flatten for correlation
-        u_flat = unc_maps[i].detach().cpu().numpy().flatten()
-        e_flat = error_map.detach().cpu().numpy().flatten()
-        
-        # Calculate Pearson Correlation
-        if np.std(u_flat) > 1e-6 and np.std(e_flat) > 1e-6:
-            corr = np.corrcoef(u_flat, e_flat)[0, 1]
-        else:
-            corr = 0.0
-            
-        correlations.append(corr)
-        steps.append(step_idx)
-        
-        # Visualization of the last step maps (optional debug)
-        if i == len(unc_step_indices) - 1:
-            fig_map, ax = plt.subplots(1, 2, figsize=(10, 5))
-            ax[0].imshow(e_flat.reshape(unc_maps[i].shape), cmap='hot')
-            ax[0].set_title(f"Squared Error Map (Step {step_idx})")
-            ax[1].imshow(u_flat.reshape(unc_maps[i].shape), cmap='viridis')
-            ax[1].set_title(f"Uncertainty Map (Step {step_idx})")
-            plt.close(fig_map)
-
-    # Plot Correlation Evolution
-    plt.figure(figsize=(10, 6))
-    plt.plot(steps, correlations, marker='o', linestyle='-', color='magenta', label='Correlation')
-    plt.xlabel('Sampling Step')
-    plt.ylabel('Correlation (Error vs Uncertainty)')
-    plt.title(f'Correlation of Uncertainty Map and Squared Error\nBatch {batch_idx}')
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(save_path, dpi=300)
-    plt.close()
-    print(f"Saved uncertainty correlation plot to {save_path}")
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    # Fixed parameters
+    # Parameters
     t_mimo = 2 
     r_mimo = 2 
     N_pilot = 2 
     P_power = 1.0 
-    
+    Perfect_Estimate = False 
+
     parser.add_argument("--input_path", type=str, default="input_img")
     parser.add_argument("--outdir", type=str, default=None)
+    parser.add_argument("--nosample_outdir", type=str, default=None)
+    parser.add_argument("--sentimgdir", type=str, default="./sentimg")
     parser.add_argument("--ddim_steps", type=int, default=200)
+    parser.add_argument("--scale", type=float, default=5.0)
     parser.add_argument("--dps_scale", type=float, default=0.3)
     parser.add_argument("--burst_iterations", type=int, default=20)
     parser.add_argument("--burst_lr", type=float, default=0.05)
     parser.add_argument("--anchor_lambda", type=float, default=0.0)
+    parser.add_argument("--h_lr_max", type=float, default=20.0)
+    parser.add_argument("--h_lr_min", type=float, default=0.05)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--monitor_range", type=int, nargs=2, default=[0, 2])
+    parser.add_argument("--monitor_range", type=int, nargs=2, default=[0, 5], 
+                        help="Start and End index of batches to monitor")
+    parser.add_argument("--unc_samples", type=int, default=4, help="Number of perturbed samples for uncertainty estimation")
     
-    # New Arguments for Uncertainty
-    parser.add_argument("--uncertainty_interval", type=int, default=10, help="Compute uncertainty every N steps")
-    parser.add_argument("--num_uncertainty_samples", type=int, default=4, help="Number of perturbed samples M")
-
     opt = parser.parse_args()
 
     seed_everything(opt.seed)
     
-    param_str = (f"Uncertainty_t={t_mimo}_steps={opt.ddim_steps}_"
-                 f"int={opt.uncertainty_interval}_M={opt.num_uncertainty_samples}")
+    # Path construction with uncertainty tag
+    param_str = (f"t={t_mimo}_r={r_mimo}_"
+                 f"steps={opt.ddim_steps}_"
+                 f"burst={opt.burst_iterations}_"
+                 f"blr={opt.burst_lr}_"
+                 f"lam={opt.anchor_lambda}_"
+                 f"zeta={opt.dps_scale}_"
+                 f"uncM={opt.unc_samples}")
 
-    if opt.outdir is None:
-        opt.outdir = f"outputs/{param_str}"
+    base_experiment_name = f"MIMO_Uncertainty/{param_str}"
     
-    os.makedirs(opt.outdir, exist_ok=True)
-    channel_outdir = os.path.join(opt.outdir, "plots")
-    os.makedirs(channel_outdir, exist_ok=True)
+    if opt.outdir is None:
+        opt.outdir = f"outputs/{base_experiment_name}"
+    
+    if opt.nosample_outdir is None:
+        opt.nosample_outdir = f"outputs/{base_experiment_name}/nosample"
 
-    print(f"Output: {opt.outdir}")
+    base_out_path = opt.outdir 
+    
+    suffix = "perfect" if Perfect_Estimate else "estimated"
+    
+    if os.path.exists(base_out_path):
+        print(f"Removing previous experiment results at: {base_out_path}")
+        shutil.rmtree(base_out_path)
+    
+    opt.outdir = os.path.join(opt.outdir, suffix)
+    opt.nosample_outdir = os.path.join(opt.nosample_outdir, suffix)
+    
+    channel_outdir = os.path.join(base_out_path, "channel_plots", suffix)
+    intermediates_base_dir = os.path.join(base_out_path, f"{suffix}_process")
+
+    os.makedirs(opt.outdir, exist_ok=True)
+    os.makedirs(opt.sentimgdir, exist_ok=True)
+    os.makedirs(opt.nosample_outdir, exist_ok=True)
+    os.makedirs(channel_outdir, exist_ok=True)
+    os.makedirs(intermediates_base_dir, exist_ok=True)
+
+    print(f"Experiment outputs will be saved to: {opt.outdir}")
 
     config = OmegaConf.load("configs/latent-diffusion/txt2img-1p4B-eval.yaml")
     model = load_model_from_config(config, "models/ldm/text2img-large/model.ckpt")
@@ -214,70 +380,91 @@ if __name__ == "__main__":
     model = model.to(device)
     sampler = DDIMSampler(model)
 
-    # Load Images
-    if os.path.exists(opt.input_path):
-        img_01 = load_images_as_tensors(opt.input_path).to(device)
-    else:
-        raise ValueError("Check input path")
-    
-    # Normalization [-1, 1]
-    img_m11 = img_01 * 2.0 - 1.0
-    batch_size = img_01.shape[0]
-    
-    monitor_indices = list(range(opt.monitor_range[0], min(opt.monitor_range[1], batch_size)))
+    print("Loading LPIPS model...")
+    lpips_fn = lpips.LPIPS(net='alex').to(device)
 
-    # Encode
-    z = model.encode_first_stage(img_m11)
-    z = model.get_first_stage_encoding(z).detach()
+    existing_imgs = glob.glob(os.path.join(opt.sentimgdir, "*.png")) + \
+                    glob.glob(os.path.join(opt.sentimgdir, "*.jpg"))
+
+    if len(existing_imgs) > 0:
+        print(f"Found existing images in {opt.sentimgdir}. Loading from there to preserve order...")
+        img_01 = load_images_as_tensors(opt.sentimgdir).to(device)
+    else:
+        print(f"No existing images in {opt.sentimgdir}. Loading from {opt.input_path}...")
+        img_01 = load_images_as_tensors(opt.input_path).to(device)
+        save_img_individually(img_01, opt.sentimgdir + "/original.png")
+
+    if img_01.shape[0] == 0:
+        raise ValueError("No images loaded! Please check input paths.")
+        
+    batch_size = img_01.shape[0]
+    img_m11 = img_01 * 2.0 - 1.0 
+    gt_imgs = img_01
     
-    z_mean = z.mean(dim=(1, 2, 3), keepdim=True)
-    z_var = torch.var(z, dim=(1, 2, 3)).view(-1, 1, 1, 1)
+    start_idx, end_idx = opt.monitor_range
+    end_idx = min(end_idx, batch_size)
+    monitor_indices = list(range(start_idx, end_idx))
+    
+    print(f"Monitoring batches: {monitor_indices} (Total {len(monitor_indices)})")
+
+    # Encode GT
+    z_gt = model.encode_first_stage(img_m11)
+    z_gt = model.get_first_stage_encoding(z_gt).detach()
+    
+    z_mean = z_gt.mean(dim=(1, 2, 3), keepdim=True)
+    z_var = torch.var(z_gt, dim=(1, 2, 3)).view(-1, 1, 1, 1)
     eps = 1e-7
-    z_norm = (z - z_mean) / (torch.sqrt(z_var) + eps)
+    z_norm_gt = (z_gt - z_mean) / (torch.sqrt(z_var) + eps)
     
-    s_0_real = z_norm / np.sqrt(2.0)
+    z_mean_target_all = z_mean
+    z_var_target_all = z_var
+
+    s_0_real = z_norm_gt / np.sqrt(2.0)
     s_0, latent_shape = latent_to_mimo_streams(s_0_real, t_mimo)
     s_0 = s_0.to(device)
-
-    # Simulation Setup (Fixed SNR for demo or loop)
-    # Using a single SNR for demonstration of uncertainty feature
-    snr_list = [10] 
     
+    L_len = s_0.shape[2]
+    print(f"MIMO Streams: {t_mimo}x{L_len} complex symbols")
+
     t_vec = torch.arange(t_mimo, device=device)
     N_vec = torch.arange(N_pilot, device=device)
     tt, NN = torch.meshgrid(t_vec, N_vec, indexing='ij')
     P = torch.sqrt(torch.tensor(P_power/(N_pilot*t_mimo))) * torch.exp(1j*2*torch.pi*tt*NN/N_pilot)
-    P = P.to(device)
+    P = P.to(device) 
 
-    for snr in snr_list:
-        print(f"\n=== Running SNR {snr} dB ===")
+    min_snr_sim = -5
+    max_snr_sim = 25
+
+    for snr in range(min_snr_sim, max_snr_sim + 1, 5): 
+        print(f"\n======== SNR = {snr} dB ========")
+        
         noise_variance = t_mimo / (10**(snr/10))
         sigma_n = np.sqrt(noise_variance / 2.0)
 
-        # Channel & Noise
         H_real = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
         H_imag = torch.randn(batch_size, r_mimo, t_mimo, device=device) * np.sqrt(0.5)
         H = torch.complex(H_real, H_imag)
 
-        # Pilot Transmission
-        V = torch.randn(batch_size, r_mimo, N_pilot, dtype=torch.cfloat, device=device) * np.sqrt(noise_variance/2) # Simple Complex Noise
+        V_real = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+        V_imag = torch.randn(batch_size, r_mimo, N_pilot, device=device) * np.sqrt(noise_variance/2)
+        V = torch.complex(V_real, V_imag)
         S_pilot = torch.matmul(H, P) + V
         
-        # LS Estimation
-        P_herm = P.mH
-        inv_PP = torch.inverse(torch.matmul(P, P_herm))
-        H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
-        sigma_e2 = noise_variance / (P_power/t_mimo)
+        if Perfect_Estimate:
+            H_hat = H 
+            sigma_e2 = 0.0
+        else:
+            P_herm = P.mH
+            inv_PP = torch.inverse(torch.matmul(P, P_herm))
+            H_hat = torch.matmul(S_pilot, torch.matmul(P_herm, inv_PP))
+            sigma_e2 = noise_variance / (P_power/t_mimo)
 
-        # Data Transmission
-        W = torch.randn(batch_size, r_mimo, s_0.shape[2], dtype=torch.cfloat, device=device) * sigma_n
+        W_real = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+        W_imag = torch.randn(batch_size, r_mimo, L_len, device=device) * sigma_n
+        W = torch.complex(W_real, W_imag)
         Y = torch.matmul(H, s_0) + W
-
-        # MMSE Init
-        eff_noise = sigma_e2 + noise_variance
-        Sigma_inv = 1.0 / eff_noise
         
-        # MMSE Filter
+        eff_noise = sigma_e2 + noise_variance
         H_hat_H = H_hat.mH
         Gram = torch.matmul(H_hat_H, H_hat) 
         Reg = eff_noise * torch.eye(t_mimo, device=device).unsqueeze(0)
@@ -288,59 +475,124 @@ if __name__ == "__main__":
         z_init_real = mimo_streams_to_latent(s_mmse, latent_shape)
         z_init_mmse = z_init_real * np.sqrt(2.0)
         
-        # Normalize for input
         actual_std = z_init_mmse.std(dim=(1, 2, 3), keepdim=True)
         z_init_normalized = z_init_mmse / (actual_std + 1e-8)
         
-        noise_power_factor = torch.matmul(W_mmse, W_mmse.mH).diagonal(dim1=-2, dim2=-1).real.mean()
+        # Calculate effective noise var for step estimation
+        W_W_H = torch.matmul(W_mmse, W_mmse.mH) 
+        noise_power_factor = W_W_H.diagonal(dim1=-2, dim2=-1).real.mean()
         post_mmse_noise_var_raw = eff_noise * noise_power_factor
-        effective_noise_variance = (post_mmse_noise_var_raw / (actual_std**2).flatten().mean())
+        actual_var_flat = (actual_std.flatten()) ** 2
+        effective_noise_variance = (post_mmse_noise_var_raw / actual_var_flat).mean()
 
-        def forward_mapper(z): return latent_to_mimo_streams(z / np.sqrt(2.0), t_mimo)
-        def backward_mapper(s, shape): return mimo_streams_to_latent(s, shape) * np.sqrt(2.0)
+        eff_var_scalar = noise_variance + sigma_e2
+        Sigma_inv = 1.0 / eff_var_scalar
         
+        def forward_mapper(z):
+            return latent_to_mimo_streams(z / np.sqrt(2.0), t_mimo)
+        
+        def backward_mapper(s, shape):
+            z = mimo_streams_to_latent(s, shape)
+            return z * np.sqrt(2.0)
+
         cond = model.get_learned_conditioning(batch_size * [""])
+        adaptive_h_lr = get_adaptive_h_lr(snr, snr_min=min_snr_sim, snr_max=max_snr_sim, lr_max=opt.h_lr_max, lr_min=opt.h_lr_min)
+
+        print(f"Starting Uncertainty-Aware Burst Sampling... Steps={opt.ddim_steps}")
         
-        # Call New Sampler
-        samples, H_final, H_hist, burst_loss, main_loss, img_hist, unc_hist = sampler.gcr_uncertainty_sampling(
+        # [MODIFIED] Call the new uncertainty-aware sampling method
+        # Also returns pred_x0_history now
+        samples, H_final_est, H_history, burst_loss, main_loss, img_history, uncertainty_history, pred_x0_history = sampler.gcr_burst_sampling_uncertainty(
             S=opt.ddim_steps,
             batch_size=batch_size,
-            shape=latent_shape[1:],
+            shape=z_gt.shape[1:4], 
             conditioning=cond,
-            y=Y,
-            H_hat=H_hat,
+            y=Y,                 
+            H_hat=H_hat, 
             Sigma_inv=torch.tensor(Sigma_inv, device=device),
-            z_init=z_init_normalized,
+            z_init=z_init_normalized, 
             burst_iterations=opt.burst_iterations,
             burst_lr=opt.burst_lr,
+            anchor_lambda=opt.anchor_lambda,
+            zeta=opt.dps_scale,
+            h_lr=adaptive_h_lr, 
             mapper=forward_mapper,
             inv_mapper=backward_mapper,
             initial_noise_variance=effective_noise_variance,
-            H_true=H,
+            H_true=H,  
             monitor_indices=monitor_indices,
-            # Uncertainty Args
-            uncertainty_interval=opt.uncertainty_interval,
-            num_uncertainty_samples=opt.num_uncertainty_samples,
-            zeta=opt.dps_scale
+            num_perturb_samples=opt.unc_samples
         )
-        
-        # Decode Final
-        z_final = samples * (torch.sqrt(z_var) + eps) + z_mean
-        rec = model.decode_first_stage(z_final)
-        rec = torch.clamp((rec + 1.0) / 2.0, 0.0, 1.0)
-        save_img_individually(rec, f"{opt.outdir}/final_snr{snr}.png")
 
-        # Process Uncertainty & Plot Correlation
-        print(f"Processing Uncertainty Plots for SNR {snr}...")
-        
-        for k, batch_idx in enumerate(monitor_indices):
-            
-            # Ground Truth Latent for this batch
-            z_true_batch = z_norm[batch_idx].detach().cpu() # (C, H, W)
-            
-            # Plot path
-            plot_path = os.path.join(channel_outdir, f"unc_corr_snr{snr}_batch{batch_idx}.png")
-            
-            plot_uncertainty_correlation(unc_hist, img_hist, z_true_batch.unsqueeze(0), plot_path, batch_idx=k)
+        # Standard Restored Image Saving
+        z_restored = samples * (torch.sqrt(z_var) + eps) + z_mean
+        rec_proposed = model.decode_first_stage(z_restored)
+        rec_proposed_01 = torch.clamp((rec_proposed + 1.0) / 2.0, 0.0, 1.0)
+        save_img_individually(rec_proposed_01, f"{opt.outdir}/burst_uncertainty_snr{snr}.png")
 
-    print("Done.")
+        # --- Uncertainty Analysis & Plotting ---
+        print(f"Analyzing Uncertainty Correlations for SNR {snr}...")
+        
+        for k, real_batch_idx in enumerate(monitor_indices):
+            batch_plot_dir = os.path.join(channel_outdir, f"batch_{real_batch_idx}")
+            os.makedirs(batch_plot_dir, exist_ok=True)
+
+            traj_plot_path = os.path.join(batch_plot_dir, f"trajectory_snr{snr}.png")
+            plot_channel_trajectory(H_history, H, H_hat, traj_plot_path, split_index=opt.burst_iterations, batch_idx=real_batch_idx)
+            
+            if k == 0:
+                loss_plot_path = os.path.join(channel_outdir, f"loss_evolution_snr{snr}_total.png")
+                plot_h_loss_evolution(burst_loss, main_loss, loss_plot_path)
+
+            # 2. Correlation Evolution: Error vs Uncertainty
+            
+            correlations = []
+            timesteps_unc = []
+            
+            z_gt_batch = z_gt[real_batch_idx].unsqueeze(0).to(device) # (1, C, H, W) GT Latent
+            
+            n_steps = len(img_history)
+            
+            u_idx = 0
+            # [MODIFIED] Using pred_x0_history for error calculation instead of img_history (noisy xt)
+            for i in range(n_steps):
+                if i % 10 == 0 and u_idx < len(uncertainty_history):
+                    t_val, u_map_all = uncertainty_history[u_idx]
+                    
+                    # [IMPORTANT FIX] Use Predicted Clean Latent (Tweedie) for error calculation
+                    # pred_x0_history contains the denoised estimate at step i
+                    z_est_clean = pred_x0_history[i][k].unsqueeze(0).to(device) # (1, C, H, W)
+                    
+                    # Calculate Error Map |pred_z0 - z_gt|^2
+                    # Note: Need to handle normalization if z_est_clean is not normalized.
+                    # In gcr_burst_sampling_uncertainty, pred_z0 is computed in normalized latent space.
+                    # z_gt_batch is also z_norm_gt. So direct comparison is valid.
+                    
+                    error_map = (z_est_clean - z_gt_batch)**2 # (1, C, H, W)
+                    
+                    # Flatten and correlate
+                    u_flat = u_map_all[real_batch_idx].flatten().cpu().numpy()
+                    e_flat = error_map.flatten().cpu().numpy()
+                    
+                    if len(u_flat) == len(e_flat):
+                        # Correlation
+                        corr, _ = scipy.stats.pearsonr(e_flat, u_flat)
+                        correlations.append(corr)
+                        timesteps_unc.append(t_val)
+                        
+                        # Save heatmap for the first, middle, and last step
+                        if u_idx == 0 or u_idx == len(uncertainty_history)//2 or u_idx == len(uncertainty_history)-1:
+                            hm_path = os.path.join(batch_plot_dir, f"uncertainty_heatmap_snr{snr}_t{t_val}.png")
+                            save_uncertainty_heatmap(u_map_all[real_batch_idx], hm_path)
+                            
+                            # Also save Error Heatmap for comparison
+                            err_path = os.path.join(batch_plot_dir, f"error_heatmap_snr{snr}_t{t_val}.png")
+                            save_uncertainty_heatmap(error_map[0].detach().cpu(), err_path) # Reuse function
+                            
+                    u_idx += 1
+            
+            # Plot Correlation Evolution
+            corr_plot_path = os.path.join(batch_plot_dir, f"correlation_evolution_snr{snr}.png")
+            plot_correlation_evolution(correlations, timesteps_unc, corr_plot_path, batch_idx=real_batch_idx)
+
+        print(f"Saved all uncertainty results for SNR {snr}")

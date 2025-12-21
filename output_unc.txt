@@ -1,0 +1,148 @@
+Removing previous experiment results at: outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4
+Experiment outputs will be saved to: outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/estimated
+Loading model from models/ldm/text2img-large/model.ckpt
+autoencoder.py
+LatentDiffusion: Running in eps-prediction mode
+DiffusionWrapper has 872.30 M params.
+ldm.modules/diffusionmodules/util.py ; make_schedule = linear
+ldm/modules/diffusionmodules/model.py, Enocoder; in_channels = 3, ch_mult = [1, 2, 4, 4]
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+making attention of type 'vanilla' with 512 in_channels
+ldm/models/autoencoder.py, AutoencoderKL init, created
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+ldm/modules/diffusionmodules/model.py, Resnet in_channels != out_channels
+Loading LPIPS model...
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+Loading model from: /home/naaa/miniconda3/envs/hybrid_env/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+Found existing images in ./sentimg. Loading from there to preserve order...
+Monitoring batches: [0, 1, 2, 3, 4] (Total 5)
+MIMO Streams: 2x1024 complex symbols
+
+======== SNR = -5 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR -5...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr-5.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr-5_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr-5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr-5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr-5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr-5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr-5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr-5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr-5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr-5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr-5.png
+Saved all uncertainty results for SNR -5
+
+======== SNR = 0 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 0...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr0.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr0_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr0.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr0.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr0.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr0.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr0.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr0.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr0.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr0.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr0.png
+Saved all uncertainty results for SNR 0
+
+======== SNR = 5 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 5...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr5.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr5_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr5.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr5.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr5.png
+Saved all uncertainty results for SNR 5
+
+======== SNR = 10 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 10...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr10.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr10_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr10.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr10.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr10.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr10.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr10.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr10.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr10.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr10.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr10.png
+Saved all uncertainty results for SNR 10
+
+======== SNR = 15 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 15...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr15.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr15_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr15.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr15.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr15.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr15.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr15.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr15.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr15.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr15.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr15.png
+Saved all uncertainty results for SNR 15
+
+======== SNR = 20 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 20...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr20.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr20_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr20.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr20.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr20.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr20.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr20.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr20.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr20.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr20.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr20.png
+Saved all uncertainty results for SNR 20
+
+======== SNR = 25 dB ========
+Starting Uncertainty-Aware Burst Sampling... Steps=200
+ldm/modules/diffusionmodules/util.py, make_ddim_timsteps ddim_discr_method = uniform
+--> [Phase 1] Burst Calibration (20 iters)...
+Analyzing Uncertainty Correlations for SNR 25...
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/trajectory_snr25.png
+Saved loss evolution plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/loss_evolution_snr25_total.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_0/correlation_evolution_snr25.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/trajectory_snr25.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_1/correlation_evolution_snr25.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/trajectory_snr25.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_2/correlation_evolution_snr25.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/trajectory_snr25.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_3/correlation_evolution_snr25.png
+Saved trajectory plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/trajectory_snr25.png
+Saved correlation plot to outputs/MIMO_Uncertainty/t=2_r=2_steps=200_burst=20_blr=0.05_lam=0.0_zeta=0.3_uncM=4/channel_plots/estimated/batch_4/correlation_evolution_snr25.png
+Saved all uncertainty results for SNR 25
